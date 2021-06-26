@@ -18,7 +18,6 @@ import (
 	"strings"
 )
 
-var log = logger.GetLog()
 
 //LxdAudit lxd benchmark object
 type LxdAudit struct {
@@ -31,17 +30,18 @@ type LxdAudit struct {
 	PlChan          chan m2.LxdAuditResults
 	CompletedChan   chan bool
 	FilesInfo       []utils.FilesInfo
+	log       *logger.LdxProbeLogger
 }
 
 // ResultProcessor process audit results
 type ResultProcessor func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench
 
 // ConsoleOutputGenerator print audit tests to stdout
-var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory) {
+var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger ) {
 	grandTotal := make([]models.AuditTestTotals, 0)
 	for _, a := range at {
 		log.Console(fmt.Sprintf("%s %s\n", "[Category]", a.Name))
-		categoryTotal := printTestResults(a.AuditTests)
+		categoryTotal := printTestResults(a.AuditTests,log)
 		grandTotal = append(grandTotal, categoryTotal)
 	}
 	log.Console(printFinalResults(grandTotal))
@@ -71,7 +71,7 @@ func calculateFinalTotal(granTotal []models.AuditTestTotals) models.AuditTestTot
 }
 
 // ReportOutputGenerator print failed audit test to human report
-var ReportOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory) {
+var ReportOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory,log *logger.LdxProbeLogger) {
 	for _, a := range at {
 		log.Table(reports.GenerateAuditReport(a.AuditTests))
 	}
@@ -107,17 +107,17 @@ func (bk LxdAudit) Help() string {
 }
 
 //Run execute the full lxd benchmark
-func (bk *LxdAudit) Run(args []string) int {
+func (ldx *LxdAudit) Run(args []string) int {
 	// load audit tests fro benchmark folder
-	auditTests := bk.FileLoader.LoadAuditTests(bk.FilesInfo)
+	auditTests := ldx.FileLoader.LoadAuditTests(ldx.FilesInfo)
 	// filter tests by cmd criteria
-	ft := filteredAuditBenchTests(auditTests, bk.PredicateChain, bk.PredicateParams)
+	ft := filteredAuditBenchTests(auditTests, ldx.PredicateChain, ldx.PredicateParams)
 	//execute audit tests and show it in progress bar
-	completedTest := executeTests(ft, bk.runAuditTest)
+	completedTest := executeTests(ft, ldx.runAuditTest,ldx.log)
 	// generate output data
-	ui.PrintOutput(completedTest, bk.OutputGenerator)
+	ui.PrintOutput(completedTest, ldx.OutputGenerator,ldx.log)
 	// send test results to plugin
-	sendResultToPlugin(bk.PlChan, bk.CompletedChan, completedTest)
+	sendResultToPlugin(ldx.PlChan, ldx.CompletedChan, completedTest)
 	return 0
 }
 
@@ -138,7 +138,7 @@ func sendResultToPlugin(plChan chan m2.LxdAuditResults, completedChan chan bool,
 }
 
 // runAuditTest execute category of audit tests
-func (bk *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
+func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 	auditRes := make([]*models.AuditBench, 0)
 	if at.NonApplicable {
 		auditRes = append(auditRes, at)
@@ -147,17 +147,17 @@ func (bk *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 	cmdTotalRes := make([]string, 0)
 	// execute audit test command
 	for index := range at.AuditCommand {
-		res := bk.execCommand(at, index, cmdTotalRes, make([]IndexValue, 0))
+		res := ldx.execCommand(at, index, cmdTotalRes, make([]IndexValue, 0))
 		cmdTotalRes = append(cmdTotalRes, res)
 	}
 	// evaluate command result with expression
-	NumFailedTest := bk.evalExpression(at, cmdTotalRes, len(cmdTotalRes), make([]string, 0), 0)
+	NumFailedTest := ldx.evalExpression(at, cmdTotalRes, len(cmdTotalRes), make([]string, 0), 0)
 	// continue with result processing
-	auditRes = append(auditRes, bk.ResultProcessor(at, NumFailedTest)...)
+	auditRes = append(auditRes, ldx.ResultProcessor(at, NumFailedTest)...)
 	return auditRes
 }
 
-func (bk *LxdAudit) addDummyCommandResponse(expr string, index int, n string) string {
+func (ldx *LxdAudit) addDummyCommandResponse(expr string, index int, n string) string {
 	if n == "[^\"]\\S*'\n" || n == "" || n == common.EmptyValue {
 		spExpr := utils.SeparateExpr(expr)
 		for _, expr := range spExpr {
@@ -180,49 +180,49 @@ type IndexValue struct {
 	value string
 }
 
-func (bk *LxdAudit) execCommand(at *models.AuditBench, index int, prevResult []string, newRes []IndexValue) string {
+func (ldx *LxdAudit) execCommand(at *models.AuditBench, index int, prevResult []string, newRes []IndexValue) string {
 	cmd := at.AuditCommand[index]
 	paramArr, ok := at.CommandParams[index]
 	if ok {
 		for _, param := range paramArr {
 			paramNum, err := strconv.Atoi(param)
 			if err != nil {
-				log.Console(fmt.Sprintf("failed to convert param for command %s", cmd))
+				ldx.log.Console(fmt.Sprintf("failed to convert param for command %s", cmd))
 				continue
 			}
 			if paramNum < len(prevResult) {
-				n := bk.addDummyCommandResponse(at.EvalExpr, index, prevResult[paramNum])
+				n := ldx.addDummyCommandResponse(at.EvalExpr, index, prevResult[paramNum])
 				newRes = append(newRes, IndexValue{index: paramNum, value: n})
 			}
 		}
-		commandRes := bk.execCmdWithParams(newRes, len(newRes), make([]IndexValue, 0), cmd, make([]string, 0))
+		commandRes := ldx.execCmdWithParams(newRes, len(newRes), make([]IndexValue, 0), cmd, make([]string, 0))
 		sb := strings.Builder{}
 		for _, cr := range commandRes {
 			sb.WriteString(utils.AddNewLineToNonEmptyStr(cr))
 		}
 		return sb.String()
 	}
-	result, _ := bk.Command.Exec(cmd)
+	result, _ := ldx.Command.Exec(cmd)
 	if result.Stderr != "" {
-		log.Console(fmt.Sprintf("Failed to execute command %s\n %s", result.Stderr, cmd))
+		ldx.log.Console(fmt.Sprintf("Failed to execute command %s\n %s", result.Stderr, cmd))
 	}
-	return bk.addDummyCommandResponse(at.EvalExpr, index, result.Stdout)
+	return ldx.addDummyCommandResponse(at.EvalExpr, index, result.Stdout)
 }
 
-func (bk *LxdAudit) execCmdWithParams(arr []IndexValue, index int, prevResHolder []IndexValue, currCommand string, resArr []string) []string {
+func (ldx *LxdAudit) execCmdWithParams(arr []IndexValue, index int, prevResHolder []IndexValue, currCommand string, resArr []string) []string {
 	if len(arr) == 0 {
-		return execShellCmd(prevResHolder, resArr, currCommand, bk.Command)
+		return ldx.execShellCmd(prevResHolder, resArr, currCommand, ldx.Command)
 	}
 	sArr := strings.Split(utils.RemoveNewLineSuffix(arr[0].value), "\n")
 	for _, a := range sArr {
 		prevResHolder = append(prevResHolder, IndexValue{index: arr[0].index, value: a})
-		resArr = bk.execCmdWithParams(arr[1:index], index-1, prevResHolder, currCommand, resArr)
+		resArr = ldx.execCmdWithParams(arr[1:index], index-1, prevResHolder, currCommand, resArr)
 		prevResHolder = prevResHolder[:len(prevResHolder)-1]
 	}
 	return resArr
 }
 
-func execShellCmd(prevResHolder []IndexValue, resArr []string, currCommand string, se shell.Executor) []string {
+func (ldx *LxdAudit) execShellCmd(prevResHolder []IndexValue, resArr []string, currCommand string, se shell.Executor) []string {
 	for _, param := range prevResHolder {
 		if param.value == common.EmptyValue || param.value == common.NotValidNumber || param.value == "" {
 			resArr = append(resArr, param.value)
@@ -231,7 +231,7 @@ func execShellCmd(prevResHolder []IndexValue, resArr []string, currCommand strin
 		cmd := strings.ReplaceAll(currCommand, fmt.Sprintf("#%d", param.index), param.value)
 		result, _ := se.Exec(cmd)
 		if result.Stderr != "" {
-			log.Console(fmt.Sprintf("Failed to execute command %s", result.Stderr))
+			ldx.log.Console(fmt.Sprintf("Failed to execute command %s", result.Stderr))
 		}
 		if len(strings.TrimSpace(result.Stdout)) == 0 {
 			result.Stdout = common.EmptyValue
@@ -242,28 +242,28 @@ func execShellCmd(prevResHolder []IndexValue, resArr []string, currCommand strin
 }
 
 //evalExpression expression eval as cartesian product
-func (bk *LxdAudit) evalExpression(at *models.AuditBench,
+func (ldx *LxdAudit) evalExpression(at *models.AuditBench,
 	commandRes []string, commResSize int, permutationArr []string, testFailure int) int {
 	if len(commandRes) == 0 {
-		return evalCommand(at, permutationArr, testFailure)
+		return ldx.evalCommand(at, permutationArr, testFailure)
 	}
 	outputs := strings.Split(utils.RemoveNewLineSuffix(commandRes[0]), "\n")
 	for _, o := range outputs {
 		permutationArr = append(permutationArr, o)
-		testFailure = bk.evalExpression(at, commandRes[1:commResSize], commResSize-1, permutationArr, testFailure)
+		testFailure = ldx.evalExpression(at, commandRes[1:commResSize], commResSize-1, permutationArr, testFailure)
 		permutationArr = permutationArr[:len(permutationArr)-1]
 	}
 	return testFailure
 }
 
-func evalCommand(at *models.AuditBench, permutationArr []string, testExec int) int {
+func (ldx *LxdAudit)evalCommand(at *models.AuditBench, permutationArr []string, testExec int) int {
 	// build command expression with params
 	expr := at.CmdExprBuilder(permutationArr, at.EvalExpr)
 	testExec++
 	// eval command expression
 	testSucceeded, err := evalCommandExpr(strings.ReplaceAll(expr, common.EmptyValue, ""))
 	if err != nil {
-		log.Console(fmt.Sprintf("failed to evaluate command expr %s for audit test %s", expr, at.Name))
+		ldx.log.Console(fmt.Sprintf("failed to evaluate command expr %s for audit test %s", expr, at.Name))
 	}
 	return testExec - testSucceeded
 }

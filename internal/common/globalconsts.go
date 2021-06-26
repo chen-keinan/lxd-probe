@@ -39,17 +39,17 @@ const (
 	Report = "r"
 	//Synopsis help
 	Synopsis = "synopsis"
-	//BeaconCli Name
-	BeaconCli = "kube-beacon"
-	//BeaconVersion version
-	BeaconVersion = "0.1"
+	//LdxProbeCli Name
+	LdxProbeCli = "ldx-probe"
+	//LdxProbeVersion version
+	LdxProbeVersion = "0.1"
 	//IncludeParam param
 	IncludeParam = "i="
 	//ExcludeParam param
 	ExcludeParam = "e="
 	//NodeParam param
 	NodeParam = "n="
-	//LxdProbeHomeEnvVar Beacon Home env var
+	//LxdProbeHomeEnvVar ldx probe Home env var
 	LxdProbeHomeEnvVar = "LXD_PROBE_HOME"
 	//LxdProbe binary name
 	LxdProbe = "lxd-probe"

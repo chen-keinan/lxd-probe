@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-// StartCLI start kube-beacon audit tester
+// StartCLI start ldx-prob audit tester
 func StartCLI() {
 	app := fx.New(
 		// dependency injection
@@ -32,14 +32,13 @@ func StartCLI() {
 		fx.Provide(NewCliCommands),
 		fx.Provide(NewCommandArgs),
 		fx.Provide(createCliBuilderData),
+		fx.Provide(logger.GetLog()),
 		fx.Invoke(StartCLICommand),
 	)
 	if err := app.Start(context.Background()); err != nil {
 		panic(err)
 	}
 }
-
-var log = logger.GetLog()
 
 //initBenchmarkSpecData initialize benchmark spec file and save if to file system
 func initBenchmarkSpecData(fm utils.FolderMgr, ad ArgsData) []utils.FilesInfo {
@@ -114,7 +113,7 @@ func initPluginWorker(plChan chan models.LxdAuditResults, completedChan chan boo
 }
 
 //StartCLICommand invoke cli lxd command beacon cli
-func StartCLICommand(fm utils.FolderMgr, plChan chan models.LxdAuditResults, completedChan chan bool, ad ArgsData, cmdArgs []string, commands map[string]cli.CommandFactory) {
+func StartCLICommand(fm utils.FolderMgr, plChan chan models.LxdAuditResults, completedChan chan bool, ad ArgsData, cmdArgs []string, commands map[string]cli.CommandFactory,log *logger.LdxProbeLogger) {
 	// init plugin folders
 	initPluginFolders(fm)
 	// init plugin worker
@@ -184,10 +183,10 @@ func createCliBuilderData(ca []string, cmd []cli.Command) map[string]cli.Command
 
 // invokeCommandCli invoke cli command with params
 func invokeCommandCli(args []string, commands map[string]cli.CommandFactory) (int, error) {
-	app := cli.NewCLI(common.BeaconCli, common.BeaconVersion)
+	app := cli.NewCLI(common.LdxProbeCli, common.LdxProbeVersion)
 	app.Args = append(app.Args, args...)
 	app.Commands = commands
-	app.HelpFunc = BeaconHelpFunc(common.BeaconCli)
+	app.HelpFunc = BeaconHelpFunc(common.LdxProbeCli)
 	status, err := app.Run()
 	return status, err
 }
