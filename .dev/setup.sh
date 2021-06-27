@@ -1,17 +1,15 @@
 echo "start vagrant provioning..."
-
 sudo apt-get update
 
+echo "configure lxd user and group"
 sudo adduser vagrant lxd
-
 newgrp lxd
 
+echo "install lxd tools"
 sudo apt install zfsutils-linux
 
+echo "setup lxd manager"
 lxd init --preseed
-
-echo "add signing key..."
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 
 echo "install curl pkg..."
 sudo apt-get install -y curl zfsutils-linux
