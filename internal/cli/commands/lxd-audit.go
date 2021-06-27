@@ -18,7 +18,6 @@ import (
 	"strings"
 )
 
-
 //LxdAudit lxd benchmark object
 type LxdAudit struct {
 	Command         shell.Executor
@@ -30,18 +29,18 @@ type LxdAudit struct {
 	PlChan          chan m2.LxdAuditResults
 	CompletedChan   chan bool
 	FilesInfo       []utils.FilesInfo
-	log       *logger.LdxProbeLogger
+	log             *logger.LdxProbeLogger
 }
 
 // ResultProcessor process audit results
 type ResultProcessor func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench
 
 // ConsoleOutputGenerator print audit tests to stdout
-var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger ) {
+var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
 	grandTotal := make([]models.AuditTestTotals, 0)
 	for _, a := range at {
 		log.Console(fmt.Sprintf("%s %s\n", "[Category]", a.Name))
-		categoryTotal := printTestResults(a.AuditTests,log)
+		categoryTotal := printTestResults(a.AuditTests, log)
 		grandTotal = append(grandTotal, categoryTotal)
 	}
 	log.Console(printFinalResults(grandTotal))
@@ -71,7 +70,7 @@ func calculateFinalTotal(granTotal []models.AuditTestTotals) models.AuditTestTot
 }
 
 // ReportOutputGenerator print failed audit test to human report
-var ReportOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory,log *logger.LdxProbeLogger) {
+var ReportOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
 	for _, a := range at {
 		log.Table(reports.GenerateAuditReport(a.AuditTests))
 	}
@@ -102,7 +101,7 @@ func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan
 }
 
 //Help return benchmark command help
-func (bk LxdAudit) Help() string {
+func (ldx LxdAudit) Help() string {
 	return startup.GetHelpSynopsis()
 }
 
@@ -113,9 +112,9 @@ func (ldx *LxdAudit) Run(args []string) int {
 	// filter tests by cmd criteria
 	ft := filteredAuditBenchTests(auditTests, ldx.PredicateChain, ldx.PredicateParams)
 	//execute audit tests and show it in progress bar
-	completedTest := executeTests(ft, ldx.runAuditTest,ldx.log)
+	completedTest := executeTests(ft, ldx.runAuditTest, ldx.log)
 	// generate output data
-	ui.PrintOutput(completedTest, ldx.OutputGenerator,ldx.log)
+	ui.PrintOutput(completedTest, ldx.OutputGenerator, ldx.log)
 	// send test results to plugin
 	sendResultToPlugin(ldx.PlChan, ldx.CompletedChan, completedTest)
 	return 0
@@ -256,7 +255,7 @@ func (ldx *LxdAudit) evalExpression(at *models.AuditBench,
 	return testFailure
 }
 
-func (ldx *LxdAudit)evalCommand(at *models.AuditBench, permutationArr []string, testExec int) int {
+func (ldx *LxdAudit) evalCommand(at *models.AuditBench, permutationArr []string, testExec int) int {
 	// build command expression with params
 	expr := at.CmdExprBuilder(permutationArr, at.EvalExpr)
 	testExec++
@@ -285,6 +284,6 @@ func evalCommandExpr(expr string) (int, error) {
 }
 
 //Synopsis for help
-func (bk *LxdAudit) Synopsis() string {
-	return bk.Help()
+func (ldx *LxdAudit) Synopsis() string {
+	return ldx.Help()
 }

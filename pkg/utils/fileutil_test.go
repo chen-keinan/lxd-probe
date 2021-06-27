@@ -35,7 +35,7 @@ func Test_CreateHomeFolderIfNotExist(t *testing.T) {
 func Test_GetBenchmarkFolder(t *testing.T) {
 	fm := NewKFolder()
 	err := CreateHomeFolderIfNotExist(fm)
-    assert.NoError(t, err)
+	assert.NoError(t, err)
 	a, err := GetBenchmarkFolder("lxd", "v1.0.0", fm)
 	assert.NoError(t, err)
 	assert.True(t, strings.HasSuffix(a, ".lxd-probe/benchmarks/lxd/v1.0.0"))

@@ -113,7 +113,7 @@ func initPluginWorker(plChan chan models.LxdAuditResults, completedChan chan boo
 }
 
 //StartCLICommand invoke cli lxd command lxd-probe cli
-func StartCLICommand(fm utils.FolderMgr, plChan chan models.LxdAuditResults, completedChan chan bool, ad ArgsData, cmdArgs []string, commands map[string]cli.CommandFactory,log *logger.LdxProbeLogger) {
+func StartCLICommand(fm utils.FolderMgr, plChan chan models.LxdAuditResults, completedChan chan bool, ad ArgsData, cmdArgs []string, commands map[string]cli.CommandFactory, log *logger.LdxProbeLogger) {
 	// init plugin folders
 	initPluginFolders(fm)
 	// init plugin worker

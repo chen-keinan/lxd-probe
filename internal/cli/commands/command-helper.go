@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func printTestResults(at []*models.AuditBench,log *logger.LdxProbeLogger) models.AuditTestTotals {
+func printTestResults(at []*models.AuditBench, log *logger.LdxProbeLogger) models.AuditTestTotals {
 	var (
 		warnCounter int
 		passCounter int
@@ -173,7 +173,7 @@ func executeTests(ft []*models.SubCategory, execTestFunc func(ad *models.AuditBe
 	completedTest := make([]*models.SubCategory, 0)
 	log.Console(ui.LxdAuditTest)
 	for _, f := range ft {
-		tr := ui.ShowProgressBar(f, execTestFunc,log)
+		tr := ui.ShowProgressBar(f, execTestFunc, log)
 		completedTest = append(completedTest, tr)
 	}
 	return completedTest
