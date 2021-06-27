@@ -17,3 +17,4 @@ coverage.md
 coverage.out
 mock*
 *.iml
+lxd-probe
