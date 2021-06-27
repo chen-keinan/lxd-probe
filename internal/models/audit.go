@@ -87,7 +87,7 @@ func (at *AuditBench) UnmarshalYAML(unmarshal func(interface{}) error) error {
 func findIndex(s, c string, commandIndex int, locations map[int][]string) {
 	b := strings.Index(s, c)
 	var err error
-	if b != -1 && len(s) >= b+2{
+	if b != -1 && len(s) >= b+2 {
 		s2 := s[b+1 : b+2]
 		_, err = strconv.Atoi(s2)
 	}

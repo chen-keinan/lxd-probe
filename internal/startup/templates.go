@@ -16,9 +16,14 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 	// Add Master Node Configuration tests
 	mnc, err := box.FindString(common.FilesystemConfiguration)
 	if err != nil {
-		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s", err.Error())
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s  %s", common.FilesystemConfiguration, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.FilesystemConfiguration, Data: mnc})
+	su, err := box.FindString(common.ConfigureSoftwareUpdates)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigureSoftwareUpdates, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigureSoftwareUpdates, Data: su})
 	return fileInfo, nil
 }
 

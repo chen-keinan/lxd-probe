@@ -3,6 +3,8 @@ package common
 const (
 	//FilesystemConfiguration file name
 	FilesystemConfiguration = "1.1_filesystem_configuration.yml"
+	//ConfigureSoftwareUpdates file name
+	ConfigureSoftwareUpdates = "1.2_configure_software_updates.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests

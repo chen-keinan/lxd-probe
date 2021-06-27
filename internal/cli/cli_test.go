@@ -24,8 +24,9 @@ func Test_StartCli(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, len(files), 1)
+	assert.Equal(t, len(files), 2)
 	assert.Equal(t, files[0].Name, common.FilesystemConfiguration)
+	assert.Equal(t, files[1].Name, common.ConfigureSoftwareUpdates)
 }
 
 func Test_ArgsSanitizer(t *testing.T) {
