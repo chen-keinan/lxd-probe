@@ -15,7 +15,7 @@ type AuditBenchResult struct {
 	AuditCommand         []string `json:"audit_command"`
 	Remediation          string   `yaml:"remediation"`
 	Impact               string   `yaml:"impact"`
-	DefaultValue         string   `yaml:"default_value"`
+	AdditionalInfo       string   `yaml:"additional_info"`
 	References           []string `yaml:"references"`
 	TestResult           string   `yaml:"test_result"`
 }

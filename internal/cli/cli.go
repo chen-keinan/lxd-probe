@@ -32,7 +32,7 @@ func StartCLI() {
 		fx.Provide(NewCliCommands),
 		fx.Provide(NewCommandArgs),
 		fx.Provide(createCliBuilderData),
-		fx.Provide(logger.GetLog()),
+		fx.Provide(logger.GetLog),
 		fx.Invoke(StartCLICommand),
 	)
 	if err := app.Start(context.Background()); err != nil {

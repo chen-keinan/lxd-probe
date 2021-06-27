@@ -128,7 +128,7 @@ func sendResultToPlugin(plChan chan m2.LxdAuditResults, completedChan chan bool,
 			if ab.TestSucceed {
 				testResult = "PASS"
 			}
-			abr := m2.AuditBenchResult{Category: at.Name, ProfileApplicability: ab.ProfileApplicability, Description: ab.Description, AuditCommand: ab.AuditCommand, Remediation: ab.Remediation, Impact: ab.Impact, DefaultValue: ab.DefaultValue, References: ab.References, TestResult: testResult}
+			abr := m2.AuditBenchResult{Category: at.Name, ProfileApplicability: ab.ProfileApplicability, Description: ab.Description, AuditCommand: ab.AuditCommand, Remediation: ab.Remediation, Impact: ab.Impact, AdditionalInfo: ab.AdditionalInfo, References: ab.References, TestResult: testResult}
 			ka.Categories = append(ka.Categories, abr)
 		}
 	}

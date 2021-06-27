@@ -31,6 +31,17 @@ func Test_CheckType_Multi_ProcessParam(t *testing.T) {
 	assert.NotNil(t, ab.Categories[0].SubCategory.AuditTests[0].CmdExprBuilder)
 }
 
+//Test_CheckType_Multi_ProcessParam test
+func Test_CheckType_Multi_AdditionalInfo(t *testing.T) {
+	ab := Audit{}
+	err := yaml.Unmarshal(readTestData("lxd_filesystem_configuration.yml", t), &ab)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.NoError(t, err)
+	assert.NotNil(t, ab.Categories[0].SubCategory.AuditTests[0].CmdExprBuilder)
+}
+
 func readTestData(fileName string, t *testing.T) []byte {
 	f, err := os.Open(fmt.Sprintf("./fixtures/%s", fileName))
 	if err != nil {
