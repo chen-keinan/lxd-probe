@@ -41,7 +41,7 @@ type AuditBench struct {
 	CheckType            string   `mapstructure:"check_type" yaml:"check_type"`
 	Remediation          string   `mapstructure:"remediation" yaml:"remediation"`
 	Impact               string   `mapstructure:"impact" yaml:"impact"`
-	DefaultValue         string   `mapstructure:"default_value" yaml:"default_value"`
+	AdditionalInfo       string   `mapstructure:"additional_info" yaml:"additional_info"`
 	References           []string `mapstructure:"references" yaml:"references"`
 	EvalExpr             string   `mapstructure:"eval_expr" yaml:"eval_expr"`
 	CmdExprBuilder       utils.CmdExprBuilder
