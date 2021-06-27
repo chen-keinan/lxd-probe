@@ -4,6 +4,7 @@ import (
 	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/mitchellh/mapstructure"
+	"strconv"
 	"strings"
 )
 
@@ -85,7 +86,12 @@ func (at *AuditBench) UnmarshalYAML(unmarshal func(interface{}) error) error {
 // find all params in command to be replace with output
 func findIndex(s, c string, commandIndex int, locations map[int][]string) {
 	b := strings.Index(s, c)
-	if b == -1 {
+	var err error
+	if b != -1 && len(s) >= b+2{
+		s2 := s[b+1 : b+2]
+		_, err = strconv.Atoi(s2)
+	}
+	if b == -1 || err != nil {
 		return
 	}
 	if locations[commandIndex] == nil {
