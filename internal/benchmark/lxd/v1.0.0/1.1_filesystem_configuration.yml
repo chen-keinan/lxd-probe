@@ -32,3 +32,13 @@ categories:
           references:
             - AJ Lewis, "LVM HOWTO", http://tldp.org/HOWTO/LVM-HOWTO/
             - https://www.freedesktop.org/wiki/Software/systemd/APIFileSystems/
+        -
+          name: '1.1.2 Ensure sticky bit is set on all world-writable directories (Automated)'
+          description: Setting the sticky bit on world writable directories prevents users from deleting or renaming files in that directory that are not owned by them.
+          profile_applicability: Level 1
+          audit:
+            - df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type d \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null
+          remediation:
+          check_type: multi_param
+          eval_expr: "$0 == '';"
+          additional_info: Some distributions may not support the --local option to df.
