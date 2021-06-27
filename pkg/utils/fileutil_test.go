@@ -15,7 +15,7 @@ import (
 //Test_GetHomeFolder test
 func Test_GetHomeFolder(t *testing.T) {
 	a := GetHomeFolder()
-	assert.True(t, strings.HasSuffix(a, ".beacon"))
+	assert.True(t, strings.HasSuffix(a, ".lxd-probe"))
 }
 
 //Test_CreateHomeFolderIfNotExist test
@@ -34,6 +34,8 @@ func Test_CreateHomeFolderIfNotExist(t *testing.T) {
 //Test_GetBenchmarkFolder test
 func Test_GetBenchmarkFolder(t *testing.T) {
 	fm := NewKFolder()
+	err := CreateHomeFolderIfNotExist(fm)
+    assert.NoError(t, err)
 	a, err := GetBenchmarkFolder("lxd", "v1.0.0", fm)
 	assert.NoError(t, err)
 	assert.True(t, strings.HasSuffix(a, ".lxd-probe/benchmarks/lxd/v1.0.0"))
@@ -42,9 +44,9 @@ func Test_GetBenchmarkFolder(t *testing.T) {
 //Test_CreateBenchmarkFolderIfNotExist test
 func Test_CreateBenchmarkFolderIfNotExist(t *testing.T) {
 	fm := NewKFolder()
-	err := CreateBenchmarkFolderIfNotExist("lxd", "v1.6.0", fm)
+	err := CreateBenchmarkFolderIfNotExist("lxd", "v1.0.0", fm)
 	assert.NoError(t, err)
-	folder, err := GetBenchmarkFolder("lxd", "v1.6.0", fm)
+	folder, err := GetBenchmarkFolder("lxd", "v1.0.0", fm)
 	assert.NoError(t, err)
 	_, err = os.Stat(folder)
 	if os.IsNotExist(err) {
@@ -61,7 +63,7 @@ func Test_GetLxdBenchAuditFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = CreateBenchmarkFolderIfNotExist("lxd", "v1.6.0", fm)
+	err = CreateBenchmarkFolderIfNotExist("lxd", "v1.0.0", fm)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,11 +71,11 @@ func Test_GetLxdBenchAuditFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := GetLxdBenchAuditFiles("lxd", "v1.6.0", fm)
+	f, err := GetLxdBenchAuditFiles("lxd", "v1.0.0", fm)
 	if err != nil {
 		t.Fatal(err)
 	}
-	folder, err := GetBenchmarkFolder("lxd", "v1.6.0", fm)
+	folder, err := GetBenchmarkFolder("lxd", "v1.0.0", fm)
 	assert.NoError(t, err)
 	err = os.RemoveAll(folder)
 	if err != nil {
@@ -87,13 +89,13 @@ func Test_GetLxdBenchAuditFiles(t *testing.T) {
 //Test_GetLxdBenchAuditNoFolder test
 func Test_GetLxdBenchAuditNoFolder(t *testing.T) {
 	fm := NewKFolder()
-	_, err := GetLxdBenchAuditFiles("lxd", "v1.6.0", fm)
+	_, err := GetLxdBenchAuditFiles("lxd", "v1.1.0", fm)
 	assert.True(t, err != nil)
 }
 
 func saveFilesIfNotExist(filesData []FilesInfo) error {
 	fm := NewKFolder()
-	folder, err := GetBenchmarkFolder("lxd", "v1.6.0", fm)
+	folder, err := GetBenchmarkFolder("lxd", "v1.0.0", fm)
 	if err != nil {
 		return err
 	}
@@ -117,11 +119,11 @@ func saveFilesIfNotExist(filesData []FilesInfo) error {
 	return nil
 }
 
-//Test_GetEnv test getting home beacon folder
+//Test_GetEnv test getting home lxd-probe folder
 func Test_GetEnv(t *testing.T) {
-	os.Setenv(common.LxdProbeHomeEnvVar, "/home/beacon")
+	os.Setenv(common.LxdProbeHomeEnvVar, "/home/lxd-probe")
 	homeFolder := GetEnv(common.LxdProbeHomeEnvVar, "/home/user")
-	assert.Equal(t, homeFolder, "/home/beacon")
+	assert.Equal(t, homeFolder, "/home/lxd-probe")
 	os.Unsetenv(common.LxdProbeHomeEnvVar)
 	homeFolder = GetEnv(common.LxdProbeHomeEnvVar, "/home/user")
 	assert.Equal(t, homeFolder, "/home/user")
@@ -151,16 +153,16 @@ func TestCreateBenchmarkFoldersErrorHomeFolder(t *testing.T) {
 	ctl := gomock.NewController(t)
 	fm := mocks.NewMockFolderMgr(ctl)
 	fm.EXPECT().GetHomeFolder().Return("homePath", fmt.Errorf("error")).Times(1)
-	err := CreateBenchmarkFolderIfNotExist("lxd", "v1.6.0", fm)
+	err := CreateBenchmarkFolderIfNotExist("lxd", "v1.0.0", fm)
 	assert.Error(t, err)
 	fmr := NewKFolder()
-	path, err := GetBenchmarkFolder("lxd", "v1.6.0", fmr)
+	path, err := GetBenchmarkFolder("lxd", "v1.0.0", fmr)
 	assert.NoError(t, err)
 	rhfp := GetHomeFolder()
 	fm2 := mocks.NewMockFolderMgr(ctl)
 	fm2.EXPECT().GetHomeFolder().Return(rhfp, nil).Times(1)
 	fm2.EXPECT().CreateFolder(path).Return(fmt.Errorf("error")).Times(1)
-	err = CreateBenchmarkFolderIfNotExist("lxd", "v1.6.0", fm2)
+	err = CreateBenchmarkFolderIfNotExist("lxd", "v1.0.0", fm2)
 	assert.Error(t, err)
 }
 
@@ -202,7 +204,7 @@ func TestGetBenchmarkFoldersErrorHomeFolder(t *testing.T) {
 	ctl := gomock.NewController(t)
 	fm := mocks.NewMockFolderMgr(ctl)
 	fm.EXPECT().GetHomeFolder().Return("homePath", fmt.Errorf("error")).Times(1)
-	_, err := GetBenchmarkFolder("lxd", "v1.6.0", fm)
+	_, err := GetBenchmarkFolder("lxd", "v1.0.0", fm)
 	assert.Error(t, err)
 }
 func TestGetSourcePluginFoldersErrorHomeFolder(t *testing.T) {

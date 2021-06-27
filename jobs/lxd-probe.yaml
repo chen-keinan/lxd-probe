@@ -1,18 +1,18 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kube-beacon
+  name: lxd-probe
 spec:
   template:
     metadata:
       labels:
-        app: kube-beacon
+        app: lxd-probe
     spec:
       hostPID: true
       containers:
-      - name: kube-beacon
-        image: chenkeinan/kube-beacon:latest
-        command: ["./kube-beacon"]
+      - name: lxd-probe
+        image: chenkeinan/lxd-probe:latest
+        command: ["./lxd-probe"]
         volumeMounts:
         - name: var-lib-etcd
           mountPath: /var/lib/etcd

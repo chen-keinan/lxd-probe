@@ -49,13 +49,13 @@ func Test_ArgsSanitizer(t *testing.T) {
 	assert.True(t, ad.Help)
 }
 
-//Test_BeaconHelpFunc test
-func Test_BeaconHelpFunc(t *testing.T) {
+//Test_LxdProbeHelpFunc test
+func Test_LxdProbeHelpFunc(t *testing.T) {
 	cm := make(map[string]cli.CommandFactory)
-	bhf := BeaconHelpFunc(common.LxdProbe)
+	bhf := LxdProbeHelpFunc(common.LxdProbe)
 	helpFile := bhf(cm)
 	assert.True(t, strings.Contains(helpFile, "Available commands are:"))
-	assert.True(t, strings.Contains(helpFile, "Usage: kube-beacon [--version] [--help] <command> [<args>]"))
+	assert.True(t, strings.Contains(helpFile, "Usage: lxd-probe [--version] [--help] <command> [<args>]"))
 }
 
 //Test_createCliBuilderData test

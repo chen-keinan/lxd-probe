@@ -9,15 +9,15 @@ export PATH=$PATH:/home/vagrant/go/bin
 export PATH=$PATH:/root/go/bin
 
 ### compile binary with debug params
-GOOS=linux GOARCH=amd64 go build -v -gcflags='-N -l' cmd/lxd-probe/beacon.go
+GOOS=linux GOARCH=amd64 go build -v -gcflags='-N -l' cmd/lxd-probe/lxd-probe.go
 
 ### run on remote machine
 
-dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./kube-beacon
+dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./lxd-probe
 
-docker run --pid=host -v /etc:/etc:ro -v /var:/var:ro -v /*/cni/*:/*/cni/* -t  beacon
+docker run --pid=host -v /etc:/etc:ro -v /var:/var:ro -v /*/cni/*:/*/cni/* -t  lxd-probe
 
-docker build ./ -t beacon -f Dockerfile
+docker build ./ -t lxd-probe -f Dockerfile
 
     export KUBECONFIG=/etc/kubernetes/admin.conf
 mkdir -p $HOME/.kube

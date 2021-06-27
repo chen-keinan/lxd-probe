@@ -112,7 +112,7 @@ func initPluginWorker(plChan chan models.LxdAuditResults, completedChan chan boo
 	worker.Invoke()
 }
 
-//StartCLICommand invoke cli lxd command beacon cli
+//StartCLICommand invoke cli lxd command lxd-probe cli
 func StartCLICommand(fm utils.FolderMgr, plChan chan models.LxdAuditResults, completedChan chan bool, ad ArgsData, cmdArgs []string, commands map[string]cli.CommandFactory,log *logger.LdxProbeLogger) {
 	// init plugin folders
 	initPluginFolders(fm)
@@ -186,7 +186,7 @@ func invokeCommandCli(args []string, commands map[string]cli.CommandFactory) (in
 	app := cli.NewCLI(common.LdxProbeCli, common.LdxProbeVersion)
 	app.Args = append(app.Args, args...)
 	app.Commands = commands
-	app.HelpFunc = BeaconHelpFunc(common.LdxProbeCli)
+	app.HelpFunc = LxdProbeHelpFunc(common.LdxProbeCli)
 	status, err := app.Run()
 	return status, err
 }
@@ -235,8 +235,8 @@ type ArgsData struct {
 //SanitizeArgs sanitizer func
 type SanitizeArgs func(str []string) ArgsData
 
-// BeaconHelpFunc beacon Help function with all supported commands
-func BeaconHelpFunc(app string) cli.HelpFunc {
+// LxdProbeHelpFunc lxd-probe Help function with all supported commands
+func LxdProbeHelpFunc(app string) cli.HelpFunc {
 	return func(commands map[string]cli.CommandFactory) string {
 		var buf bytes.Buffer
 		buf.WriteString(fmt.Sprintf(startup.GetHelpSynopsis(), app))

@@ -24,7 +24,7 @@ type FolderMgr interface {
 	GetHomeFolder() (string, error)
 }
 
-//bFolder kube-beacon folder object
+//bFolder lxd-probe folder object
 type bFolder struct {
 }
 
@@ -33,8 +33,8 @@ func NewKFolder() FolderMgr {
 	return &bFolder{}
 }
 
-//CreateFolder create new kube beacon folder
-func (kf bFolder) CreateFolder(folderName string) error {
+//CreateFolder create new lxd-probe folder
+func (lxdf bFolder) CreateFolder(folderName string) error {
 	_, err := os.Stat(folderName)
 	if os.IsNotExist(err) {
 		errDir := os.MkdirAll(folderName, 0750)
@@ -45,15 +45,15 @@ func (kf bFolder) CreateFolder(folderName string) error {
 	return nil
 }
 
-//GetHomeFolder return kube-beacon home folder
-func (kf bFolder) GetHomeFolder() (string, error) {
+//GetHomeFolder return lxd-probe home folder
+func (lxdf bFolder) GetHomeFolder() (string, error) {
 	usr, err := user.Current()
 	if err != nil {
 		return "", err
 	}
 	// User can set a custom KUBE_KNARK_HOME from environment variable
 	usrHome := GetEnv(common.LxdProbeHomeEnvVar, usr.HomeDir)
-	return path.Join(usrHome, ".beacon"), nil
+	return path.Join(usrHome, ".lxd-probe"), nil
 }
 
 //GetPluginSourceSubFolder return plugins source folder path
@@ -92,28 +92,28 @@ func CreatePluginsSourceFolderIfNotExist(fm FolderMgr) error {
 	return fm.CreateFolder(pluginfFolder)
 }
 
-//GetHomeFolder return beacon home folder
+//GetHomeFolder return lxd-probe home folder
 func GetHomeFolder() string {
 	usr, err := user.Current()
 	if err != nil {
 		panic("Failed to fetch user home folder")
 	}
-	// User can set a custom BEACON_HOME from environment variable
+	// User can set a custom LXD_PROBE_HOME from environment variable
 	usrHome := GetEnv(common.LxdProbeHomeEnvVar, usr.HomeDir)
-	return path.Join(usrHome, ".beacon")
+	return path.Join(usrHome, ".lxd-probe")
 }
 
-//CreateHomeFolderIfNotExist create beacon home folder if not exist
+//CreateHomeFolderIfNotExist create lxd-probe home folder if not exist
 func CreateHomeFolderIfNotExist(fm FolderMgr) error {
-	beaconFolder, err := fm.GetHomeFolder()
+	lxdProbeFolder, err := fm.GetHomeFolder()
 	if err != nil {
 		return err
 	}
-	_, err = os.Stat(beaconFolder)
+	_, err = os.Stat(lxdProbeFolder)
 	if os.IsNotExist(err) {
-		errDir := os.MkdirAll(beaconFolder, 0750)
+		errDir := os.MkdirAll(lxdProbeFolder, 0750)
 		if errDir != nil {
-			return fmt.Errorf("failed to create beacon home folder at %s", beaconFolder)
+			return fmt.Errorf("failed to create lxd-probe home folder at %s", lxdProbeFolder)
 		}
 	}
 	return nil
@@ -128,7 +128,7 @@ func GetBenchmarkFolder(spec, version string, fm FolderMgr) (string, error) {
 	return filepath.Join(folder, fmt.Sprintf("benchmarks/%s/%s/", spec, version)), nil
 }
 
-//CreateBenchmarkFolderIfNotExist create beacon benchmark folder if not exist
+//CreateBenchmarkFolderIfNotExist create lxd-probe benchmark folder if not exist
 func CreateBenchmarkFolderIfNotExist(spec, version string, fm FolderMgr) error {
 	benchmarkFolder, err := GetBenchmarkFolder(spec, version, fm)
 	if err != nil {
