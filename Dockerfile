@@ -15,6 +15,6 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-COPY --from=builder /src/cmd/kube/lxd-probe .
+COPY --from=builder /src/cmd/lxd/lxd-probe .
 
 CMD ["./lxd-probe"]

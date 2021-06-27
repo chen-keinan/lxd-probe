@@ -30,7 +30,7 @@ build:
 	export PATH=$GOPATH/bin:$PATH;
 	export PATH=$PATH:/home/vagrant/go/bin
 	export PATH=$PATH:/home/root/go/bin
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v cmd/kube/lxd-probe.go;
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 install:build_travis
 	cp $(BINARY_NAME) $(GOPATH)/bin/$(BINARY_NAME)
 test_travis:
@@ -41,10 +41,10 @@ test_travis:
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 build_travis:
 	$(GOPACKR)
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v cmd/kube/lxd-probe.go;
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_remote:
 	$(GOPACKR)
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' cmd/kube/lxd-probe.go
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' ./cmd/lxd-probe
 build_docker:
 	export PATH=$GOPATH/bin:$PATH;
 	docker build -t chenkeinan/lxd-probe:latest .
@@ -56,6 +56,6 @@ dlv:
 	dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./lxd-probe
 build_beb:
 	$(GOPACKR)
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' cmd/kube/lxd-probe.go
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' cmd/lxd/lxd-probe.go
 	scripts/deb.sh
 .PHONY: all build install test
