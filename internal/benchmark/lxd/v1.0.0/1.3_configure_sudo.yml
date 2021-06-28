@@ -24,3 +24,18 @@ categories:
           references:
             - SUDO(8)
             - http://www.sudo.ws/
+        -
+          name: '1.3.2 Ensure sudo commands use pty (Automated)'
+          description: sudo can be configured to run only from a psuedo-pty
+          profile_applicability: Level 1
+          audit:
+            - 'grep -Ei ''^\s*Defaults\s+([^#]+,\s*)?use_pty(,\s+\S+\s*)*(\s+#.*)?$'' /etc/sudoers /etc/sudoers.d/*'
+          remediation: 'edit the file /etc/sudoers or a file in /etc/sudoers.d/ with visudo -f and add the following line:
+                        Defaults use_pty'
+          check_type: multi_param
+          eval_expr: "'$0' != '';"
+          additional_info: isudo edits the sudoers file in a safe fashion, analogous to vipw(8).
+                          visudo locks the sudoers file against multiple simultaneous edits, provides basic sanity checks, and checks or parse errors.
+                          If the sudoers file is currently being edited you will receive a message to try again later.
+          references:
+            - SUDO(8)
