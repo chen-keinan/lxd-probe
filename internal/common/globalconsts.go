@@ -13,6 +13,8 @@ const (
 	AdditionalProcessHardening = "1.5_additional_process_hardening.yml"
 	//MandatoryAccessControl file name
 	MandatoryAccessControl = "1.6_mandatory_access_control.yml"
+	//WarningBanners file name
+	WarningBanners         = "1.7_warning_banners.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
