@@ -39,6 +39,11 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.AdditionalProcessHardening, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.AdditionalProcessHardening, Data: ah})
+	mac, err := box.FindString(common.MandatoryAccessControl)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.MandatoryAccessControl, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.MandatoryAccessControl, Data: mac})
 	return fileInfo, nil
 }
 

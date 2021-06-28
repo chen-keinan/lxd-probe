@@ -11,6 +11,8 @@ const (
 	FilesystemIntegrityChecking = "1.4_filesystem_integrity_checking.yml"
 	//AdditionalProcessHardening file name
 	AdditionalProcessHardening = "1.5_additional_process_hardening.yml"
+	//MandatoryAccessControl file name
+	MandatoryAccessControl = "1.6_mandatory_access_control.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
