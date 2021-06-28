@@ -12,7 +12,7 @@ categories:
                         The invoking user's real (not effective) user ID is used to determine the user name with which to query the security policy.
           profile_applicability: Level 1
           audit:
-            - 'dpkg -s sudo |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'dpkg -s sudo 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
             - 'dpkg -s sudo-ldap 2> /dev/null|grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Install sudo using the following command.
                         # apt install sudo
