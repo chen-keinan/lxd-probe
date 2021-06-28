@@ -27,7 +27,7 @@ categories:
           impact: 'Since the /tmp directory is intended to be world-writable, there is a risk of resource exhaustion if it is not bound to a separate partition.
               Running out of /tmp space is a problem regardless of what kind of filesystem lies under it, but in a default installation a disk-based /tmp will essentially have the whole disk available, as it only creates a single / partition. On the other hand, a RAM-based /tmp as with tmpfs will almost certainly be much smaller, which can lead to applications filling up the filesystem much more easily.
               /tmp utilizing tmpfs can be resized using the size={size} parameter on the Options line on the tmp.mount file'
-          eval_expr: "$0 == 'tmpfs on /tmp type tmpfs (rw,nosuid,nodev,noexec,relatime)'; || $1 == 'tmpfs /tmp tmpfs defaults,noexec,nosuid,nodev 0 0'; || $2 == 'enabled'"
+          eval_expr: "'$0' == 'tmpfs on /tmp type tmpfs (rw,nosuid,nodev,noexec,relatime)'; || '$1' == 'tmpfs /tmp tmpfs defaults,noexec,nosuid,nodev 0 0'; || '$2' == 'enabled'"
           additional_info: If an entry for /tmp exists in /etc/fstab it will take precedence over entries in the tmp.mount file
           references:
             - AJ Lewis, "LVM HOWTO", http://tldp.org/HOWTO/LVM-HOWTO/
@@ -40,5 +40,5 @@ categories:
             - df --local -P | awk '{if (NR!=1) print $6}' | xargs -I '{}' find '{}' -xdev -type d \( -perm -0002 -a ! -perm -1000 \) 2>/dev/null
           remediation:
           check_type: multi_param
-          eval_expr: "$0 == '';"
+          eval_expr: "'$0' == '';"
           additional_info: Some distributions may not support the --local option to df.

@@ -262,7 +262,7 @@ func (ldx *LxdAudit) evalCommand(at *models.AuditBench, permutationArr []string,
 	// eval command expression
 	testSucceeded, err := evalCommandExpr(strings.ReplaceAll(expr, common.EmptyValue, ""))
 	if err != nil {
-		ldx.log.Console(fmt.Sprintf("failed to evaluate command expr %s for audit test %s", expr, at.Name))
+		ldx.log.Console(fmt.Sprintf("failed to evaluate command expr %s for audit test %s : err %s", expr, at.Name, err.Error()))
 	}
 	return testExec - testSucceeded
 }

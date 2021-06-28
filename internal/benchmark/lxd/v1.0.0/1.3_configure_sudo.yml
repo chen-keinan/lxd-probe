@@ -13,12 +13,13 @@ categories:
           profile_applicability: Level 1
           audit:
             - 'dpkg -s sudo |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
-            - 'dpkg -s sudo-ldap |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'dpkg -s sudo-ldap 2> /dev/null|grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Install sudo using the following command.
                         # apt install sudo
                         OR
                         # apt install sudo-ldap'
           check_type: multi_param
+          eval_expr: "'$0' == 'install ok installed'; || '$1' == 'install ok installed';"
           additional_info: Use the sudo-ldap package if you need LDAP support for sudoers.
           references:
             - SUDO(8)
