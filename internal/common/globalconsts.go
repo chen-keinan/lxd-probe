@@ -9,6 +9,8 @@ const (
 	ConfigureSudo = "1.3_configure_sudo.yml"
 	//FilesystemIntegrityChecking file name
 	FilesystemIntegrityChecking = "1.4_filesystem_integrity_checking.yml"
+	//AdditionalProcessHardening file name
+	AdditionalProcessHardening = "1.5_additional_process_hardening.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests

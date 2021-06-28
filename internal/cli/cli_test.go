@@ -24,11 +24,12 @@ func Test_StartCli(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, len(files), 4)
+	assert.Equal(t, len(files), 5)
 	assert.Equal(t, files[0].Name, common.FilesystemConfiguration)
 	assert.Equal(t, files[1].Name, common.ConfigureSoftwareUpdates)
 	assert.Equal(t, files[2].Name, common.ConfigureSudo)
 	assert.Equal(t, files[3].Name, common.FilesystemIntegrityChecking)
+	assert.Equal(t, files[4].Name, common.AdditionalProcessHardening)
 }
 
 func Test_ArgsSanitizer(t *testing.T) {
