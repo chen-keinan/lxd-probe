@@ -17,6 +17,7 @@ func Test_CreateLxdBenchmarkFilesIfNotExist(t *testing.T) {
 	// generate test with packr
 	assert.Equal(t, bFiles[0].Name, common.FilesystemConfiguration)
 	assert.Equal(t, bFiles[1].Name, common.ConfigureSoftwareUpdates)
+	assert.Equal(t, bFiles[2].Name, common.ConfigureSudo)
 	fm := utils.NewKFolder()
 	err = utils.CreateBenchmarkFolderIfNotExist("lxd", "v1.0.0", fm)
 	assert.NoError(t, err)
@@ -27,6 +28,7 @@ func Test_CreateLxdBenchmarkFilesIfNotExist(t *testing.T) {
 	bFiles, err = utils.GetLxdBenchAuditFiles("lxd", "v1.0.0", fm)
 	assert.Equal(t, bFiles[0].Name, common.FilesystemConfiguration)
 	assert.Equal(t, bFiles[1].Name, common.ConfigureSoftwareUpdates)
+	assert.Equal(t, bFiles[2].Name, common.ConfigureSudo)
 	assert.NoError(t, err)
 	err = os.RemoveAll(utils.GetHomeFolder())
 	assert.NoError(t, err)

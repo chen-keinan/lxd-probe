@@ -5,6 +5,8 @@ const (
 	FilesystemConfiguration = "1.1_filesystem_configuration.yml"
 	//ConfigureSoftwareUpdates file name
 	ConfigureSoftwareUpdates = "1.2_configure_software_updates.yml"
+	//ConfigureSudo file name
+	ConfigureSudo = "1.3_configure_sudo.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests

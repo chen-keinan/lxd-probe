@@ -1,0 +1,25 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Initial Setup
+    sub_category:
+      name: 1.3 Configure Sudo
+      audit_tests:
+        -
+          name: '1.3.1 Ensure sudo is installed (Automated)'
+          description: sudo allows a permitted user to execute a command as the superuser or another user, as specified by the security policy.
+                        The invoking user's real (not effective) user ID is used to determine the user name with which to query the security policy.
+          profile_applicability: Level 1
+          audit:
+            - 'dpkg -s sudo |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'dpkg -s sudo-ldap |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+          remediation: 'Install sudo using the following command.
+                        # apt install sudo
+                        OR
+                        # apt install sudo-ldap'
+          check_type: multi_param
+          additional_info: Use the sudo-ldap package if you need LDAP support for sudoers.
+          references:
+            - SUDO(8)
+            - http://www.sudo.ws/
