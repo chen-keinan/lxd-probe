@@ -29,6 +29,11 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigureSudo, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigureSudo, Data: cs})
+	ic, err := box.FindString(common.FilesystemIntegrityChecking)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.FilesystemIntegrityChecking, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.FilesystemIntegrityChecking, Data: ic})
 	return fileInfo, nil
 }
 

@@ -7,6 +7,8 @@ const (
 	ConfigureSoftwareUpdates = "1.2_configure_software_updates.yml"
 	//ConfigureSudo file name
 	ConfigureSudo = "1.3_configure_sudo.yml"
+	//FilesystemIntegrityChecking file name
+	FilesystemIntegrityChecking = "1.4_filesystem_integrity_checking.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
