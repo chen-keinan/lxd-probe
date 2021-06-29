@@ -54,6 +54,16 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.EnsureUpdates, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.EnsureUpdates, Data: eu})
+	is, err := box.FindString(common.InetdServices)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.InetdServices, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.InetdServices, Data: is})
+	sps, err := box.FindString(common.SpecialPurposeServices)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.SpecialPurposeServices, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.SpecialPurposeServices, Data: sps})
 	return fileInfo, nil
 }
 

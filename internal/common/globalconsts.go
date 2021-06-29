@@ -17,6 +17,10 @@ const (
 	WarningBanners = "1.7_warning_banners.yml"
 	//EnsureUpdates file name
 	EnsureUpdates = "1.8_ensure_updates.yml"
+	//InetdServices file name
+	InetdServices = "2.1_inetd_services.yml"
+	//SpecialPurposeServices file name
+	SpecialPurposeServices = "2.2_special_purpose_services.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests

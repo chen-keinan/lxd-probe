@@ -1,0 +1,32 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Services
+    sub_category:
+      name: 2.2 Special Purpose Services
+      audit_tests:
+        -
+          name: '2.2.1 Ensure X Window System is not installed (Automated)'
+          description: The X Window System provides a Graphical User Interface (GUI) where users can have multiple windows in which to run programs and various add on.
+                        The X Windows system is typically used on workstations where users login, but not on servers where users typically do not login.
+          profile_applicability: Level 1
+          audit:
+            - 'dpkg -l xserver-xorg* 2> /dev/null'
+          remediation: 'Remove the X Windows System packages:
+                        apt purge xserver-xorg*'
+          check_type: multi_param
+          eval_expr: "'$0' != '';"
+        -
+          name: '2.2.2 Ensure Avahi Server is not enabled (Automated)'
+          description: Avahi is a free zeroconf implementation, including a system for multicast DNS/DNS-SD service discovery.
+            Avahi allows programs to publish and discover services and hosts running on a local network with no specific configuration.
+            For example, a user can plug a computer into a network and Avahi automatically finds printers to print to, files to look at and people to talk to, as well as network services running on the machine.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled avahi-daemon 2> /dev/null'
+          remediation: 'Run the following command to disable avahi-daemon:
+                               # systemctl --now disable avahi-daemon'
+          check_type: multi_param
+          eval_expr: "'$0' != ''; || '$0' != 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
