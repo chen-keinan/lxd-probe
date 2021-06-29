@@ -54,3 +54,36 @@ categories:
                         # echo "Authorized uses only. All activity may be monitored and reported." > /etc/issue.net'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '1.7.1.4 Ensure permissions on /etc/motd are configured (Automated)'
+          description: 'The contents of the /etc/motd file are displayed to users after login and function as a message of the day for authenticated users.'
+          profile_applicability: Level 1
+          audit:
+            - 'stat /etc/motd 2> /dev/null| grep "Access: ("'
+          remediation: 'Run the following commands to set permissions on /etc/motd :
+                         # chown root:root /etc/motd
+                        # chmod u-x,go-wx /etc/motd'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
+        -
+          name: '1.7.1.5 Ensure permissions on /etc/issue are configured (Automated)'
+          description: 'The contents of the /etc/issue file are displayed to users prior to login for local terminals.'
+          profile_applicability: Level 1
+          audit:
+            - 'stat /etc/issue 2> /dev/null| grep "Access: ("'
+          remediation: 'Run the following commands to set permissions on /etc/motd :
+                               # chown root:root /etc/issue
+                              # chmod u-x,go-wx /etc/issue'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
+        -
+          name: '1.7.1.6 Ensure permissions on /etc/issue.net are configured (Automated)'
+          description: 'The contents of the /etc/issue.net file are displayed to users prior to login for remote connections from configured services.'
+          profile_applicability: Level 1
+          audit:
+            - 'stat /etc/issue.net 2> /dev/null| grep "Access: ("'
+          remediation: 'Run the following commands to set permissions on /etc/motd :
+                                     # chown root:root /etc/issue.net
+                                    # chmod u-x,go-wx /etc/issue.net'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
