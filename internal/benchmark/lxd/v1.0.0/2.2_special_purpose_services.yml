@@ -9,7 +9,7 @@ categories:
         -
           name: '2.2.1 Ensure X Window System is not installed (Automated)'
           description: The X Window System provides a Graphical User Interface (GUI) where users can have multiple windows in which to run programs and various add on.
-                        The X Windows system is typically used on workstations where users login, but not on servers where users typically do not login.
+            The X Windows system is typically used on workstations where users login, but not on servers where users typically do not login.
           profile_applicability: Level 1
           audit:
             - 'dpkg -l xserver-xorg* 2> /dev/null'
@@ -33,8 +33,8 @@ categories:
         -
           name: '2.2.3 Ensure CUPS is not enabled (Automated)'
           description: The Common Unix Print System (CUPS) provides the ability to print to both local and network printers.
-                      A system running CUPS can also accept print jobs from remote systems and print them to local printers.
-                      It also provides a web based remote administration capability.
+            A system running CUPS can also accept print jobs from remote systems and print them to local printers.
+            It also provides a web based remote administration capability.
           profile_applicability: Level 1
           audit:
             - 'systemctl is-enabled cups 2> /dev/null'
@@ -42,7 +42,8 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == ''; || '$0' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
-          references: More detailed documentation on CUPS is available at the project homepage at http://www.cups.org
+          references:
+            - More detailed documentation on CUPS is available at the project homepage at http://www.cups.org
         -
           name: '2.2.4 Ensure DHCP Server is not enabled (Automated)'
           description: The Dynamic Host Configuration Protocol (DHCP) is a service that allows machines to be dynamically assigned IP addresses.
@@ -56,11 +57,12 @@ categories:
           check_type: multi_param
           eval_expr: "('$0' == ''; && '$1' == '';) || ('$0' != 'disabled'; && '$1' == 'disabled')"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
-          references: More detailed documentation on DHCP is available at http://www.isc.org/software/dhcp.
+          references:
+            - More detailed documentation on DHCP is available at http://www.isc.org/software/dhcp.
         -
           name: '2.2.5 Ensure LDAP server is not enabled (Automated)'
           description: The Lightweight Directory Access Protocol (LDAP) was introduced as a replacement for NIS/YP.
-                        It is a service that provides a method for looking up information from a central database.
+            It is a service that provides a method for looking up information from a central database.
           profile_applicability: Level 1
           audit:
             - 'systemctl is-enabled slapd 2> /dev/null'
@@ -68,11 +70,12 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == ''; || '$0' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
-          references: For more detailed documentation on OpenLDAP, go to the project homepage at http://www.openldap.org.
+          references:
+            - For more detailed documentation on OpenLDAP, go to the project homepage at http://www.openldap.org.
         -
           name: '2.2.6 Ensure RPC is not enabled (Automated)'
           description: The Remote Procedure Call Binding Server (rpcbind) provides the ability for applications to do remote procedure call through the network.
-                        It is a service that provides a method for looking up information from a central database.
+            It is a service that provides a method for looking up information from a central database.
           profile_applicability: Level 1
           audit:
             - 'systemctl is-enabled rpcbind 2> /dev/null'
@@ -83,7 +86,7 @@ categories:
         -
           name: '2.2.7 Ensure DNS Server is not enabled (Automated)'
           description: The Domain Name System (DNS) is a hierarchical naming system that maps names to IP addresses for computers,
-                        services and other resources connected to a network.
+            services and other resources connected to a network.
           profile_applicability: Level 1
           audit:
             - 'systemctl is-enabled bind9 2> /dev/null'

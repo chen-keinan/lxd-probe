@@ -10,6 +10,7 @@ import (
 )
 
 //GenerateLxdBenchmarkFiles use packr to load benchmark audit test yaml
+//nolint:gocyclo
 func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 	fileInfo := make([]utils.FilesInfo, 0)
 	box := packr.NewBox("./../benchmark/lxd/v1.0.0/")

@@ -51,7 +51,7 @@ func printFinalResults(grandTotal []models.AuditTestTotals) string {
 	passTest := colorstring.Color("[green]Pass:")
 	failTest := colorstring.Color("[red]Fail:")
 	warnTest := colorstring.Color("[yellow]Warn:")
-	title := colorstring.Color("[white]Test Result Total")
+	title := colorstring.Color("[blue]Test Result Total")
 	return fmt.Sprintf("%s %s %d , %s %d , %s %d ", title, passTest, finalTotal.Pass, warnTest, finalTotal.Warn, failTest, finalTotal.Fail)
 }
 
