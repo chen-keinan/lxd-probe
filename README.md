@@ -10,5 +10,5 @@ The audit tests are the full implementation of [CIS Lxd Benchmark specification]
 
 audit result now can be leveraged as webhook via user plugin(using go plugin)
 #### Audit checks are performed on linux containers, and output audit report include :
-* root cause of the security issue
+* root cause of the security issue.
 * proposed remediation for security issue
