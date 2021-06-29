@@ -14,7 +14,9 @@ const (
 	//MandatoryAccessControl file name
 	MandatoryAccessControl = "1.6_mandatory_access_control.yml"
 	//WarningBanners file name
-	WarningBanners         = "1.7_warning_banners.yml"
+	WarningBanners = "1.7_warning_banners.yml"
+	//EnsureUpdates file name
+	EnsureUpdates = "1.8_ensure_updates.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
