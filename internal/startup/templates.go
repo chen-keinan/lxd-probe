@@ -15,56 +15,72 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 	fileInfo := make([]utils.FilesInfo, 0)
 	box := packr.NewBox("./../benchmark/lxd/v1.0.0/")
 	// Add Master Node Configuration tests
+	//1
 	mnc, err := box.FindString(common.FilesystemConfiguration)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s  %s", common.FilesystemConfiguration, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.FilesystemConfiguration, Data: mnc})
+	//2
 	su, err := box.FindString(common.ConfigureSoftwareUpdates)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigureSoftwareUpdates, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigureSoftwareUpdates, Data: su})
+	//3
 	cs, err := box.FindString(common.ConfigureSudo)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigureSudo, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigureSudo, Data: cs})
+	//4
 	ic, err := box.FindString(common.FilesystemIntegrityChecking)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.FilesystemIntegrityChecking, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.FilesystemIntegrityChecking, Data: ic})
+	//5
 	ah, err := box.FindString(common.AdditionalProcessHardening)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.AdditionalProcessHardening, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.AdditionalProcessHardening, Data: ah})
+	//6
 	mac, err := box.FindString(common.MandatoryAccessControl)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.MandatoryAccessControl, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.MandatoryAccessControl, Data: mac})
+	//7
 	wb, err := box.FindString(common.WarningBanners)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.WarningBanners, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.WarningBanners, Data: wb})
+	//8
 	eu, err := box.FindString(common.EnsureUpdates)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.EnsureUpdates, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.EnsureUpdates, Data: eu})
+	//9
 	is, err := box.FindString(common.InetdServices)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.InetdServices, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.InetdServices, Data: is})
+	//10
 	sps, err := box.FindString(common.SpecialPurposeServices)
 	if err != nil {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.SpecialPurposeServices, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.SpecialPurposeServices, Data: sps})
+	//11
+	sci, err := box.FindString(common.ServiceClients)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ServiceClients, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ServiceClients, Data: sci})
 	return fileInfo, nil
 }
 

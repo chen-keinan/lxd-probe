@@ -21,6 +21,8 @@ const (
 	InetdServices = "2.1_inetd_services.yml"
 	//SpecialPurposeServices file name
 	SpecialPurposeServices = "2.2_special_purpose_services.yml"
+	//ServiceClients file name
+	ServiceClients = "2.3_service_clients.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
