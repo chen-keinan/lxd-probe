@@ -23,6 +23,7 @@ import (
 func StartCLI() {
 	app := fx.New(
 		// dependency injection
+		fx.NopLogger,
 		fx.Provide(NewLxdResultChan),
 		fx.Provide(NewCompletionChan),
 		fx.Provide(NewArgFunc),
@@ -33,7 +34,7 @@ func StartCLI() {
 		fx.Provide(NewCommandArgs),
 		fx.Provide(createCliBuilderData),
 		fx.Provide(logger.GetLog),
-		fx.Invoke(StartCLICommand),
+ 		fx.Invoke(StartCLICommand),
 	)
 	if err := app.Start(context.Background()); err != nil {
 		panic(err)
