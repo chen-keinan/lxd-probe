@@ -33,7 +33,7 @@ Note : lxd-probe require privileged user to execute tests
 ## Quick Start
 
 ```
-Usage: lxd-prob [--version] [--help] <command> [<args>]
+Usage: lxd-probe [--version] [--help] <command> [<args>]
 
 Available commands are:
   -r , --report :  run audit tests and generate failure report
