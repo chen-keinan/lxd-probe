@@ -94,3 +94,117 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == ''; || '$0' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+        -
+          name: '2.2.8 Ensure FTP Server is not enabled (Automated)'
+          description: The File Transfer Protocol (FTP) provides networked computers with the ability to transfer files.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled vsftpd 2> /dev/null'
+          remediation: 'Run the following command to disable vsftpd:# systemctl --now disable vsftpd'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+                            Additional FTP servers also exist and should be audited.
+        -
+          name: '2.2.9 Ensure HTTP server is not enabled (Automated)'
+          description: HTTP or web servers provide the ability to host web site content.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled apache2 2> /dev/null'
+          remediation: 'Run the following command to disable apache:# systemctl --now disable apache2'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+                          Several httpd servers exist and can use other service names. apache, apache2, lighttpd, and nginx are example services that provide an HTTP server.
+                          These and other services should also be audited.
+        -
+          name: '2.2.10 Ensure email services are not enabled (Automated)'
+          description: dovecot is an open source mail submission and transport server for Linux based systems.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled dovecot 2> /dev/null'
+          remediation: 'Run one of the following commands to disable dovecot :# systemctl --now disable dovecot'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+                          Several IMAP/POP3 servers exist and can use other service names. courier-imap and cyrus-imap are example services that provide a mail server.
+                          These and other services should also be audited.
+        -
+          name: '2.2.11 Ensure Samba is not enabled (Automated)'
+          description: The Samba daemon allows system administrators to configure their Linux systems to share file systems and directories with Windows desktops.
+                        Samba will advertise the file systems and directories via the Server Message Block (SMB) protocol.
+                        Windows desktop users will be able to mount these directories and file systems as letter drives on their systems.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled smbd 2> /dev/null'
+          remediation: 'Run the following command to disable Samba:systemctl --now disable smbd'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate met
+        -
+          name: '2.2.12 Ensure HTTP Proxy Server is not enabled (Automated)'
+          description: Squid is a standard proxy server used in many distributions and environments.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled squid 2> /dev/null'
+          remediation: 'Run the following command to disable squid:# systemctl --now disable squid'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+                            On some distributions the squid service is known as squid3, not squid.
+                            Several HTTP proxy servers exist. These and other services should be checked.
+        -
+          name: '2.2.13 Ensure SNMP Server is not enabled (Automated)'
+          description: The Simple Network Management Protocol (SNMP) server is used to listen for SNMP commands from an SNMP management system,
+                      execute the commands or collect the information and then send results back to the requesting system.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled snmpd 2> /dev/null'
+          remediation: 'Run the following command to disable snmpd: # systemctl --now disable snmpd'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+        -
+          name: '2.2.14 Ensure mail transfer agent is configured for local-only mode (Automated)'
+          description: Mail Transfer Agents (MTA), such as sendmail and Postfix, are used to listen for incoming mail and transfer the messages to the appropriate user or mail server.
+                      If the system is not intended to be a mail server, it is recommended that the MTA be configured to only process local mail.
+          profile_applicability: Level 1
+          audit:
+            - 'ss -lntu 2> /dev/null| grep -E '':25\s'' | grep -E -v ''\s(127.0.0.1|::1):25\s'''
+          remediation: 'Edit /etc/exim4/update-exim4.conf.conf and and or modify following lines to look like the lines below:
+                        dc_eximconfig_configtype=''local'' dc_local_interfaces=''127.0.0.1 ; ::1'' dc_readhost=''''
+                          dc_relay_domains=''''
+                          dc_minimaldns=''false''
+                          dc_relay_nets=''''
+                          dc_smarthost=''''
+                          dc_use_split_config=''false''
+                          dc_hide_mailname=''''
+                          dc_mailname_in_oh=''true''
+                          dc_localdelivery=''mail_spool'''
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
+          additional_info: This recommendation is designed around the exim4 mail server,
+                          depending on your environment you may have an alternative MTA installed such as sendmail.
+                          If this is the case consult the documentation for your installed MTA to configure the recommended state.
+        -
+          name: '2.2.15 Ensure rsync service is not enabled (Automated)'
+          description: The rsync service can be used to synchronize files between systems over network links.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled rsync 2> /dev/null'
+          remediation: 'Run the following command to disable rsync:# systemctl --now disable rsync'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+        -
+          name: '2.2.16 Ensure NIS Server is not enabled (Automated)'
+          description: The Network Information Service (NIS) (formally known as Yellow Pages) is a client-server directory service protocolfor distributing system configuration files.
+                      The NIS server is a collection of programs that allow for the distribution of configuration files.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled nis 2> /dev/null'
+          remediation: 'Run the following command to disable nis: # systemctl --now disable nis'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
+
