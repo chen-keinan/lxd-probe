@@ -81,6 +81,12 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ServiceClients, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ServiceClients, Data: sci})
+	//12
+	nes, err := box.FindString(common.NonessentialServices)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.NonessentialServices, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.NonessentialServices, Data: nes})
 	return fileInfo, nil
 }
 
