@@ -28,7 +28,7 @@ make build
 ./lxd-probe
 ```
 
-Note : lxd-probe require privileged user to execute tests
+Note : lxd-probe require privileged user to execute tests.
 
 ## Quick Start
 
