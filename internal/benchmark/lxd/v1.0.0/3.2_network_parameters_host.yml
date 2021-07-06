@@ -1,0 +1,39 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Network Configuration
+    sub_category:
+      name: 3.2 Network Parameters (Host and Router)
+      audit_tests:
+        -
+          name: '3.2.1 Ensure source routed packets are not accepted (Automated)'
+          description: In networking, source routing allows a sender to partially or fully specify the route packets take through a network.
+                      In contrast, non-source routed packets travel a path determined by routers in the network.
+                      In some cases, systems may not be routable or reachable from some locations
+                      (e.g. private addresses vs. Internet routable), and so source routed packets would need to be used.
+          profile_applicability: Level 1
+          audit:
+            - 'sysctl net.ipv4.conf.all.accept_source_route 2> /dev/null'
+            - 'sysctl net.ipv4.conf.default.accept_source_route 2> /dev/null'
+            - 'grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null'
+            - 'grep "net\.ipv4\.conf\.default\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null'
+            - 'sysctl net.ipv6.conf.all.accept_source_route 2> /dev/null'
+            - 'sysctl net.ipv6.conf.default.accept_source_route 2> /dev/null'
+            - 'grep "net\.ipv6\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null'
+            - 'grep "net\.ipv6\.conf\.default\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null'
+            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v "ipv6.disable=1" 2> /dev/null'
+          remediation: 'Set the following parameters in /etc/sysctl.conf or a /etc/sysctl.d/* file:
+                        Run the following commands to set the active kernel parameters:
+                        IF IPv6 is enabled:
+                        Set the following parameters in /etc/sysctl.conf or a /etc/sysctl.d/* file:
+                          net.ipv4.conf.all.accept_source_route = 0 net.ipv4.conf.default.accept_source_route = 0
+                           # sysctl -w net.ipv4.conf.all.accept_source_route=0
+                        # sysctl -w net.ipv4.conf.default.accept_source_route=0 # sysctl -w net.ipv4.route.flush=1
+                           net.ipv6.conf.all.accept_source_route = 0
+                           Run the following commands to set the active kernel parameters:
+                           # sysctl -w net.ipv6.conf.all.accept_source_route=0
+                          # sysctl -w net.ipv6.conf.default.accept_source_route=0 # sysctl -w net.ipv6.route.flush=1'
+
+          check_type: multi_param
+          eval_expr: "'$0' == 'net.ipv4.conf.all.accept_source_route = 0'; && '$1' == 'net.ipv4.conf.default.accept_source_route = 0'; && '$2' == 'net.ipv4.conf.all.accept_source_route= 0'; && '$3' == 'net.ipv4.conf.default.accept_source_route= 0'; && '($3' == 'net.ipv4.conf.default.accept_source_route= 0'; && '$4' == 'net.ipv6.conf.default.accept_source_route = 0'; && '$5' == 'net.ipv4.conf.all.accept_source_route= 0'; && '$6' == 'net.ipv6.conf.default.accept_source_route= 0'; || '$7' == ''"

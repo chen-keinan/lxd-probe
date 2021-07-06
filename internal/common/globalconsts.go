@@ -27,6 +27,8 @@ const (
 	NonessentialServices = "2.4_nonessential_services.yml"
 	//NetworkParameters file name
 	NetworkParameters = "3.1_network_parameters.yml"
+	//NetworkParametersHost file name
+	NetworkParametersHost = "3.2_network_parameters_host.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
