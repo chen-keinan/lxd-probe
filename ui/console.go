@@ -14,8 +14,8 @@ func PrintOutput(auditTests []*models.SubCategory, outputGenerator OutputGenerat
 	outputGenerator(auditTests, log)
 }
 
-//ShowProgressBar execute audit test and show progress bar
-func ShowProgressBar(a *models.SubCategory, execTestFunc func(ad *models.AuditBench) []*models.AuditBench) *models.SubCategory {
+//ExecuteSpecs execute audit test and show progress bar
+func ExecuteSpecs(a *models.SubCategory, execTestFunc func(ad *models.AuditBench) []*models.AuditBench) *models.SubCategory {
 	if len(a.AuditTests) == 0 {
 		return a
 	}

@@ -22,20 +22,26 @@ func printTestResults(at []*models.AuditBench, table *tablewriter.Table, categor
 		failCounter int
 	)
 	for _, a := range at {
+		var testType string
+		if a.NonApplicable {
+			testType = "Manual"
+		} else {
+			testType = "Automated"
+		}
 		if a.NonApplicable {
 			warnTest := colorstring.Color("[yellow][Warn]")
 			warnCounter++
-			table.Append([]string{category, warnTest, a.Name})
+			table.Append([]string{category, warnTest, testType, a.Name})
 			continue
 		}
 		if a.TestSucceed {
 			passTest := colorstring.Color("[green][Pass]")
-			table.Append([]string{category, passTest, a.Name})
+			table.Append([]string{category, passTest, testType, a.Name})
 
 			passCounter++
 		} else {
 			failTest := colorstring.Color("[red][Fail]")
-			table.Append([]string{category, failTest, a.Name})
+			table.Append([]string{category, failTest, testType, a.Name})
 			failCounter++
 		}
 	}
@@ -173,7 +179,7 @@ func executeTests(ft []*models.SubCategory, execTestFunc func(ad *models.AuditBe
 	log.Console(ui.LxdAuditTest)
 	bar := pb.StartNew(len(ft)).Prefix("Executing LXD specs:")
 	for _, f := range ft {
-		tr := ui.ShowProgressBar(f, execTestFunc)
+		tr := ui.ExecuteSpecs(f, execTestFunc)
 		completedTest = append(completedTest, tr)
 		bar.Increment()
 		time.Sleep(time.Millisecond * 50)

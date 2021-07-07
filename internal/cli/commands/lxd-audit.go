@@ -41,7 +41,7 @@ type ResultProcessor func(at *models.AuditBench, NumFailedTest int) []*models.Au
 var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
 	grandTotal := make([]models.AuditTestTotals, 0)
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Category", "Severity", "Description"})
+	table.SetHeader([]string{"Category", "Severity", "Type", "Description"})
 	table.SetAutoWrapText(false)
 	table.SetBorder(true) // Set
 	for _, a := range at {
