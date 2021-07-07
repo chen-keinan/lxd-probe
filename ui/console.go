@@ -22,15 +22,14 @@ func ShowProgressBar(a *models.SubCategory, execTestFunc func(ad *models.AuditBe
 		return a
 	}
 	completedTest := make([]*models.AuditBench, 0)
-	log.Console(a.Name)
-	bar := pb.StartNew(len(a.AuditTests))
+	var bar *pb.ProgressBar
+	bar = pb.New(len(a.AuditTests)).Prefix(a.Name)
 	for _, test := range a.AuditTests {
 		ar := execTestFunc(test)
 		completedTest = append(completedTest, ar...)
-
 		bar.Increment()
 		time.Sleep(time.Millisecond * 20)
 	}
-	bar.Finish()
+ 	bar.Finish()
 	return &models.SubCategory{Name: a.Name, AuditTests: completedTest}
 }
