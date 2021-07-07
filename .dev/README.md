@@ -1,11 +1,11 @@
-# kubernetes-vagrantfile
+# LXD-vagrantfile
 
 vagrant file to be used for lxd associated  programs developments, file include :
 - buntu/bionic64
 - lxd cluster 
 - dlv for remote debug
 
-## Quick Start
+### Quick Start
 
 ```
  git clone git@github.com:chen-keinan/lxd-vagrantfile.git
@@ -13,7 +13,6 @@ vagrant file to be used for lxd associated  programs developments, file include 
  vagrant up
 
 ```
-
 
 ### Compile binary with debug params
 ```
