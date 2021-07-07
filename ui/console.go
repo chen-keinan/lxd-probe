@@ -1,10 +1,8 @@
 package ui
 
 import (
-	"github.com/cheggaaa/pb"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
-	"time"
 )
 
 // OutputGenerator for  audit results
@@ -17,19 +15,14 @@ func PrintOutput(auditTests []*models.SubCategory, outputGenerator OutputGenerat
 }
 
 //ShowProgressBar execute audit test and show progress bar
-func ShowProgressBar(a *models.SubCategory, execTestFunc func(ad *models.AuditBench) []*models.AuditBench, log *logger.LdxProbeLogger) *models.SubCategory {
+func ShowProgressBar(a *models.SubCategory, execTestFunc func(ad *models.AuditBench) []*models.AuditBench) *models.SubCategory {
 	if len(a.AuditTests) == 0 {
 		return a
 	}
 	completedTest := make([]*models.AuditBench, 0)
-	var bar *pb.ProgressBar
-	bar = pb.New(len(a.AuditTests)).Prefix(a.Name)
 	for _, test := range a.AuditTests {
 		ar := execTestFunc(test)
 		completedTest = append(completedTest, ar...)
-		bar.Increment()
-		time.Sleep(time.Millisecond * 20)
 	}
- 	bar.Finish()
 	return &models.SubCategory{Name: a.Name, AuditTests: completedTest}
 }

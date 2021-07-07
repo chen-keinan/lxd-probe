@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/cheggaaa/pb"
 	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
@@ -11,6 +12,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/yaml.v2"
 	"strings"
+	"time"
 )
 
 func printTestResults(at []*models.AuditBench, table *tablewriter.Table, category string) models.AuditTestTotals {
@@ -169,9 +171,13 @@ func filteredAuditBenchTests(auditTests []*models.SubCategory, pc []filters.Pred
 func executeTests(ft []*models.SubCategory, execTestFunc func(ad *models.AuditBench) []*models.AuditBench, log *logger.LdxProbeLogger) []*models.SubCategory {
 	completedTest := make([]*models.SubCategory, 0)
 	log.Console(ui.LxdAuditTest)
+	bar := pb.StartNew(len(ft)).Prefix("Executing LXD specs:")
 	for _, f := range ft {
-		tr := ui.ShowProgressBar(f, execTestFunc, log)
+		tr := ui.ShowProgressBar(f, execTestFunc)
 		completedTest = append(completedTest, tr)
+		bar.Increment()
+		time.Sleep(time.Millisecond * 50)
 	}
+	bar.Finish()
 	return completedTest
 }
