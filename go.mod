@@ -18,6 +18,7 @@ require (
 	github.com/mitchellh/cli v1.1.2
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/mitchellh/mapstructure v1.4.1
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/cobra v1.2.1 // indirect

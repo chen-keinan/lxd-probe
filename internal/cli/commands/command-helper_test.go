@@ -10,6 +10,7 @@ import (
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/golang/mock/gomock"
+	"github.com/olekukonko/tablewriter"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"reflect"
@@ -198,7 +199,7 @@ func Test_printTestResults(t *testing.T) {
 	ab = append(ab, ats)
 	ab = append(ab, atf)
 	ab = append(ab, ata)
-	tr := printTestResults(ab, logger.GetLog())
+	tr := printTestResults(ab, tablewriter.NewWriter(os.Stdout), "aaa")
 	assert.Equal(t, tr.Warn, 1)
 	assert.Equal(t, tr.Pass, 1)
 	assert.Equal(t, tr.Fail, 1)

@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
@@ -9,11 +8,12 @@ import (
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/chen-keinan/lxd-probe/ui"
 	"github.com/mitchellh/colorstring"
+	"github.com/olekukonko/tablewriter"
 	"gopkg.in/yaml.v2"
 	"strings"
 )
 
-func printTestResults(at []*models.AuditBench, log *logger.LdxProbeLogger) models.AuditTestTotals {
+func printTestResults(at []*models.AuditBench, table *tablewriter.Table, category string) models.AuditTestTotals {
 	var (
 		warnCounter int
 		passCounter int
@@ -22,17 +22,18 @@ func printTestResults(at []*models.AuditBench, log *logger.LdxProbeLogger) model
 	for _, a := range at {
 		if a.NonApplicable {
 			warnTest := colorstring.Color("[yellow][Warn]")
-			log.Console(fmt.Sprintf("%s %s\n", warnTest, a.Name))
 			warnCounter++
+			table.Append([]string{category, warnTest, a.Name})
 			continue
 		}
 		if a.TestSucceed {
 			passTest := colorstring.Color("[green][Pass]")
-			log.Console(fmt.Sprintf("%s %s\n", passTest, a.Name))
+			table.Append([]string{category, passTest, a.Name})
+
 			passCounter++
 		} else {
 			failTest := colorstring.Color("[red][Fail]")
-			log.Console(fmt.Sprintf("%s %s\n", failTest, a.Name))
+			table.Append([]string{category, failTest, a.Name})
 			failCounter++
 		}
 	}

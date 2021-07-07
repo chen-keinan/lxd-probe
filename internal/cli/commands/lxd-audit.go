@@ -14,6 +14,8 @@ import (
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/chen-keinan/lxd-probe/ui"
 	"github.com/mitchellh/colorstring"
+	"github.com/olekukonko/tablewriter"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -38,11 +40,17 @@ type ResultProcessor func(at *models.AuditBench, NumFailedTest int) []*models.Au
 // ConsoleOutputGenerator print audit tests to stdout
 var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
 	grandTotal := make([]models.AuditTestTotals, 0)
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Category", "Severity", "Description"})
+	table.SetAutoWrapText(false)
+	table.SetBorder(true) // Set
 	for _, a := range at {
-		log.Console(fmt.Sprintf("%s %s\n", "[Category]", a.Name))
-		categoryTotal := printTestResults(a.AuditTests, log)
+		categoryTotal := printTestResults(a.AuditTests, table, a.Name)
 		grandTotal = append(grandTotal, categoryTotal)
 	}
+	table.SetAutoMergeCellsByColumnIndex([]int{0})
+	table.SetRowLine(true)
+	table.Render()
 	log.Console(printFinalResults(grandTotal))
 }
 
