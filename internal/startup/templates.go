@@ -99,6 +99,12 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.NetworkParametersHost, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.NetworkParametersHost, Data: nps})
+	//15
+	tw, err := box.FindString(common.TcpWrappers)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.TcpWrappers, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.TcpWrappers, Data: tw})
 	return fileInfo, nil
 }
 

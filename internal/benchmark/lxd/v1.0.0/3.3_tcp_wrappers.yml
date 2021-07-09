@@ -1,0 +1,27 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Network Configuration
+    sub_category:
+      name: 3.3 TCP Wrappers
+      audit_tests:
+        -
+          name: '3.3.1 Ensure TCP Wrappers is installed (Manual)'
+          description: Many Linux distributions provide value-added firewall solutions which provide easy,
+                      advanced management of network traffic into and out of the local system.
+                      When these solutions are available and appropriate for an environment they should be used.
+                      In cases where a value-added firewall is not provided by a distribution, TCP Wrappers provides a simple access list
+                      and standardized logging method for services capable of supporting it.
+                      Services that are called from inetd and xinetd support the use of TCP wrappers.
+                      Any service that can support TCP wrappers will have the libwrap.so library attached to it.
+          profile_applicability: Level 1
+          audit:
+            - 'dpkg -s tcpd 2> /dev/null'
+          remediation: 'Run the following command to install TCP Wrappers:
+                        # apt install tcpd'
+          check_type: multi_param
+          eval_expr: "'$0' == 'install ok installed';"
+          additional_info: 'To verify if a service supports TCP Wrappers, run the following command:
+                          # ldd <path-to-daemon> | grep libwrap.so
+                          If there is any output, then the service supports TCP Wrappers.'
