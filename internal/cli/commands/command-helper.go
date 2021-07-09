@@ -123,7 +123,7 @@ func isArgsExist(args []string, name string) bool {
 
 //GetResultProcessingFunction return processing function by specificTests
 func GetResultProcessingFunction(args []string) ResultProcessor {
-	if isArgsExist(args, common.Report) {
+	if isArgsExist(args, common.Report) || isArgsExist(args, common.ReportFull) {
 		return reportResultProcessor
 	}
 	return simpleResultProcessor
