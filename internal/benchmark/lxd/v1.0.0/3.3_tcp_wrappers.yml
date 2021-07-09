@@ -7,7 +7,7 @@ categories:
       name: 3.3 TCP Wrappers
       audit_tests:
         -
-          name: '3.3.1 Ensure TCP Wrappers is installed (Manual)'
+          name: '3.3.1 Ensure TCP Wrappers is installed'
           description: Many Linux distributions provide value-added firewall solutions which provide easy,
                       advanced management of network traffic into and out of the local system.
                       When these solutions are available and appropriate for an environment they should be used.
@@ -25,3 +25,31 @@ categories:
           additional_info: 'To verify if a service supports TCP Wrappers, run the following command:
                           # ldd <path-to-daemon> | grep libwrap.so
                           If there is any output, then the service supports TCP Wrappers.'
+        -
+          name: '3.3.2 Ensure /etc/hosts.allow is configured (Manual)'
+          description: The /etc/hosts.allow file specifies which IP addresses are permitted to connect to the host.
+                        It is intended to be used in conjunction with the /etc/hosts.deny file.
+          profile_applicability: Level 1
+          audit:
+            - '# cat /etc/hosts.allow'
+          remediation: 'Run the following command to create /etc/hosts.allow:
+                        # echo "ALL: <net>/<mask>, <net>/<mask>, ..." >/etc/hosts.allow
+                        where each <net>/<mask> combination (for example, "192.168.1.0/255.255.255.0") represents
+                         one network block in use by your organization that requires access to this system.'
+          check_type: multi_param
+          eval_expr: ""
+          additional_info: 'Contents of the /etc/hosts.allow file will vary depending on your network configuration.'
+          type: manual
+        -
+          name: '3.3.3 Ensure /etc/hosts.deny is configured'
+          description: The /etc/hosts.deny file specifies which IP addresses are not permitted to connect to the host.
+                      It is intended to be used in conjunction with the /etc/hosts.allow file.
+          profile_applicability: Level 1
+          audit:
+            - 'cat /etc/hosts.deny | grep "ALL: ALL"  2> /dev/null'
+          remediation: 'Run the following command to create /etc/hosts.deny:
+                        # echo "ALL: ALL" >> /etc/hosts.deny
+                        Additional Information:
+                        Contents of the /etc/hosts.deny file may include additional options depending on your network configuration.'
+          check_type: multi_param
+          eval_expr: "'$0' == 'ALL: ALL';"
