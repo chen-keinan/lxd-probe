@@ -29,8 +29,8 @@ const (
 	NetworkParameters = "3.1_network_parameters.yml"
 	//NetworkParametersHost file name
 	NetworkParametersHost = "3.2_network_parameters_host.yml"
-	//TcpWrappers file name
-	TcpWrappers = "3.3_tcp_wrappers.yml"
+	//TCPWrappers file name
+	TCPWrappers = "3.3_tcp_wrappers.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
@@ -43,6 +43,8 @@ const (
 	NotValidNumber = "10000"
 	//Report arg
 	Report = "r"
+	//ReportFull arg
+	ReportFull = "report"
 	//Synopsis help
 	Synopsis = "synopsis"
 	//LdxProbeCli Name

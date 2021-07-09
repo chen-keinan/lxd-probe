@@ -131,7 +131,7 @@ func GetResultProcessingFunction(args []string) ResultProcessor {
 
 //getOutPutGeneratorFunction return output generator function
 func getOutputGeneratorFunction(args []string) ui.OutputGenerator {
-	if isArgsExist(args, common.Report) {
+	if isArgsExist(args, common.Report) || isArgsExist(args, common.ReportFull) {
 		return ReportOutputGenerator
 	}
 	return ConsoleOutputGenerator
