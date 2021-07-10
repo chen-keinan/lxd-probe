@@ -42,3 +42,36 @@ categories:
                             # ufw allow proto tcp from any to any port 22
                             The rules will still be flushed, but the ssh port will be open after enabling the firewall. Please note that once ufw is ''enabled'', ufw will not flush the chains when adding or removing rules (but will when modifying a rule or changing the default policy).
                             By default, ufw will prompt when enabling the firewall while running under ssh. This can be disabled by using ufw --force enable.'
+        -
+          name: '3.4.2.2 Ensure default deny firewall policy (Automated)'
+          description: A default deny policy on connections ensures that any unconfigured network usage will be rejected.
+          profile_applicability: Level 1
+          audit:
+            - 'ufw status verbose 2> /dev/null|grep Default: |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'' |awk -F "," ''{print $1}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null|grep Default: |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'' |awk -F "," ''{print $2}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null|grep Default: |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'' |awk -F "," ''{print $3}'' |awk ''FNR <= 1'''
+          remediation: 'Run the following commands to implement a default deny policy:
+                        # ufw default deny incoming
+                        # ufw default deny outgoing
+                        # ufw default deny routed'
+          check_type: multi_param
+          eval_expr: "('$0' == 'deny (incoming)'; || '$0' == 'reject (incoming)';) && ('$1' == 'deny (outgoing)'; || '$1' == 'reject (outgoing)';) && ('$2' == 'deny (routed)'; || '$2' == 'reject (routed)';)"
+        -
+          name: '3.4.2.3 Ensure loopback traffic is configured (Automated)'
+          description: Configure the loopback interface to accept traffic.
+                       Configure all other interfaces to deny traffic to the loopback network (127.0.0.0/8 for IPv4 and ::1/128 for IPv6).
+          profile_applicability: Level 1
+          audit:
+            - 'ufw status verbose 2> /dev/null | grep "Anywhere on lo" | grep "ALLOW IN" | awk -F " " ''{print $6}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null | grep "Anywhere" | grep "DENY IN" | awk -F " " ''{print $4}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null | grep "Anywhere (v6) on lo" | grep "ALLOW IN" | awk -F " " ''{print $7 $8}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null | grep "Anywhere (v6)" | grep "DENY IN" | awk -F " " ''{print $5}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null | grep "Anywhere" | grep "ALLOW OUT" | awk -F " " ''{print $4 $5 $6}'' |awk ''FNR <= 1'''
+            - 'ufw status verbose 2> /dev/null | grep "Anywhere (v6)" | grep "ALLOW OUT" | awk -F " " ''{print $5 $6 $7 $8}'' |awk ''FNR <= 1'''
+          remediation: 'Run the following commands to implement the loopback rules:
+                        # ufw allow in on lo
+                        # ufw allow out from lo
+                        # sudo ufw deny in from 127.0.0.0/8
+                        # sudo ufw deny in from ::1'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Anywhere'; && '$1' == '127.0.0.0/8'; && '$2' == 'Anywhere(v6)'; && '$3' == '::1'; && '$4' == 'Anywhereonlo' && '$5' == 'Anywhere(v6)onlo';"
