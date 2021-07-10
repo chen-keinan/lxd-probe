@@ -75,3 +75,17 @@ categories:
                         # sudo ufw deny in from ::1'
           check_type: multi_param
           eval_expr: "'$0' == 'Anywhere'; && '$1' == '127.0.0.0/8'; && '$2' == 'Anywhere(v6)'; && '$3' == '::1'; && '$4' == 'Anywhereonlo' && '$5' == 'Anywhere(v6)onlo';"
+        -
+          name: '3.4.2.4 Ensure outbound connections are configured (Manual)'
+          description: Configure the firewall rules for new outbound connections.
+          profile_applicability: Level 1
+          audit:
+            - 'ufw status numbered'
+          remediation: 'Configure ufw in accordance with site policy. The following commands will implement a policy to allow all outbound connections on all interfaces:
+                        # ufw allow out on all'
+          check_type: multi_param
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Unlike iptables, when a new outbound rule is added, ufw automatically takes care of associated established connections,
+                            so no rules for the latter kind are required.'
+          type: manual
+
