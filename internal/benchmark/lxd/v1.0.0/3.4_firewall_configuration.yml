@@ -1,0 +1,25 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Network Configuration
+    sub_category:
+      name: 3.4 Firewall Configuration
+      audit_tests:
+        -
+          name: '3.4.1.1 Ensure a Firewall package is installed (Automated)'
+          description: A Firewall package should be selected. Most firewall configuration utilities operate as a front end to nftables or iptables.
+          profile_applicability: Level 1
+          audit:
+            - 'dpkg -s ufw 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'dpkg -s nftables 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'dpkg -s iptables 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+          remediation: 'Run one of the following commands to install the Firewall package that follows local site policy:
+                                     To install UFW, run the following command:
+                                     # apt install ufw
+                                     To install nftables, run the following command:
+                                     # apt install nftables
+                                     To install iptables, run the following command:
+                                      # apt install iptables'
+          check_type: multi_param
+          eval_expr: "'$0' == 'install ok installed'; && '$1' == 'install ok installed'; && '$2' == 'install ok installed';"

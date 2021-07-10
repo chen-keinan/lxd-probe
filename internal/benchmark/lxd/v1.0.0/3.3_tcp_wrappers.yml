@@ -17,7 +17,7 @@ categories:
                       Any service that can support TCP wrappers will have the libwrap.so library attached to it.
           profile_applicability: Level 1
           audit:
-            - 'dpkg -s tcpd 2> /dev/null'
+            - 'dpkg -s tcpd 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Run the following command to install TCP Wrappers:
                         # apt install tcpd'
           check_type: multi_param
