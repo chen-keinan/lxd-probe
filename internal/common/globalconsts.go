@@ -30,7 +30,7 @@ const (
 	//NetworkParametersHost file name
 	NetworkParametersHost = "3.2_network_parameters_host.yml"
 	//TCPWrappers file name
-	TCPWrappers           = "3.3_tcp_wrappers.yml"
+	TCPWrappers = "3.3_tcp_wrappers.yml"
 	//FirewallConfiguration file name
 	FirewallConfiguration = "3.4_firewall_configuration.yml"
 	//GrepRegex for tests

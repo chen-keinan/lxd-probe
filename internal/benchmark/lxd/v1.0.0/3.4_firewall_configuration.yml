@@ -23,3 +23,22 @@ categories:
                                       # apt install iptables'
           check_type: multi_param
           eval_expr: "'$0' == 'install ok installed'; && '$1' == 'install ok installed'; && '$2' == 'install ok installed';"
+        -
+          name: '3.4.2.1 Ensure ufw service is enabled (Automated)'
+          description: UncomplicatedFirewall (ufw) is a frontend for iptables. ufw provides a framework for managing netfilter, as well as a command-line and available graphical user interface for manipulating the firewall.
+                      Ensure that the ufw service is enabled to protect your system.
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled ufw 2> /dev/null'
+          remediation: 'Remediation:
+                        Run the following command to enable ufw:
+                        # ufw enable'
+          check_type: multi_param
+          eval_expr: "'$0' == 'enabled';"
+          referances:
+            - http://manpages.ubuntu.com/manpages/precise/en/man8/ufw.8.html
+          additional_info: 'When running ufw enable or starting ufw via its initscript, ufw will flush its chains. This is required so ufw can maintain a consistent state, but it may drop existing connections (eg ssh). ufw does support adding rules before enabling the firewall.
+                            Run the following command before running ufw enable.
+                            # ufw allow proto tcp from any to any port 22
+                            The rules will still be flushed, but the ssh port will be open after enabling the firewall. Please note that once ufw is ''enabled'', ufw will not flush the chains when adding or removing rules (but will when modifying a rule or changing the default policy).
+                            By default, ufw will prompt when enabling the firewall while running under ssh. This can be disabled by using ufw --force enable.'
