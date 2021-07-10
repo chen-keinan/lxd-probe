@@ -28,7 +28,7 @@ categories:
           description: Periodic checking of the filesystem integrity is needed to detect changes to the filesystem.
           profile_applicability: Level 1
           audit:
-            - 'crontab -u root -l | grep aide'
+            - 'crontab -u root -l 2> /dev/null | grep aide'
             - 'grep -r aide /etc/cron.* /etc/crontab'
             - 'systemctl is-enabled aidecheck.service 2> /dev/null'
             - 'systemctl is-enabled aidecheck.timer 2> /dev/null'
