@@ -89,3 +89,17 @@ categories:
                             so no rules for the latter kind are required.'
           type: manual
 
+        -
+          name: '3.4.2.5 Ensure firewall rules exist for all open ports (Automated)'
+          description: Any ports that have been opened on non-loopback addresses need firewall rules to govern traffic.
+          profile_applicability: Level 1
+          audit:
+            - 'ss -4tuln | grep -v 127.0.0 |grep -v lo |  wc -l'
+            - 'ufw status | grep -v v6 | grep -v lo |grep -v 127.0.0 |wc -l'
+          remediation: 'For each port identified in the audit which does not have a firewall rule establish a proper rule for accepting inbound connections:
+                        # ufw allow in <port>/<tcp or udp protocol>
+                        Additional Information:
+                        Changing firewall settings while connected over network can result in being locked out of the system.
+                        The remediation command opens up the port to traffic from all sources. Consult ufw documentation and set any restrictions in compliance with site policy.'
+          check_type: multi_param
+          eval_expr: "$0 > 1 && $1 > 5"
