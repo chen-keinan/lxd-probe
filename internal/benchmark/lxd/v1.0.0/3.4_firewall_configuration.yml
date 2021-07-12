@@ -268,3 +268,12 @@ categories:
                         include "/etc/nftables.rules"'
           check_type: multi_param
           type: manual
+        -
+          name: '3.4.4.1.1 Ensure iptables packages are installed (Automated)'
+          description: The nftables service allows for the loading of nftables rulesets during boot, or starting on the nftables service
+          profile_applicability: Level 1
+          audit:
+            - 'apt list iptables iptables-persistent 2> /dev/null | grep installed | awk -F " " ''{print $4}'''
+          remediation: 'Run the following command to install iptables and iptables-persistent # apt install iptables iptables-persistent'
+          check_type: multi_param
+          eval_expr: "'$0' == '[installed,automatic]';"
