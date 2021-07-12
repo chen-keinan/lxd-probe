@@ -200,4 +200,14 @@ categories:
                         # nft chain inet filter forward { policy drop \; }
                         # nft chain inet filter output { policy drop \; }'
           check_type: multi_param
-          eval_expr: "'$0' == 'type filter hook input priority 0 policy drop'; && '$1' == 'type filter hook forward priority 0 policy drop'; && '$2' == 'type filter hook output priority 0 policy drop'; "
+          eval_expr: "'$0' == 'type filter hook input priority 0 policy drop'; && '$1' == 'type filter hook forward priority 0 policy drop'; && '$2' == 'type filter hook output priority 0 policy drop';"
+        -
+          name: '3.4.3.7 Ensure nftables service is enabled (Automated)'
+          description: The nftables service allows for the loading of nftables rulesets during boot, or starting on the nftables service
+          profile_applicability: Level 1
+          audit:
+            - 'systemctl is-enabled nftables 2> /dev/null'
+          remediation: 'Run the following command to enable the nftables service:
+                        # systemctl enable nftables'
+          check_type: multi_param
+          eval_expr: "'$0' == 'enabled';"
