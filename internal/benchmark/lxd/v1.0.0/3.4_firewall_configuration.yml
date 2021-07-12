@@ -103,3 +103,30 @@ categories:
                         The remediation command opens up the port to traffic from all sources. Consult ufw documentation and set any restrictions in compliance with site policy.'
           check_type: multi_param
           eval_expr: "$0 > 1 && $1 > 5"
+        -
+          name: '3.4.3.1 Ensure iptables are flushed'
+          description: nftables is a replacement for iptables, ip6tables, ebtables and arptables
+          profile_applicability: Level 1
+          audit:
+            - 'iptables -n -L -v --line-numbers |grep num |  wc -l'
+            - 'ip6tables -n -L -v --line-numbers |grep num |  wc -l'
+          remediation: 'Run the following commands to flush iptables: For iptables:
+                        # iptables -F
+                        For ip6tables
+                        # ip6tables -F'
+          check_type: multi_param
+          eval_expr: "$0 == 3"
+        -
+          name: '3.4.3.2 Ensure a table exists (Automated)'
+          description: Tables hold chains. Each table only has one address family and only applies to packets of this family.
+                        Tables can have one of five families.
+          profile_applicability: Level 1
+          audit:
+            - 'nft list tables 2> /dev/null'
+            - 'ip6tables -n -L -v --line-numbers |grep num |  wc -l'
+          remediation: 'Run the following command to create a table in nftables
+                        # nft create table inet <table name>
+                        Example:
+                        # nft create table inet filter'
+          check_type: multi_param
+          eval_expr: "'$0' != '' && '$0' == 'table inet filter'"
