@@ -147,3 +147,19 @@ categories:
                           # nft create chain inet filter output { type filter hook output priority 0 \; }'
           check_type: multi_param
           eval_expr: "'$0' == 'type filter hook input priority 0 policy accept' && '$1' == 'type filter hook forward priority 0 policy accept'&& '$2' == 'type filter hook output priority 0 policy accept'"
+        -
+          name: '3.4.3.4 Ensure loopback traffic is configured (Automated)'
+          description: Configure the loopback interface to accept traffic. Configure all other interfaces to deny traffic to the loopback network
+          profile_applicability: Level 1
+          audit:
+            - 'nft list ruleset 2> /dev/null| awk ''/hook input/,/}/'' | grep ''iif "lo" accept'' | xargs'
+            - 'nft list ruleset 2> /dev/null| awk ''/hook input/,/}/'' | grep ''ip sddr'' | xargs'
+            - 'sysctl -a 2>/dev/null | grep disable_ipv6 |  awk -F "=" ''{print $2}'''
+            - 'nft list ruleset 2> /dev/null| awk ''/hook input/,/}/'' | grep ''ip6 saddr'' |xargs'
+          remediation: 'Run the following commands to implement the loopback rules:
+                          # nft add rule inet filter input iif lo accept
+                          # nft create rule inet filter input ip saddr 127.0.0.0/8 counter drop
+                          IF IPv6 is enabled on the system, run the following command to implement the IPv6 loopback rule:
+                          nft add rule inet filter input ip6 saddr ::1 counter drop'
+          check_type: multi_param
+          eval_expr: "('$0' == 'iif lo accept'; && '$2' == 'ip saddr 127.0.0.0/8 counter packets 0 bytes 0 drop';) || ('$3' == '0'; && '$4' == 'ip6 saddr ::1 counter packets 0 bytes 0 drop';)"
