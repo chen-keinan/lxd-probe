@@ -201,6 +201,9 @@ categories:
                         # nft chain inet filter output { policy drop \; }'
           check_type: multi_param
           eval_expr: "'$0' == 'type filter hook input priority 0 policy drop'; && '$1' == 'type filter hook forward priority 0 policy drop'; && '$2' == 'type filter hook output priority 0 policy drop';"
+          default_value: accept.
+          references:
+            - Manual Page nft
         -
           name: '3.4.3.7 Ensure nftables service is enabled (Automated)'
           description: The nftables service allows for the loading of nftables rulesets during boot, or starting on the nftables service
