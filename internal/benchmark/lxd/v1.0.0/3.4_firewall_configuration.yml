@@ -123,10 +123,27 @@ categories:
           profile_applicability: Level 1
           audit:
             - 'nft list tables 2> /dev/null'
-            - 'ip6tables -n -L -v --line-numbers |grep num |  wc -l'
           remediation: 'Run the following command to create a table in nftables
                         # nft create table inet <table name>
                         Example:
                         # nft create table inet filter'
           check_type: multi_param
           eval_expr: "'$0' != '' && '$0' == 'table inet filter'"
+        -
+          name: '3.4.3.3 Ensure base chains exist (Automated)'
+          description: Chains are containers for rules. They exist in two kinds, base chains and regular chains.
+                        A base chain is an entry point for packets from the networking stack,
+                        a regular chain may be used as jump target and is used for better rule organization.
+          profile_applicability: Level 1
+          audit:
+            - 'nft list ruleset 2> /dev/null | grep ''hook input''| xargs |sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset 2> /dev/null | grep ''hook forward''| xargs |sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset 2> /dev/null | grep ''hook output''| xargs |sed ''s/;//'' | sed ''s/;//'''
+          remediation: 'Run the following command to create the base chains:
+                         # nft create chain inet <table name> <base chain name> { type filter hook <(input|forward|output)> priority 0 \; }
+                         Example:
+                         # nft create chain inet filter input { type filter hook input priority 0 \; }
+                          # nft create chain inet filter forward { type filter hook forward priority 0 \; }
+                          # nft create chain inet filter output { type filter hook output priority 0 \; }'
+          check_type: multi_param
+          eval_expr: "'$0' == 'type filter hook input priority 0 policy accept' && '$1' == 'type filter hook forward priority 0 policy accept'&& '$2' == 'type filter hook output priority 0 policy accept'"
