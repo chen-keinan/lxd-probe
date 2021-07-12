@@ -163,3 +163,41 @@ categories:
                           nft add rule inet filter input ip6 saddr ::1 counter drop'
           check_type: multi_param
           eval_expr: "('$0' == 'iif lo accept'; && '$2' == 'ip saddr 127.0.0.0/8 counter packets 0 bytes 0 drop';) || ('$3' == '0'; && '$4' == 'ip6 saddr ::1 counter packets 0 bytes 0 drop';)"
+        -
+          name: '3.4.3.5 Ensure outbound and established connections are configured (Manual)'
+          description: Configure the firewall rules for new outbound, and established connections
+          profile_applicability: Level 1
+          audit:
+            - 'Run the following commands and verify all rules for established incoming connections match site policy: site policy:
+               Output should be similar to:
+               Run the folllowing command and verify all rules for new and established outbound connections match site policy
+               Output should be similar to:
+                ip protocol tcp ct state established,related,new accept
+                ip protocol udp ct state established,related,new accept
+                ip protocol icmp ct state established,related,new accept'
+          remediation: 'Configure nftables in accordance with site policy.
+                        The following commands will implement a policy to allow all outbound connections and all established connections:
+                        # nft add rule inet filter input ip protocol tcp ct state established accept
+                        # nft add rule inet filter input ip protocol udp ct state established accept
+                        # nft add rule inet filter input ip protocol icmp ct state established accept
+                        # nft add rule inet filter output ip protocol tcp ct state new,related,established accept
+                        # nft add rule inet filter output ip protocol udp ct state new,related,established accept
+                        # nft add rule inet filter output ip protocol icmp ct state new,related,established accept'
+          check_type: multi_param
+          type: manual
+        -
+          name: '3.4.3.6 Ensure default deny firewall policy (Automated)'
+          description: Base chain policy is the default verdict that will be applied to packets reaching the end of the chain.
+          profile_applicability: Level 1
+          audit:
+            - 'nft list ruleset | grep ''hook input''|xargs | sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset | grep ''hook forward''|xargs | sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset | grep ''hook output''|xargs | sed ''s/;//'' | sed ''s/;//'''
+          remediation: 'Run the following command for the base chains with the input, forward, and output hooks to implement a default DROP policy:
+                        # nft chain <table family> <table name> <chain name> { policy drop \; }
+                        Example:
+                        # nft chain inet filter input { policy drop \; }
+                        # nft chain inet filter forward { policy drop \; }
+                        # nft chain inet filter output { policy drop \; }'
+          check_type: multi_param
+          eval_expr: "'$0' == 'type filter hook input priority 0 policy drop'; && '$1' == 'type filter hook forward priority 0 policy drop'; && '$2' == 'type filter hook output priority 0 policy drop'; "
