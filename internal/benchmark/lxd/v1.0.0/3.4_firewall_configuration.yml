@@ -321,3 +321,39 @@ categories:
           additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
                             Remediation will only affect the active system firewall, be sure to configure the default
                             policy in your firewall management to apply on boot as well.'
+        -
+          name: '3.4.4.2.1 Ensure default deny firewall policy (Automated)'
+          description: A default deny all policy on connections ensures that any unconfigured network usage will be rejected.
+          profile_applicability: Level 1
+          audit:
+            - 'iptables -L 2> /dev/null |grep Chain |awk -F "Chain INPUT " ''{print $2}''| awk ''FNR <= 3'''
+          remediation: 'Run the following commands to implement a default DROP policy:
+                         # iptables -P INPUT DROP
+                          # iptables -P OUTPUT DROP
+                          # iptables -P FORWARD DROP'
+          check_type: multi_param
+          eval_expr: "'$0' == '(policy DROP)';"
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Remediation will only affect the active system firewall, be sure to configure the default
+                            policy in your firewall management to apply on boot as well.'
+        -
+          name: '3.4.4.2.2 Ensure loopback traffic is configured (Automated)'
+          description: Configure the loopback interface to accept traffic. Configure all other interfaces to deny
+                        traffic to the loopback network (127.0.0.0/8).
+          profile_applicability: Level 1
+          audit:
+            - 'iptables -L INPUT -v -n |grep ACCEPT |grep -v Chain |awk -F " " ''{print $4}''| awk ''FNR <= 1'''
+            - 'iptables -L INPUT -v -n |grep ACCEPT |grep -v Chain |awk -F " " ''{print $6}''| awk ''FNR <= 1'''
+            - 'iptables -L INPUT -v -n |grep DROP |grep -v Chain |awk -F " " ''{print $6}''| awk ''FNR <= 1'''
+            - 'iptables -L INPUT -v -n |grep DROP |grep -v Chain |awk -F " " ''{print $8}''| awk ''FNR <= 1'''
+            - 'iptables -L OUTPUT -v -n |grep ACCEPT |grep -v Chain |awk -F " " ''{print $4}''| awk ''FNR <= 1'''
+            - 'iptables -L OUTPUT -v -n |grep ACCEPT |grep -v Chain |awk -F " " ''{print $7}''| awk ''FNR <= 1'''
+          remediation: 'Run the following commands to implement the loopback rules:
+                          # iptables -A INPUT -i lo -j ACCEPT
+                          # iptables -A OUTPUT -o lo -j ACCEPT
+                          # iptables -A INPUT -s 127.0.0.0/8 -j DROP'
+          check_type: multi_param
+          eval_expr: "'$0' == 'all'; && '$1' == 'lo'; && '$2' == '*'; && '$3' == '127.0.0.0/8'; && '$4' == 'all'; && '$5' == 'lo';"
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Remediation will only affect the active system firewall, be sure to configure the default policy
+                             in your firewall management to apply on boot as well.'
