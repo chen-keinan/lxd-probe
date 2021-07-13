@@ -190,9 +190,9 @@ categories:
           description: Base chain policy is the default verdict that will be applied to packets reaching the end of the chain.
           profile_applicability: Level 1
           audit:
-            - 'nft list ruleset | grep ''hook input''|xargs | sed ''s/;//'' | sed ''s/;//'''
-            - 'nft list ruleset | grep ''hook forward''|xargs | sed ''s/;//'' | sed ''s/;//'''
-            - 'nft list ruleset | grep ''hook output''|xargs | sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset 2> /dev/null | grep ''hook input''|xargs | sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset 2> /dev/null | grep ''hook forward''|xargs | sed ''s/;//'' | sed ''s/;//'''
+            - 'nft list ruleset 2> /dev/null | grep ''hook output''|xargs | sed ''s/;//'' | sed ''s/;//'''
           remediation: 'Run the following command for the base chains with the input, forward, and output hooks to implement a default DROP policy:
                         # nft chain <table family> <table name> <chain name> { policy drop \; }
                         Example:
@@ -375,3 +375,17 @@ categories:
           additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
                             Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall management to apply on boot as well.'
           type: manual
+        -
+          name: '3.4.4.2.4 Ensure firewall rules exist for all open ports (Automated)'
+          description: Any ports that have been opened on non-loopback addresses need firewall rules to govern traffic.
+          profile_applicability: Level 1
+          audit:
+            - 'ss -4tuln 2> /dev/null |grep -v 127.0.0. |grep -v Local |awk -F " " ''{print $5}''|awk -F ":" ''{print $2}'''
+            - 'iptables -L INPUT -v -n 2> /dev/null |grep NEW |grep dpt:#1 |awk ''FNR <= 1'''
+          remediation: 'For each port identified in the audit which does not have a firewall rule establish a proper rule for accepting inbound connections:
+                         # iptables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT'
+          check_type: multi_param
+          eval_expr: "'$1' != '';"
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall management to apply on boot as well.
+                            The remediation command opens up the port to traffic from all sources. Consult iptables documentation and set any restrictions in compliance with site policy.'
