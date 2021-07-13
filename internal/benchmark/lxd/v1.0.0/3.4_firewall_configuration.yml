@@ -357,3 +357,21 @@ categories:
           additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
                             Remediation will only affect the active system firewall, be sure to configure the default policy
                              in your firewall management to apply on boot as well.'
+        -
+          name: '3.4.4.2.3 Ensure outbound and established connections are configured (Manual)'
+          description: Configure the firewall rules for new outbound, and established connections.
+          profile_applicability: Level 1
+          audit:
+            - 'iptables -L -v -n'
+          remediation: 'Configure iptables in accordance with site policy.
+                        The following commands will implement a policy to allow all outbound connections and all established connections:
+                        # iptables -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT
+                        # iptables -A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT
+                        # iptables -A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT
+                        # iptables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT
+                        # iptables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT
+                        # iptables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT'
+          check_type: multi_param
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall management to apply on boot as well.'
+          type: manual
