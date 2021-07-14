@@ -45,7 +45,7 @@ build_travis:
 build_remote:
 	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' ./cmd/lxd-probe
-	mv lxd-probe ~/boxes/lxd_box/lxd-probe
+	mv lxd-probe ~/boxes/basic_box/lxd-probe
 build_docker:
 	export PATH=$GOPATH/bin:$PATH;
 	docker build -t chenkeinan/lxd-probe:latest .

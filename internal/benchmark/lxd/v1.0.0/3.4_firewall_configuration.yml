@@ -424,5 +424,23 @@ categories:
           eval_expr: "('$0' == 'all'; && '$1' == 'lo'; && '$2' == '*'; && '$3' == '127.0.0.0/8'; && '$4' == 'all'; && '$5' == 'lo';) || '$7' != ''"
           additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
                             Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall
-                             management to apply on boot as well.
-'
+                             management to apply on boot as well.'
+        -
+          name: '3.4.4.3.3 Ensure IPv6 outbound and established connections are configured (Manual)'
+          description: Configure the firewall rules for new outbound, and established IPv6 connections.
+          profile_applicability: Level 1
+          audit:
+            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v ipv6.disable=1'
+            - '# grep "^\s*linux" /boot/grub/grub.cfg | grep -v ipv6.disable=1'
+          remediation: 'Configure iptables in accordance with site policy. The following commands will implement a policy
+                        to allow all outbound connections and all established connections:
+                        # ip6tables -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT
+                        # ip6tables -A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT
+                        # ip6tables -A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT
+                        # ip6tables -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT
+                        # ip6tables -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT
+                        # ip6tables -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT'
+          check_type: multi_param
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall management to apply on boot as well.'
+          type: manual
