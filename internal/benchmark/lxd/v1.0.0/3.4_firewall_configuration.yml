@@ -389,3 +389,18 @@ categories:
           additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
                             Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall management to apply on boot as well.
                             The remediation command opens up the port to traffic from all sources. Consult iptables documentation and set any restrictions in compliance with site policy.'
+        -
+          name: '3.4.4.3.1 Ensure IPv6 default deny firewall policy (Automated)'
+          description: A default deny all policy on connections ensures that any unconfigured network usage will be rejected.
+          profile_applicability: Level 1
+          audit:
+            - 'iptables -L 2> /dev/null |grep Chain |awk -F "Chain INPUT " ''{print $2}''| awk ''FNR <= 3'''
+            - 'grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null| grep -v ipv6.disable=1'
+          remediation: 'Run the following commands to implement a default DROP policy:
+                         # ip6tables -P INPUT DROP
+                        # ip6tables -P OUTPUT DROP
+                        # ip6tables -P FORWARD DROP'
+          check_type: multi_param
+          eval_expr: "('$0' == '(policy DROP)'; || '$1' == '(policy REJECT)';) && '$1' == '' "
+          additional_info: 'Changing firewall settings while connected over network can result in being locked out of the system.
+                            Remediation will only affect the active system firewall, be sure to configure the default policy in your firewall management to apply on boot as well.'
