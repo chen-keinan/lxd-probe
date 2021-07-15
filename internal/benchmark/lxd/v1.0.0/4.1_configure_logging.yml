@@ -1,0 +1,20 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Logging and Auditing
+    sub_category:
+      name: 4.1 Configure Logging
+      audit_tests:
+        -
+          name: '4.1.1.1 Ensure rsyslog is installed (Automated)'
+          description: The rsyslog software is a recommended replacement to the original syslogd daemon which provide improvements over syslogd,
+                        such as connection-oriented (i.e. TCP) transmission of logs, the option to log to database formats,
+                        and the encryption of log data en route to a central logging server.
+          profile_applicability: Level 1
+          audit:
+            - 'dpkg -s rsyslog 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+          remediation: 'nstall rsyslog:
+                        # apt install rsyslog'
+          check_type: multi_param
+          eval_expr: "'$0' == 'install ok installed';"

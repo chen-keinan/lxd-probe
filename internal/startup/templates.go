@@ -111,6 +111,12 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.FirewallConfiguration, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.FirewallConfiguration, Data: fc})
+	//16
+	cf, err := box.FindString(common.ConfigureLogging)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigureLogging, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigureLogging, Data: cf})
 	return fileInfo, nil
 }
 

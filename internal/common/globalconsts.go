@@ -33,6 +33,8 @@ const (
 	TCPWrappers = "3.3_tcp_wrappers.yml"
 	//FirewallConfiguration file name
 	FirewallConfiguration = "3.4_firewall_configuration.yml"
+	//ConfigureLogging file name
+	ConfigureLogging = "4.1_configure_logging.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
