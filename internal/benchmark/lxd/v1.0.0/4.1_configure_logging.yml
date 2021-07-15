@@ -89,4 +89,30 @@ categories:
           eval_expr: "'$0' == '0640';"
           references:
             - See the rsyslog.conf(5) man page for more information.
+        -
+          name: '4.1.1.5 Ensure rsyslog is configured to send logs to a remote log host (Automated)'
+          description: The rsyslog utility supports the ability to send logs it gathers to a remote log host running syslogd(8)
+                      or to receive messages from remote hosts, reducing administrative overhead.
+          profile_applicability: Level 1
+          audit:
+            - 'grep -E "^[^#](\s*\S+\s*)\s*action\(" /etc/rsyslog.conf /etc/rsyslog.d/*.conf | grep "target="'
+          remediation: 'Edit the /etc/rsyslog.conf and /etc/rsyslog.d/*.conf files and add one of the following lines:
+                        Newer syntax:
+                        <files to sent to the remote log server> action(type="omfwd" target="<FQDN or ip of loghost>" port="<port number>" protocol="tcp"
+                        action.resumeRetryCount="<number of re-tries>" queue.size=<number of messages to queue>")
+                        queue.type="linkList"
+                        Example:
+                        *.* action(type="omfwd" target="192.168.2.100" port"514" protocol="tcp" action.resumeRetryCount="100"
+                        queue.type="linkList" queue.size="1000")
+                        Older syntax:
+                        *.* @@<FQDN or ip of loghost>
+                        Example:
+                        *.* @@192.168.2.100
+                        Run the following command to reload the rsyslog configuration: # systemctl reload rsyslog'
+          check_type: multi_param
+          eval_expr: "'$0' != '';"
+          additional_info: 'The double "at" sign (@@) directs rsyslog to use TCP to send log messages to the server, which is a more reliable transport mechanism than the default UDP protocol.
+                            *.* sends all logs to the remote loghost. Ensure that the selection of logfiles being sent follows local site policy'
+          references:
+            - See the rsyslog.conf(5) man page for more information.
 
