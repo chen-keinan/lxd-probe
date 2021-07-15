@@ -76,4 +76,17 @@ categories:
           additional_info: 'On some systems /var/log/secure should be used for authentication data rather than /var/log/auth.log.
                             Please consult your distribution-specific recommendations for further details.'
           type: manual
+        -
+          name: '4.1.1.4 Ensure rsyslog default file permissions configured (Automated)'
+          description: rsyslog will create logfiles that do not already exist on the system.
+                      This setting controls what permissions will be applied to these newly created files.
+          profile_applicability: Level 1
+          audit:
+            - 'grep ^\$FileCreateMode /etc/rsyslog.conf /etc/rsyslog.d/*.conf |awk -F "FileCreateMode" ''{print $2}'' |awk ''FNR <= 1'''
+          remediation: 'Edit the /etc/rsyslog.conf and /etc/rsyslog.d/*.conf files and set $FileCreateMode to 0640 or more restrictive:
+                        $FileCreateMode 0640'
+          check_type: multi_param
+          eval_expr: "'$0' == '0640';"
+          references:
+            - See the rsyslog.conf(5) man page for more information.
 
