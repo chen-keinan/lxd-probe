@@ -157,3 +157,17 @@ categories:
                             If there are custom configs present, they override the main configuration parameters'
           references:
             - https://github.com/konstruktoid/hardening/blob/master/systemd.adoc#etcsyste mdjournaldconf
+        -
+          name: '4.1.2.2 Ensure journald is configured to compress large log files (Automated)'
+          description: The journald system includes the capability of compressing overly large
+                        files to avoid filling up the system with logs or making the logs unmanageably large..
+          audit:
+            - 'grep -e Compress /etc/systemd/journald.conf'
+          remedeation: 'Edit the /etc/systemd/journald.conf file and add the following line:
+                        Compress=yes'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Compress=yes';"
+          additional_info: 'The main configuration file /etc/systemd/journald.conf is read before any of the custom *.conf files.
+                            If there are custom configs present, they override the main configuration parameters'
+          references:
+            - https://github.com/konstruktoid/hardening/blob/master/systemd.adoc#etcsyste mdjournaldconf
