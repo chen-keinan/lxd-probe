@@ -35,6 +35,8 @@ const (
 	FirewallConfiguration = "3.4_firewall_configuration.yml"
 	//ConfigureLogging file name
 	ConfigureLogging = "4.1_configure_logging.yml"
+	//EnsureLogrotateConfigured file name
+	EnsureLogrotateConfigured = "4.2_ensure_logrotate_configured.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
