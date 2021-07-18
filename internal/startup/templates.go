@@ -123,6 +123,12 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.EnsureLogrotateConfigured, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.EnsureLogrotateConfigured, Data: elc})
+	//17
+	elap, err := box.FindString(common.EnsureLogrotateAssignsAppropriatePermissions)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.EnsureLogrotateAssignsAppropriatePermissions, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.EnsureLogrotateAssignsAppropriatePermissions, Data: elap})
 	return fileInfo, nil
 }
 

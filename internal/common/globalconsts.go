@@ -37,6 +37,8 @@ const (
 	ConfigureLogging = "4.1_configure_logging.yml"
 	//EnsureLogrotateConfigured file name
 	EnsureLogrotateConfigured = "4.2_ensure_logrotate_configured.yml"
+	//EnsureLogrotateAssignsAppropriatePermissions file name
+	EnsureLogrotateAssignsAppropriatePermissions = "4.3_ensure_logrotate_assigns_appropriate_permissions.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
