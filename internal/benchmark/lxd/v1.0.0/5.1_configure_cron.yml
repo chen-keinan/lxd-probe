@@ -1,0 +1,18 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Access, Authentication and Authorization
+    sub_category:
+      name: 5.1 Configure cron
+      audit_tests:
+        -
+          name: '5.1.1 Ensure cron daemon is enabled (Automated)'
+          description: The cron daemon is used to execute batch jobs on the system.
+          audit:
+            - 'systemctl is-enabled cron 2> /dev/null'
+          remedeation: 'Based on your system configuration, run the appropriate one of the following commands to enable cron:
+                        # systemctl --now enable cron'
+          check_type: multi_param
+          additional_info: 'Additional methods of enabling a service exist. Consult your distribution documentation for appropriate methods.'
+          eval_expr: "'$0' == 'enabled';"
