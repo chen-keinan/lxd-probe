@@ -22,7 +22,7 @@ categories:
             - 'sysctl net.ipv6.conf.default.accept_source_route 2> /dev/null'
             - 'grep "net\.ipv6\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null |awk -F ":" ''{print $2}'''
             - 'grep "net\.ipv6\.conf\.default\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null |awk -F ":" ''{print $2}'''
-            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v "ipv6.disable=1" 2> /dev/null |awk -F ":" ''{print $2}'''
+            - 'grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v "ipv6.disable=1" |awk -F ":" ''{print $2}'''
           remediation: 'Set the following parameters in /etc/sysctl.conf or a /etc/sysctl.d/* file:
                         Run the following commands to set the active kernel parameters:
                         IF IPv6 is enabled:
@@ -54,7 +54,7 @@ categories:
             - 'sysctl net.ipv6.conf.default.accept_redirects 2> /dev/null'
             - 'grep "net\.ipv6\.conf\.all\.accept_redirects" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null |awk -F ":" ''{print $2}'''
             - 'grep "net\.ipv6\.conf\.default\.accept_redirects" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null |awk -F ":" ''{print $2}'''
-            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v "ipv6.disable=1" 2> /dev/null |awk -F ":" ''{print $2}'''
+            - 'grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v "ipv6.disable=1" |awk -F ":" ''{print $2}'''
           remediation: 'Set the following parameters in /etc/sysctl.conf or a /etc/sysctl.d/* file:
                         Run the following commands to set the active kernel parameters:
                         IF IPv6 is enabled:
@@ -179,7 +179,7 @@ categories:
             - 'sysctl net.ipv6.conf.default.accept_ra 2> /dev/null'
             - 'grep "net\.ipv6\.conf\.all\.accept_ra" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null |awk -F ":" ''{print $2}'''
             - 'grep "net\.ipv6\.conf\.default\.accept_ra" /etc/sysctl.conf /etc/sysctl.d/* 2> /dev/null |awk -F ":" ''{print $2}'''
-            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v "ipv6.disable=1" 2> /dev/null'
+            - 'grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v "ipv6.disable=1"'
           remediation: 'IF IPv6 is enabled: Set the following parameters in /etc/sysctl.conf or a /etc/sysctl.d/* file:
                          net.ipv6.conf.all.accept_ra = 0
                         net.ipv6.conf.default.accept_ra = 0

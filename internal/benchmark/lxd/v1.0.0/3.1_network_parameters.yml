@@ -34,7 +34,7 @@ categories:
             - 'grep -E -s "^\s*net\.ipv4\.ip_forward\s*=\s*1" /etc/sysctl.conf /etc/sysctl.d/*.conf /usr/lib/sysctl.d/*.conf /run/sysctl.d/*.conf 2> /dev/null'
             - 'sysctl net.ipv6.conf.all.forwarding 2> /dev/null'
             - 'grep -E -s "^\s*net\.ipv6\.conf\.all\.forwarding\s*=\s*1" /etc/sysctl.conf /etc/sysctl.d/*.conf /usr/lib/sysctl.d/*.conf /run/sysctl.d/*.conf 2> /dev/null'
-            - '# grep "^\s*linux" /boot/grub/grub.cfg | grep -v "ipv6.disable=1" 2> /dev/null'
+            - '# grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v "ipv6.disable=1"'
           remediation: 'Run the following command to restore the default parameter and set the active kernel parameter:
                         IF IPv6 is enabled:
                         Run the following command to restore the default parameter and set the active kernel parameter:

@@ -415,7 +415,7 @@ categories:
             - 'ip6tables -L INPUT -v -n |grep DROP |grep -v Chain |awk -F " " ''{print $8}''| awk ''FNR <= 1'''
             - 'ip6tables -L OUTPUT -v -n |grep ACCEPT |grep -v Chain |awk -F " " ''{print $4}''| awk ''FNR <= 1'''
             - 'ip6tables -L OUTPUT -v -n |grep ACCEPT |grep -v Chain |awk -F " " ''{print $7}''| awk ''FNR <= 1'''
-            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v ipv6.disable=1'
+            - 'grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v ipv6.disable=1'
           remediation: 'Run the following commands to implement the loopback rules:
                           # ip6tables -A INPUT -i lo -j ACCEPT
                           # ip6tables -A OUTPUT -o lo -j ACCEPT
@@ -430,8 +430,8 @@ categories:
           description: Configure the firewall rules for new outbound, and established IPv6 connections.
           profile_applicability: Level 1
           audit:
-            - 'grep "^\s*linux" /boot/grub/grub.cfg | grep -v ipv6.disable=1'
-            - '# grep "^\s*linux" /boot/grub/grub.cfg | grep -v ipv6.disable=1'
+            - 'grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v ipv6.disable=1'
+            - '# grep "^\s*linux" /boot/grub/grub.cfg 2> /dev/null | grep -v ipv6.disable=1'
           remediation: 'Configure iptables in accordance with site policy. The following commands will implement a policy
                         to allow all outbound connections and all established connections:
                         # ip6tables -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT
