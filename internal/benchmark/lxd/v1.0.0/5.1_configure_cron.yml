@@ -51,3 +51,16 @@ categories:
                         # chmod og-rwx /etc/cron.daily'
           check_type: multi_param
           eval_expr: "'$0' == '(0700/drwx------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '5.1.5 Ensure permissions on /etc/cron.weekly are configured (Automated)'
+          description: The /etc/cron.weekly directory contains system cron jobs that need to run on a weekly basis.
+                      The files in this directory cannot be manipulated by the crontab command, but are instead edited by system
+                      administrators using a text editor. The commands below restrict read/write and search access to user and group root, preventing
+                      regular users from accessing this directory.
+          audit:
+            - 'stat /etc/cron.weekly |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Run the following commands to set ownership and permissions on /etc/cron.weekly:
+                         # chown root:root /etc/cron.weekly
+                        # chmod og-rwx /etc/cron.weekly'
+          check_type: multi_param
+          eval_expr: "'$0' == '(0700/drwx------)  Uid: (    0/    root)   Gid: (    0/    root)';"
