@@ -16,3 +16,26 @@ categories:
           check_type: multi_param
           additional_info: 'Additional methods of enabling a service exist. Consult your distribution documentation for appropriate methods.'
           eval_expr: "'$0' == 'enabled';"
+        -
+          name: '5.1.2 Ensure permissions on /etc/crontab are configured (Automated)'
+          description: The /etc/crontab file is used by cron to control its own jobs.
+                       The commands in this item make sure that root is the user and group owner of the file and that only the owner can access the file.
+          audit:
+            - 'stat /etc/crontab |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Run the following commands to set ownership and permissions on /etc/crontab :
+                         # chown root:root /etc/crontab
+                         # chmod og-rwx /etc/crontab'
+          check_type: multi_param
+          eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '5.1.3 Ensure permissions on /etc/cron.hourly are configured (Automated)'
+          description: This directory contains system cron jobs that need to run on an hourly basis.
+                        The files in this directory cannot be manipulated by the crontab command, but are instead edited by system administrators using a text editor.
+                       The commands below restrict read/write and search access to user and group root, preventing regular users from accessing this directory.
+          audit:
+            - 'stat /etc/cron.hourly |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Run the following commands to set ownership and permissions on /etc/cron.hourly:
+                         # chown root:root /etc/cron.hourly
+                        # chmod og-rwx /etc/cron.hourly'
+          check_type: multi_param
+          eval_expr: "'$0' == '(0700/drwx------)  Uid: (    0/    root)   Gid: (    0/    root)';"
