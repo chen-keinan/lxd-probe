@@ -17,3 +17,16 @@ categories:
           check_type: multi_param
           additional_info: 'Additional methods of enabling a service exist. Consult your distribution documentation for appropriate methods.'
           eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '5.2.2 Ensure permissions on SSH private host key files are configured (Automated)'
+          description: An SSH private key is one of two files used in SSH public key authentication.
+                      In this authentication method, The possession of the private key is proof of identity.
+                      Only a private key that corresponds to a public key will be able to authenticate successfully.
+                      The private keys need to be stored and handled carefully, and no copies of the private key should be distributed.
+          audit:
+            - 'find /etc/ssh -xdev -type f -name ''ssh_host_*_key'' -exec stat {} \; | grep "Access: (" |awk -F "Access:" ''{print $2}'''
+          remedeation: 'Run the following commands to set ownership and permissions on the private SSH host key files:
+                        # find /etc/ssh -xdev -type f -name ''ssh_host_*_key'' -exec chown root:root {} \;
+                        # find /etc/ssh -xdev -type f -name ''ssh_host_*_key'' -exec chmod 0600 {} \;'
+          check_type: multi_param
+          eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
