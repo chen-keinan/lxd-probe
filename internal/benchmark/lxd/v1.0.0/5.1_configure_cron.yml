@@ -64,3 +64,16 @@ categories:
                         # chmod og-rwx /etc/cron.weekly'
           check_type: multi_param
           eval_expr: "'$0' == '(0700/drwx------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+          -
+          name: '5.1.6 Ensure permissions on /etc/cron.monthly are configured (Automated)'
+          description: The /etc/cron.monthly directory contains system cron jobs that need to run on a monthly basis.
+                        The files in this directory cannot be manipulated by the crontab command, but are instead edited by system
+                        administrators using a text editor. The commands below restrict read/write and search access to user and group
+                        root, preventing regular users from accessing this directory.
+          audit:
+            - 'stat /etc/cron.monthly |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Run the following commands to set ownership and permissions on /etc/cron.monthly:
+                         # chown root:root /etc/cron.monthly
+                        # chmod og-rwx /etc/cron.monthly'
+          check_type: multi_param
+          eval_expr: "'$0' == '(0700/drwx------)  Uid: (    0/    root)   Gid: (    0/    root)';"
