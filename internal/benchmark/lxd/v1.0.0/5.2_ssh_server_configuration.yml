@@ -1,0 +1,19 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Access, Authentication and Authorization
+    sub_category:
+      name: 5.2 SSH Server Configuration
+      audit_tests:
+        -
+          name: '5.2.1 Ensure permissions on /etc/ssh/sshd_config are configured (Automated)'
+          description: The /etc/ssh/sshd_config file contains configuration specifications for sshd. The command below sets the owner and group of the file to root.
+          audit:
+            - 'stat /etc/ssh/sshd_config 2> /dev/null |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Run the following commands to set ownership and permissions on /etc/ssh/sshd_config:
+                         # chown root:root /etc/ssh/sshd_config
+                         # chmod og-rwx /etc/ssh/sshd_config'
+          check_type: multi_param
+          additional_info: 'Additional methods of enabling a service exist. Consult your distribution documentation for appropriate methods.'
+          eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"

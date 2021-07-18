@@ -85,7 +85,7 @@ categories:
                       using a text editor. The commands below restrict read/write and search access to user and group root, preventing regular
                       users from accessing this directory.
           audit:
-            - 'stat /etc/cron.d |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'stat /etc/cron.d 2> /dev/null |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
           remedeation: 'Run the following commands to set ownership and permissions on /etc/cron.d:
                          # chown root:root /etc/cron.d
                         # chmod og-rwx /etc/cron.d'
@@ -102,12 +102,20 @@ categories:
           audit:
             - 'stat /etc/cron.deny 2> /dev/null'
             - 'stat /etc/at.deny 2> /dev/null'
-            - 'stat /etc/cron.allow |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
-            - 'stat /etc/at.allow |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'stat /etc/cron.allow 2> /dev/null |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'stat /etc/at.allow 2> /dev/null |grep Access |awk -F "Access:" ''{print $2}'' |awk ''FNR <= 1'''
 
-          remedeation: 'Run the following commands to set ownership and permissions on /etc/cron.d:
-                         # chown root:root /etc/cron.d
-                        # chmod og-rwx /etc/cron.d'
+          remedeation: 'Run the following commands to remove /etc/cron.deny and /etc/at.deny and create and set permissions and ownership for /etc/cron.allow and /etc/at.allow :
+                        # rm /etc/cron.deny
+                        # rm /etc/at.deny
+                        # touch /etc/cron.allow
+                        # touch /etc/at.allow
+                        # chmod o-rwx /etc/cron.allow
+                        # chmod g-wx /etc/cron.allow
+                        # chmod o-rwx /etc/at.allow
+                        # chmod g-wx /etc/at.allow
+                        # chown root:root /etc/cron.allow
+                        # chown root:root /etc/at.allow'
           check_type: multi_param
           eval_expr: "'$0' == ''; && '$1' == ''; && '$2' == '(0640/-rw-r-----)  Uid: (    0/    root)   Gid: (    0/    root)' && '$3' == '(0640/-rw-r-----)  Uid: (    0/    root)   Gid: (    0/    root)';"
 
