@@ -30,3 +30,16 @@ categories:
                         # find /etc/ssh -xdev -type f -name ''ssh_host_*_key'' -exec chmod 0600 {} \;'
           check_type: multi_param
           eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '5.2.3 Ensure permissions on SSH public host key files are configured (Automated)'
+          description: An SSH public key is one of two files used in SSH public key authentication.
+                      In this authentication method, a public key is a key that can be used for verifying digital
+                      signatures generated using a corresponding private key. Only a public key that corresponds to a private
+                      key will be able to authenticate successfully.
+          audit:
+            - 'find /etc/ssh -xdev -type f -name ''ssh_host_*_key.pub'' -exec stat {} \; | grep "Access: (" |awk -F "Access:" ''{print $2}'''
+          remedeation: 'Run the following commands to set permissions and ownership on the SSH host public key files:
+                        # find /etc/ssh -xdev -type f -name ''ssh_host_*_key.pub'' -exec chmod go-wx {} \;
+                        # find /etc/ssh -xdev -type f -name ''ssh_host_*_key.pub'' -exec chown root:root {} \;'
+          check_type: multi_param
+          eval_expr: "'$0' == '(0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
