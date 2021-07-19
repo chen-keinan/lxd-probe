@@ -56,4 +56,20 @@ categories:
           additional_info: 'This command not longer exists in newer versions of SSH.
                             This check is still being included for systems that may be running an older version of SSH. As of
                             openSSH version 7.4 this parameter will not cause an issue when included.'
-
+        -
+          name: '5.2.5 Ensure SSH LogLevel is appropriate (Automated)'
+          description: INFO level is the basic level that only records login activity of SSH users. In many situations,
+            such as Incident Response, it is important to determine when a particular user was active on a system.
+            The logout record can eliminate those users who disconnected, which helps narrow the field.
+            VERBOSE level specifies that login and logout activity as well as the key fingerprint for any SSH key used for
+            login will be logged. This information is important for SSH key management, especially in legacy environments.
+          audit:
+            - 'sshd -T 2> /dev/null | grep loglevel'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: LogLevel VERBOSE
+                        OR
+                        LogLevel INFO'
+          check_type: multi_param
+          eval_expr: "'$0' == 'LogLevel VERBOSE'; || '$0' == 'LogLevel INFO'; || '$0' == 'loglevel VERBOSE'; || '$0' == 'loglevel INFO';"
+          default_value: LogLevel INFO
+          references:
+            - https://www.ssh.com/ssh/sshd_config/
