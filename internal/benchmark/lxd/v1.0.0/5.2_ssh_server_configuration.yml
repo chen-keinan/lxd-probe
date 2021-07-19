@@ -43,3 +43,17 @@ categories:
                         # find /etc/ssh -xdev -type f -name ''ssh_host_*_key.pub'' -exec chown root:root {} \;'
           check_type: multi_param
           eval_expr: "'$0' == '(0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '5.2.4 Ensure SSH Protocol is not set to 1 (Automated)'
+          description: Older versions of SSH support two different and incompatible protocols
+                        SSH1 and SSH2. SSH1 was the original protocol and was subject to security issues.
+                        SSH2 is more advanced and secure.
+          audit:
+            - 'sshd -T 2> /dev/null | grep -Ei ''^\s*protocol\s+(1|1\s*,\s*2|2\s*,\s*1)\s*'''
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: Protocol 2'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
+          additional_info: 'This command not longer exists in newer versions of SSH.
+                            This check is still being included for systems that may be running an older version of SSH. As of
+                            openSSH version 7.4 this parameter will not cause an issue when included.'
+
