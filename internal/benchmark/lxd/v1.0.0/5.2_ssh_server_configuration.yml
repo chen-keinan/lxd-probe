@@ -82,6 +82,14 @@ categories:
                         X11Forwarding no'
           check_type: multi_param
           eval_expr: "'$0' == 'x11forwarding no';"
-          default_value: LogLevel INFO
-          references:
-            - https://www.ssh.com/ssh/sshd_config/
+        -
+          name: '5.2.7 Ensure SSH MaxAuthTries is set to 4 or less (Automated)'
+          description: The MaxAuthTries parameter specifies the maximum number of authentication attempts permitted per connection.
+                      When the login failure count reaches half the number, error messages will be written to the syslog file detailing the login failure.
+          audit:
+            - 'sshd -T 2> /dev/null| grep maxauthtries'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
+                        MaxAuthTries 4'
+          check_type: multi_param
+          eval_expr: "'$0' == 'maxAuthTries 4';"
+          default_value: MaxAuthTries 6
