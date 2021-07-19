@@ -126,4 +126,14 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == 'permitrootlogin no';"
           default_value: PermitRootLogin without-password
+        -
+          name: '5.2.11 Ensure SSH PermitEmptyPasswords is disabled (Automated)'
+          description: The PermitEmptyPasswords parameter specifies if the SSH server allows login to accounts with empty password strings.
+          audit:
+            - 'sshd -T 2> /dev/null| grep permitemptypasswords'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows::
+                        permitemptypasswords no'
+          check_type: multi_param
+          eval_expr: "'$0' == 'permitemptypasswords no';"
+          default_value: PermitEmptyPasswords no
 
