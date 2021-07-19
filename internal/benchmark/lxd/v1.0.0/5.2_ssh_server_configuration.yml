@@ -93,3 +93,14 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == 'maxAuthTries 4';"
           default_value: MaxAuthTries 6
+        -
+          name: '5.2.8 Ensure SSH IgnoreRhosts is enabled (Automated)'
+          description: The IgnoreRhosts parameter specifies that .rhosts and .shosts
+                        files will not be used in RhostsRSAAuthentication or HostbasedAuthentication.
+          audit:
+            - 'sshd -T 2> /dev/null| grep ignorerhosts'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
+                        IgnoreRhosts yes'
+          check_type: multi_param
+          eval_expr: "'$0' == 'ignoreRhosts yes';"
+          default_value: IgnoreRhosts yes
