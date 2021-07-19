@@ -104,3 +104,26 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == 'ignoreRhosts yes';"
           default_value: IgnoreRhosts yes
+        -
+          name: '5.2.9 Ensure SSH HostbasedAuthentication is disabled (Automated)'
+          description: The HostbasedAuthentication parameter specifies if authentication is allowed through
+                        trusted hosts via the user of .rhosts, or /etc/hosts.equiv, along with successful public key
+                        client host authentication. This option only applies to SSH Protocol Version 2.
+          audit:
+            - 'sshd -T 2> /dev/null| grep hostbasedauthentication'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
+                        hostbasedauthentication no'
+          check_type: multi_param
+          eval_expr: "'$0' == 'hostbasedauthentication no';"
+          default_value: hostbasedAuthentication no
+        -
+          name: '5.2.10 Ensure SSH root login is disabled (Automated)'
+          description: The PermitRootLogin parameter specifies if the root user can log in using ssh. The default is no.
+          audit:
+            - 'sshd -T 2> /dev/null| grep permitrootlogin'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows::
+                        permitrootlogin no'
+          check_type: multi_param
+          eval_expr: "'$0' == 'permitrootlogin no';"
+          default_value: PermitRootLogin without-password
+
