@@ -69,7 +69,19 @@ categories:
                         OR
                         LogLevel INFO'
           check_type: multi_param
-          eval_expr: "'$0' == 'LogLevel VERBOSE'; || '$0' == 'LogLevel INFO'; || '$0' == 'loglevel VERBOSE'; || '$0' == 'loglevel INFO';"
+          eval_expr: "'$0' == 'loglevel VERBOSE'; || '$0' == 'loglevel INFO';"
+          default_value: LogLevel INFO
+          references:
+            - https://www.ssh.com/ssh/sshd_config/
+        -
+          name: '5.2.6 Ensure SSH X11 forwarding is disabled (Automated)'
+          description: The X11Forwarding parameter provides the ability to tunnel X11 traffic through the connection to enable remote graphic connections.
+          audit:
+            - 'sshd -T 2> /dev/null| grep x11forwarding'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
+                        X11Forwarding no'
+          check_type: multi_param
+          eval_expr: "'$0' == 'x11forwarding no';"
           default_value: LogLevel INFO
           references:
             - https://www.ssh.com/ssh/sshd_config/
