@@ -136,4 +136,56 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == 'permitemptypasswords no';"
           default_value: PermitEmptyPasswords no
+        -
+          name: '5.2.12 Ensure SSH PermitUserEnvironment is disabled (Automated)'
+          description: The PermitUserEnvironment option allows users to present environment options to the ssh daemon.
+          audit:
+            - 'sshd -T 2> /dev/null| grep permituserenvironment'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows::
+                        permituserenvironment no'
+          check_type: multi_param
+          eval_expr: "'$0' == 'permituserenvironment no';"
+          default_value: permituserenvironment no
+        -
+          name: '5.2.13 Ensure only strong Ciphers are used (Automated)'
+          description: This variable limits the ciphers that SSH can use during communication.
+          audit:
+            - 'sshd -T 2> /dev/null| grep ciphers'
+          remedeation: 'Edit the /etc/ssh/sshd_config file add/modify the Ciphers line to contain a comma separated list of the site approved ciphers
+                        Example:
+                         Ciphers chacha20-poly1305@openssh.com,
+                         aes256-gcm@openssh.com,
+                         aes128-gcm@openssh.com,
+                         aes256-ctr,
+                         aes192-ctr,
+                         aes128-ctr'
+          check_type: multi_param
+          eval_expr: "'$0'; IN ('3des-cbc','aes128-cbc','aes192-cbc','aes256-cbc','arcfour','arcfour128','arcfour256','blowfish-cbc','cast128-cbc','rijndael-cbc@lysator.liu.se');"
+          default_value: Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128- gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256- cbc,blowfish-cbc,cast128-cbc,3des-cbc
+          references:
+            - https://nvd.nist.gov/vuln/detail/CVE-2016-2183 2. https://nvd.nist.gov/vuln/detail/CVE-2015-2808 3. https://www.kb.cert.org/vuls/id/565052
+            - https://www.openssh.com/txt/cbc.adv
+            - https://nvd.nist.gov/vuln/detail/CVE-2008-5161 6. https://nvd.nist.gov/vuln/detail/CVE-2013-4548 7. https://www.kb.cert.org/vuls/id/565052
+            - https://www.openssh.com/txt/cbc.adv
+            - SSHD_CONFIG(5)
+          additional_info: 'Some organizations may have stricter requirements for approved ciphers. Ensure that ciphers used are in compliance with site policy.
+                            The only "strong" ciphers currently FIPS 140-2 compliant are: aes256-ctr,aes192- ctr,aes128-ctr
+                            CVE-2013-4548 referenced above applies to OpenSSH versions 6.2 and 6.3. If running these versions of Open SSH, Please upgrade to version 6.4 or later to fix the vulnerability, or disable AES-GCM in the server configuration.
+                            The Following are the supported ciphers in openSSH:
+                            3des-cbc
+                            aes128-cbc
+                            aes192-cbc
+                            aes256-cbc
+                            aes128-ctr
+                            aes192-ctr
+                            aes256-ctr
+                            aes128-gcm@openssh.com
+                            aes256-gcm@openssh.com
+                            arcfour
+                            arcfour128
+                            arcfour256
+                            blowfish-cbc
+                            cast128-cbc
+                            rijndael-cbc@lysator.liu.se
+                            chacha20-poly1305@openssh.com'
 
