@@ -249,4 +249,20 @@ categories:
                             The Key Exchange algorithms supported by OpenSSH 7 are:
                             curve25519-sha256 curve25519-sha256@libssh.org diffie-hellman-group1-sha1 diffie-hellman-group14-sha1 diffie-hellman-group-exchange-sha1
                              diffie-hellman-group-exchange-sha256 ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521'
-
+        -
+          name: '5.2.16 Ensure SSH Idle Timeout Interval is configured (Automated)'
+          description: The two options ClientAliveInterval and ClientAliveCountMax control the timeout of ssh sessions.
+                      When the ClientAliveInterval variable is set, ssh sessions that have no activity for the specified length of
+                      time are terminated. When the ClientAliveCountMax variable is set, sshd will send client alive messages at every
+                      ClientAliveInterval interval. When the number of consecutive client alive messages are sent with no response from the client,
+                      the ssh session is terminated. For example, if the ClientAliveInterval is set to 15 seconds and the ClientAliveCountMax is set to 3,
+                      the client ssh session will be terminated after 45 seconds of idle time.
+          audit:
+            - 'sshd -T 2> /dev/null| grep clientaliveinterval |awk -F "clientaliveinterval" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'sshd -T 2> /dev/null| grep clientalivecountmax |awk -F "clientalivecountmax" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameters according to site policy:
+                        ClientAliveInterval 300
+                        ClientAliveCountMax 0'
+          check_type: multi_param
+          eval_expr: "$0 > 1 && $0 < 300 && $1 <= 3"
+          default_value: ClientAliveInterval 300 ClientAliveCountMax 0
