@@ -150,7 +150,7 @@ categories:
           name: '5.2.13 Ensure only strong Ciphers are used (Automated)'
           description: This variable limits the ciphers that SSH can use during communication.
           audit:
-            - 'sshd -T 2> /dev/null| grep ciphers'
+            - 'sshd -T 2> /dev/null| grep ciphers |awk -F "ciphers" ''{print $2}'' |awk ''FNR <= 1'' | sed -e $''s/,/\\\n/g'''
           remedeation: 'Edit the /etc/ssh/sshd_config file add/modify the Ciphers line to contain a comma separated list of the site approved ciphers
                         Example:
                          Ciphers chacha20-poly1305@openssh.com,
@@ -188,4 +188,42 @@ categories:
                             cast128-cbc
                             rijndael-cbc@lysator.liu.se
                             chacha20-poly1305@openssh.com'
+        -
+          name: '5.2.14 Ensure only strong MAC algorithms are used (Automated)'
+          description: This variable limits the types of MAC algorithms that SSH can use during communication.
+          audit:
+            - 'sshd -T | grep -i "MACs" |awk -F "macs" ''{print $2}'' |awk ''FNR <= 1'' | sed -e $''s/,/\\\n/g'''
+          remedeation: 'Edit the /etc/ssh/sshd_config file and add/modify the MACs line to contain a comma separated list of the site approved MACs
+                          Example:
+                          MACs hmac-sha2-512-etm@openssh.com,
+                          hmac-sha2-256-etm@openssh.com,
+                          hmac-sha2-512,
+                          hmac-sha2-256'
+          check_type: multi_param
+          eval_expr: "!('$0'; IN ('hmac-md5','hmac-md5-96','hmac-ripemd160','hmac-sha1','hmac-sha1-96','umac-64@openssh.com','umac-128@openssh.com','hmac-md5-etm@openssh.com','hmac-md5-96-etm@openssh.com','hmac-ripemd160-etm@openssh.com','hmac-sha1-etm@openssh.com','hmac-sha1-96-etm@openssh.com','umac-64-etm@openssh.com','umac-128-etm@openssh.com');)"
+          default_value: MACs umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256- etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1- etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2- 256,hmac-sha2-512,hmac-sha1,hmac-sha1-etm@openssh.com
+          references:
+            - More information on SSH downgrade attacks can be found here http://www.mitls.org/pages/attacks/SLOTH
+            - SSHD_CONFIG(5)
+          additional_info: 'Some organizations may have stricter requirements for approved MACs. Ensure that MACs used are in compliance with site policy.
+                            The only "strong" MACs currently FIPS 140-2 approved are hmac-sha2-256 and hmac- sha2-512
+                            The Supported MACs are:
+                            hmac-md5
+                            hmac-md5-96
+                            hmac-ripemd160
+                            hmac-sha1
+                            hmac-sha1-96
+                            hmac-sha2-256
+                            hmac-sha2-512
+                            umac-64@openssh.com
+                            umac-128@openssh.com
+                            hmac-md5-etm@openssh.com
+                            hmac-md5-96-etm@openssh.com
+                            hmac-ripemd160-etm@openssh.com
+                            hmac-sha1-etm@openssh.com
+                            hmac-sha1-96-etm@openssh.com
+                            hmac-sha2-256-etm@openssh.com
+                            hmac-sha2-512-etm@openssh.com
+                            umac-64-etm@openssh.com
+                            umac-128-etm@openssh.com'
 
