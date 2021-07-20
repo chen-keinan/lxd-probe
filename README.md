@@ -22,8 +22,8 @@ audit result now can be leveraged as webhook via user plugin(using go plugin)
 ## Installation
 
 ```
-git clone https://github.com/chen-keinan/kube-beacon
-cd kube-beacon
+git clone https://github.com/chen-keinan/lxd-probe
+cd lxd-probe
 make build
 ./lxd-probe
 ```
