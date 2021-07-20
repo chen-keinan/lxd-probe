@@ -160,7 +160,7 @@ categories:
                          aes192-ctr,
                          aes128-ctr'
           check_type: multi_param
-          eval_expr: "'$0'; IN ('3des-cbc','aes128-cbc','aes192-cbc','aes256-cbc','arcfour','arcfour128','arcfour256','blowfish-cbc','cast128-cbc','rijndael-cbc@lysator.liu.se');"
+          eval_expr: "'$0' IN ('3des-cbc','aes128-cbc','aes192-cbc','aes256-cbc','arcfour','arcfour128','arcfour256','blowfish-cbc','cast128-cbc','rijndael-cbc@lysator.liu.se');"
           default_value: Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128- gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256- cbc,blowfish-cbc,cast128-cbc,3des-cbc
           references:
             - https://nvd.nist.gov/vuln/detail/CVE-2016-2183 2. https://nvd.nist.gov/vuln/detail/CVE-2015-2808 3. https://www.kb.cert.org/vuls/id/565052
@@ -200,7 +200,7 @@ categories:
                           hmac-sha2-512,
                           hmac-sha2-256'
           check_type: multi_param
-          eval_expr: "!('$0'; IN ('hmac-md5','hmac-md5-96','hmac-ripemd160','hmac-sha1','hmac-sha1-96','umac-64@openssh.com','umac-128@openssh.com','hmac-md5-etm@openssh.com','hmac-md5-96-etm@openssh.com','hmac-ripemd160-etm@openssh.com','hmac-sha1-etm@openssh.com','hmac-sha1-96-etm@openssh.com','umac-64-etm@openssh.com','umac-128-etm@openssh.com');)"
+          eval_expr: "!('$0' IN ('hmac-md5','hmac-md5-96','hmac-ripemd160','hmac-sha1','hmac-sha1-96','umac-64@openssh.com','umac-128@openssh.com','hmac-md5-etm@openssh.com','hmac-md5-96-etm@openssh.com','hmac-ripemd160-etm@openssh.com','hmac-sha1-etm@openssh.com','hmac-sha1-96-etm@openssh.com','umac-64-etm@openssh.com','umac-128-etm@openssh.com');)"
           default_value: MACs umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256- etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1- etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2- 256,hmac-sha2-512,hmac-sha1,hmac-sha1-etm@openssh.com
           references:
             - More information on SSH downgrade attacks can be found here http://www.mitls.org/pages/attacks/SLOTH
@@ -226,4 +226,27 @@ categories:
                             hmac-sha2-512-etm@openssh.com
                             umac-64-etm@openssh.com
                             umac-128-etm@openssh.com'
+        -
+          name: '5.2.15 Ensure only strong Key Exchange algorithms are used (Automated)'
+          description: Key exchange is any method in cryptography by which cryptographic keys are exchanged between two parties, allowing use of
+                      a cryptographic algorithm. If the sender and receiver wish to exchange encrypted messages,
+                      each must be equipped to encrypt messages to be sent and decrypt messages received
+          audit:
+            - 'sshd -T | grep -i kexalgorithms |awk -F "kexalgorithms" ''{print $2}'' |awk ''FNR <= 1'' | sed -e $''s/,/\\\n/g'''
+          remedeation: 'Edit the /etc/ssh/sshd_config file add/modify the KexAlgorithms line to contain a comma separated list of the site approved key exchange algorithms
+                        Example:
+                          KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,
+                          diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,
+                          diffie-hellman-group18- sha512,
+                          ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,
+                          diffie- hellman-group-exchange-sha256'
+          check_type: multi_param
+          eval_expr: "!('$0' IN ('diffie-hellman-group1-sha1','diffie-hellman-group14-sha1','diffie-hellman-group-exchange-sha1');)"
+          default_value: KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2- nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange- sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+          additional_info: 'Kex algorithms have a higher preference the earlier they appear in the list
+                            Some organizations may have stricter requirements for approved Key exchange algorithms. Ensure that Key exchange algorithms used are in compliance with site policy.
+                            The only Key Exchange Algorithms currently FIPS 140-2 approved are: ecdh-sha2- nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange- sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman- group14-sha256
+                            The Key Exchange algorithms supported by OpenSSH 7 are:
+                            curve25519-sha256 curve25519-sha256@libssh.org diffie-hellman-group1-sha1 diffie-hellman-group14-sha1 diffie-hellman-group-exchange-sha1
+                             diffie-hellman-group-exchange-sha256 ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521'
 
