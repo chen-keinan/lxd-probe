@@ -326,4 +326,34 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == 'usepam yes';"
           default_value: usepam yes
+        -
+          name: '5.2.21 Ensure SSH AllowTcpForwarding is disabled (Automated)'
+          description: SSH port forwarding is a mechanism in SSH for tunneling application ports from the client to the server,
+                      or servers to clients. It can be used for adding encryption to legacy applications, going through firewalls,
+                      and some system administrators and IT professionals use it for opening backdoors into the internal network from their home machines
+          audit:
+            - 'sshd -T 2> /dev/null| grep -i allowtcpforwarding'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
+                        AllowTcpForwarding no'
+          check_type: multi_param
+          eval_expr: "'$0' == 'allowtcpforwarding no';"
+          default_value: allowTcpForwarding yes
+        -
+          name: '5.2.22 Ensure SSH MaxStartups is configured (Automated)'
+          description: The MaxStartups parameter specifies the maximum number of concurrent unauthenticated connections to the SSH daemon.
+          audit:
+            - 'sshd -T 2> /dev/null| grep -i maxstartups'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: maxstartups 10:30:60'
+          check_type: multi_param
+          eval_expr: "'$0' == 'maxstartups 10:30:60';"
+          additional_info: 'Local site policy may be more restrictive'
+        -
+          name: '5.2.23 Ensure SSH MaxSessions is set to 4 or less (Automated)'
+          description: The MaxSessions parameter specifies the maximum number of open sessions permitted from a given connection.
+          audit:
+            - 'sshd -T 2> /dev/null| grep -i maxsessions'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: MaxSessions 4'
+          check_type: multi_param
+          eval_expr: "'$0' == 'maxsessions 4';"
+          default_value: MaxSessions 10
 
