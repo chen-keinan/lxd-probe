@@ -315,3 +315,15 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: Banner /etc/issue.net'
           check_type: multi_param
           eval_expr: "'$0' == 'banner /etc/issue.net';"
+        -
+          name: '5.2.20 Ensure SSH PAM is enabled (Automated)'
+          description: UsePAM Enables the Pluggable Authentication Module interface.
+                      If set to “yes” this will enable PAM authentication using ChallengeResponseAuthentication and PasswordAuthentication
+                      in addition to PAM account and session module processing for all authentication types
+          audit:
+            - 'sshd -T 2> /dev/null| grep -i usepam'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: UsePAM yes'
+          check_type: multi_param
+          eval_expr: "'$0' == 'usepam yes';"
+          default_value: usepam yes
+
