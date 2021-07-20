@@ -306,3 +306,12 @@ categories:
                         DenyGroups <grouplist>'
           check_type: multi_param
           eval_expr: "'$0' != ''; && '$1' != ''; && '$2' != ''; && '$3' != '';"
+        -
+          name: '5.2.19 Ensure SSH warning banner is configured (Automated)'
+          description: The Banner parameter specifies a file whose contents must be sent to the remote user before authentication is permitted.
+                      By default, no banner is displayed.
+          audit:
+            - 'sshd -T 2> /dev/null| grep banner'
+          remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: Banner /etc/issue.net'
+          check_type: multi_param
+          eval_expr: "'$0' == 'banner /etc/issue.net';"
