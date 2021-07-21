@@ -24,7 +24,7 @@ func Test_StartCli(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, len(files), 21)
+	assert.Equal(t, len(files), 22)
 	assert.Equal(t, files[0].Name, common.FilesystemConfiguration)
 	assert.Equal(t, files[1].Name, common.ConfigureSoftwareUpdates)
 	assert.Equal(t, files[2].Name, common.ConfigureSudo)
@@ -45,7 +45,8 @@ func Test_StartCli(t *testing.T) {
 	assert.Equal(t, files[17].Name, common.EnsureLogrotateConfigured)
 	assert.Equal(t, files[18].Name, common.EnsureLogrotateAssignsAppropriatePermissions)
 	assert.Equal(t, files[19].Name, common.ConfigureCron)
-	assert.Equal(t, files[20].Name, common.SshServerConfiguration)
+	assert.Equal(t, files[20].Name, common.SSHServerConfiguration)
+	assert.Equal(t, files[21].Name, common.ConfigurePam)
 }
 
 func Test_ArgsSanitizer(t *testing.T) {

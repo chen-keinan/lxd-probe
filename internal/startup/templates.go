@@ -136,11 +136,17 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigureCron, Data: cc})
 	//19
-	ssc, err := box.FindString(common.SshServerConfiguration)
+	ssc, err := box.FindString(common.SSHServerConfiguration)
 	if err != nil {
-		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.SshServerConfiguration, err.Error())
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.SSHServerConfiguration, err.Error())
 	}
-	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.SshServerConfiguration, Data: ssc})
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.SSHServerConfiguration, Data: ssc})
+	//20
+	cp, err := box.FindString(common.ConfigurePam)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigurePam, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigurePam, Data: cp})
 	return fileInfo, nil
 }
 

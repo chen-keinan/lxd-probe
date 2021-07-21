@@ -41,8 +41,10 @@ const (
 	EnsureLogrotateAssignsAppropriatePermissions = "4.3_ensure_logrotate_assigns_appropriate_permissions.yml"
 	//ConfigureCron file name
 	ConfigureCron = "5.1_configure_cron.yml"
-	//SshServerConfiguration file name
-	SshServerConfiguration = "5.2_ssh_server_configuration.yml"
+	//SSHServerConfiguration file name
+	SSHServerConfiguration = "5.2_ssh_server_configuration.yml"
+	//ConfigurePam file name
+	ConfigurePam = "5.3_configure_pam.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
