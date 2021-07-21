@@ -68,3 +68,13 @@ categories:
                             Use of the "audit" keyword may log credentials in the case of user error during authentication. This risk
                             should be evaluated in the context of the site policies of your organization.'
           eval_expr: "'$0' == 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900'; && '$1' IN ('pam_deny.so','pam_tally2.so');"
+        -
+          name: '5.3.3 Ensure password reuse is limited (Automated)'
+          description: The /etc/security/opasswd file stores the users' old passwords and can be checked to ensure that users are not recycling recent passwords.
+          audit:
+            - 'grep -E ''^password\s+required\s+pam_pwhistory.so'' /etc/pam.d/common- password 2> /dev/null'
+          remedeation: 'Edit the /etc/pam.d/common-password file to include the remember option and conform to site policy as shown:
+                        password required pam_pwhistory.so remember=5'
+          check_type: multi_param
+          additional_info: 'Additional module options may be set, recommendation only covers those listed here.'
+          eval_expr: "'$0' == 'password required pam_pwhistory.so remember=5';"
