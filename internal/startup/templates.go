@@ -147,6 +147,12 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.ConfigurePam, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.ConfigurePam, Data: cp})
+	//21
+	uaae, err := box.FindString(common.UserAccountsAndEnvironment)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.UserAccountsAndEnvironment, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.UserAccountsAndEnvironment, Data: uaae})
 	return fileInfo, nil
 }
 

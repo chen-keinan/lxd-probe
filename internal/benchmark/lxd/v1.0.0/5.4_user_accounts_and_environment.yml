@@ -1,0 +1,23 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: Access, Authentication and Authorization
+    sub_category:
+      name: 5.4 User Accounts and Environment
+      audit_tests:
+        -
+          name: '5.4.1.1 Ensure password expiration is 365 days or less (Automated)'
+          description: The PASS_MAX_DAYS parameter in /etc/login.defs allows an administrator to force passwords to expire once they reach a defined age.
+                        It is recommended that the PASS_MAX_DAYS parameter be set to less than or equal to 365 days.
+          audit:
+            - 'grep PASS_MAX_DAYS /etc/login.defs 2> /dev/null|grep -v ''#'' | awk -F "PASS_MAX_DAYS" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'grep -E ''^[^:]+:[^!*]'' /etc/shadow 2> /dev/null| cut -d: -f1,5 | awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Set the PASS_MAX_DAYS parameter to conform to site policy in /etc/login.defs : PASS_MAX_DAYS 365
+                        Modify user parameters for all users with a password set to match:
+                        # chage --maxdays 365 <user>'
+          check_type: multi_param
+          additional_info: 'You can also check this setting in /etc/shadow directly. The 5th field should be 365 or less for all users with a password.
+                            Note: A value of -1 will disable password expiration. Additionally the password expiration must be
+                            greater than the minimum days between password changes or users will be unable to change their password.'
+          eval_expr: "$0 <= 365; && $1 <= 365"

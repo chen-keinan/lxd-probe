@@ -45,6 +45,8 @@ const (
 	SSHServerConfiguration = "5.2_ssh_server_configuration.yml"
 	//ConfigurePam file name
 	ConfigurePam = "5.3_configure_pam.yml"
+	//UserAccountsAndEnvironment file name
+	UserAccountsAndEnvironment = "5.4_user_accounts_and_environment.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
