@@ -78,3 +78,19 @@ categories:
           check_type: multi_param
           additional_info: 'Additional module options may be set, recommendation only covers those listed here.'
           eval_expr: "'$0' == 'password required pam_pwhistory.so remember=5';"
+        -
+          name: '5.3.4 Ensure password hashing algorithm is SHA-512 (Automated)'
+          description: The commands below change password encryption from md5 to sha512 (a much stronger hashing algorithm).
+                      All existing accounts will need to perform a password change to upgrade the stored hashes to the new algorithm.
+          audit:
+            - 'grep -E ''^\s*password\s+(\S+\s+)+pam_unix\.so\s+(\S+\s+)*sha512\s*(\S+\s*)*(\s+#.*)?$'' /etc/pam.d/common-password |grep sha512 2> /dev/null'
+          remedeation: 'Edit the /etc/pam.d/common-password file to include the sha512 option for pam_unix.so as shown:
+                        password [success=1 default=ignore] pam_unix.so sha512'
+          check_type: multi_param
+          additional_info: 'Consult your documentation for the appropriate PAM file and module.
+                            Additional module options may be set, recommendation only covers those listed here.
+                            If it is determined that the password algorithm being used is not SHA-512, once it is changed, it is recommended that all user ID''s
+                            be immediately expired and forced to change their passwords on next login.
+                            To accomplish that, the following commands can be used. Any system accounts that need to be expired should be
+                            carefully done separately by the system administrator to prevent any potential problems.'
+          eval_expr: "'$0' != '';"
