@@ -48,3 +48,18 @@ categories:
           check_type: multi_param
           additional_info: 'You can also check this setting in /etc/shadow directly. The 6th field should be 7 or more for all users with a password.'
           eval_expr: "$0 >= 7 && $1 >= 7"
+        -
+          name: '5.4.1.4 Ensure inactive password lock is 30 days or less (Automated)'
+          description: User accounts that have been inactive for over a given period of time can be automatically disabled.
+                        It is recommended that accounts that are inactive for 30 days after password expiration be disabled.
+          audit:
+            - 'useradd -D 2> /dev/null| grep INACTIVE | awk -F "INACTIVE=" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'grep -E ''^[^:]+:[^!*]'' /etc/shadow 2> /dev/null| cut -d: -f1,7 | awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Run the following command to set the default password inactivity period to 30 days:
+                        # useradd -D -f 30
+                        Modify user parameters for all users with a password set to match:
+                        # chage --inactive 30 <user>'
+          check_type: multi_param
+          additional_info: 'You can also check this setting in /etc/shadow directly. The 7th field should be 30 or less for all users with a password.
+                            Note: A value of -1 would disable this setting.'
+          eval_expr: "$0 <= 30 && $1 <= 30"
