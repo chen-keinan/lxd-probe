@@ -21,3 +21,16 @@ categories:
                             Note: A value of -1 will disable password expiration. Additionally the password expiration must be
                             greater than the minimum days between password changes or users will be unable to change their password.'
           eval_expr: "$0 <= 365; && $1 <= 365"
+        -
+          name: '5.4.1.2 Ensure minimum days between password changes is configured (Automated)'
+          description: The PASS_MIN_DAYS parameter in /etc/login.defs allows an administrator to prevent users from changing
+                        their password until a minimum number of days have passed since the last time the user changed their password.
+                        It is recommended that PASS_MIN_DAYS parameter be set to 1 or more days.
+          audit:
+            - 'grep PASS_MIN_DAYS /etc/login.defs 2> /dev/null|grep -v ''#'' | awk -F "PASS_MAX_DAYS" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'grep -E ''^[^:]+:[^!*]'' /etc/shadow 2> /dev/null| cut -d: -f1,4 | awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Set the PASS_MIN_DAYS parameter to 1 in /etc/login.defs : PASS_MIN_DAYS 1
+                        Modify user parameters for all users with a password set to match: # chage --mindays 1 <user>'
+          check_type: multi_param
+          additional_info: 'You can also check this setting in /etc/shadow directly. The 4th field should be 1 or more for all users with a password.'
+          eval_expr: "$0 >= 1 && $1 >=1"
