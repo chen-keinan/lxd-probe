@@ -89,4 +89,13 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == '' && '$1' == ''"
           additional_info: 'The root, sync, shutdown, and halt users are exempted from requiring a non-login shell.'
+        -
+          name: '5.4.3 Ensure default group for the root account is GID 0 (Automated)'
+          description: The usermod command can be used to specify which group the root user belongs to. This affects permissions of files that are created by the root user.
+          audit:
+            - 'grep "^root:" /etc/passwd 2> /dev/null| cut -f4 -d:'
+          remedeation: 'Run the following command to set the root user default group to GID 0 :
+                        # usermod -g 0 root'
+          check_type: multi_param
+          eval_expr: "'$0' == '0'"
 
