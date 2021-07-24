@@ -71,3 +71,22 @@ categories:
           remedeation: 'Investigate any users with a password change date in the future and correct them. Locking the account, expiring the password, or resetting the password manually may be appropriate.'
           check_type: multi_param
           eval_expr: "'$0' == ''"
+        -
+          name: '5.4.2 Ensure system accounts are secured (Automated)'
+          description: There are a number of accounts provided with most distributions that are used to manage applications and are not intended to provide an interactive shell.
+          audit:
+            - 'awk -F: ''($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $1!~/^\+/ && $3<''"$(awk ''/^\s*UID_MIN/{print $2}'' /etc/login.defs)"'' && $7!="''"$(which nologin)"''" && $7!="/bin/false") {print}'' /etc/passwd'
+            - 'awk -F: ''($1!="root" && $1!~/^\+/ && $3<''"$(awk ''/^\s*UID_MIN/{print $2}'' /etc/login.defs)"'') {print $1}'' /etc/passwd | xargs -I ''{}'' passwd -S ''{}'' | awk ''($2!="L" && $2!="LK") {print $1}'''
+          remedeation: 'Run the commands appropriate for your distribution:
+                        Set the shell for any accounts returned by the audit to nologin:
+                        # usermod -s $(which nologin) <user>
+                        Lock any non root accounts returned by the audit:
+                        # usermod -L <user>
+                        The following command will set all system accounts to a non login shell:
+                         awk -F: ''($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $1!~/^\+/ && $3<''"$(awk ''/^\s*UID_MIN/{print $2}'' /etc/login.defs)"'' &&  $7!="''"$(which nologin)"''" && $7!="/bin/false") {print $1}'' /etc/passwd | while read -r user; do usermod -s "$(which nologin)" "$user"; done
+                        The following command will automatically lock not root system accounts:
+                        awk -F: ''($1!="root" && $1!~/^\+/ && $3<''"$(awk ''/^\s*UID_MIN/{print $2}'' /etc/login.defs)"'') {print $1}'' /etc/passwd | xargs -I ''{}'' passwd -S ''{}'' | awk ''($2!="L" && $2!="LK") {print $1}'' | while read -r user; do usermod -L "$user"; done'
+          check_type: multi_param
+          eval_expr: "'$0' == '' && '$1' == ''"
+          additional_info: 'The root, sync, shutdown, and halt users are exempted from requiring a non-login shell.'
+

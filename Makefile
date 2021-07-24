@@ -41,7 +41,7 @@ test_travis:
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 build_travis:
 	$(GOPACKR)
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;	
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_remote:
 	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' ./cmd/lxd-probe
