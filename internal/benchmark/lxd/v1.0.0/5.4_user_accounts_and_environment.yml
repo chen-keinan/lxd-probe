@@ -54,7 +54,7 @@ categories:
                         It is recommended that accounts that are inactive for 30 days after password expiration be disabled.
           audit:
             - 'useradd -D 2> /dev/null| grep INACTIVE | awk -F "INACTIVE=" ''{print $2}'' |awk ''FNR <= 1'''
-            - 'grep -E ''^[^:]+:[^!*]'' /etc/shadow 2> /dev/null| cut -d: -f1,7 | awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'grep -E ''^[^:]+:[^]'' /etc/shadow 2> /dev/null| cut -d: -f1,7 | awk -F ":" ''{print $2}'' |awk ''FNR <= 1'' |sed ''/^$/d'''
           remedeation: 'Run the following command to set the default password inactivity period to 30 days:
                         # useradd -D -f 30
                         Modify user parameters for all users with a password set to match:
@@ -62,7 +62,7 @@ categories:
           check_type: multi_param
           additional_info: 'You can also check this setting in /etc/shadow directly. The 7th field should be 30 or less for all users with a password.
                             Note: A value of -1 would disable this setting.'
-          eval_expr: "$0 <= 30 && $1 <= 30"
+          eval_expr: "$0 <= 30 && $1 == 30"
         -
           name: '5.4.1.5 Ensure all users last password change date is in the past (Automated)'
           description: All users should have a password change date in the past.
@@ -98,4 +98,24 @@ categories:
                         # usermod -g 0 root'
           check_type: multi_param
           eval_expr: "'$0' == '0'"
+        -
+          name: '5.4.4 Ensure default user umask is 027 or more restrictive (Automated)'
+          description: The default umask determines the permissions of files created by users.
+                        The user creating the file has the discretion of making their files and directories readable
+                        by others via the chmod command. Users who wish to allow their files and directories to be readable by
+                        others by default may choose a different default umask by inserting the umask command into the standard shell
+                        configuration files ( .profile , .bashrc , etc.) in their home directories.
+          audit:
+            - 'grep "umask"  /etc/bash.bashrc 2> /dev/null |awk -F "umask" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'grep "umask" /etc/profile /etc/profile.d/*.sh 2> /dev/null |awk -F "umask" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Edit the /etc/bash.bashrc, /etc/profile and /etc/profile.d/*.sh files (and the appropriate files for any other shell supported on your system) and add or edit any umask parameters as follows:
+                        umask 027'
+          check_type: multi_param
+          eval_expr: "$0 >= 27 && $1 >= 27"
+          additional_info: 'The audit and remediation in this recommendation apply to bash and shell. If other shells are supported on the system,
+                            it is recommended that their configuration files also are checked.
+                            Other methods of setting a default user umask exist however the shell configuration files
+                            are the last run and will override other settings if they exist therefor our recommendation is to configure
+                            in the shell configuration files. If other methods are in use in your environment they should be audited and the
+                            shell configs should be verified to not override.'
 
