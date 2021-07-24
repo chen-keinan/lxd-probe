@@ -118,4 +118,17 @@ categories:
                             are the last run and will override other settings if they exist therefor our recommendation is to configure
                             in the shell configuration files. If other methods are in use in your environment they should be audited and the
                             shell configs should be verified to not override.'
+        -
+          name: '5.4.5 Ensure default user shell timeout is 900 seconds or less (Automated)'
+          description: The default TMOUT determines the shell timeout for users. The TMOUT value is measured in seconds.
+          audit:
+            - 'grep "TMOUT" /etc/bash.bashrc | awk -F ";" ''{print $1}'' |awk ''FNR <= 1'' | awk -F "TMOUT=" ''{print $2}'' |awk ''FNR <= 1'''
+            - 'grep "TMOUT" /etc/profile /etc/profile.d/*.sh | awk -F ";" ''{print $1}'' |awk ''FNR <= 1'' | awk -F "TMOUT=" ''{print $2}'' |awk ''FNR <= 1'''
+          remedeation: 'Edit the /etc/bashrc, /etc/profile and /etc/profile.d/*.sh files (and the appropriate files for any other shell supported on your system) and add or edit any TMOUT parameters in accordance with site policy:
+                        readonly TMOUT=900 ; export TMOUT
+                        Note: setting the value to readonly prevents unwanted modification during runtime.'
+          check_type: multi_param
+          eval_expr: "$0 <= 900 && $1 <= 900"
+          additional_info: 'The audit and remediation in this recommendation apply to bash and shell. If other shells are supported on the system, it is recommended that their configuration files also are checked. Other methods of setting a timeout exist for other shells not covered here.
+                            Ensure that the timeout conforms to your local policy.'
 
