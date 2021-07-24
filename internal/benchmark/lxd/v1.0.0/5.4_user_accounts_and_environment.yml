@@ -63,3 +63,11 @@ categories:
           additional_info: 'You can also check this setting in /etc/shadow directly. The 7th field should be 30 or less for all users with a password.
                             Note: A value of -1 would disable this setting.'
           eval_expr: "$0 <= 30 && $1 <= 30"
+        -
+          name: '5.4.1.5 Ensure all users last password change date is in the past (Automated)'
+          description: All users should have a password change date in the past.
+          audit:
+            - 'for usr in $(cut -d: -f1 /etc/shadow); do [[ $(chage --list $usr | grep ''^Last password change'' | cut -d: -f2) > $(date) ]] && echo "$usr :$(chage -- list $usr | grep ''^Last password change'' | cut -d: -f2)"; done'
+          remedeation: 'Investigate any users with a password change date in the future and correct them. Locking the account, expiring the password, or resetting the password manually may be appropriate.'
+          check_type: multi_param
+          eval_expr: "'$0' == ''"
