@@ -24,7 +24,7 @@ func Test_StartCli(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, len(files), 24)
+	assert.Equal(t, len(files), 25)
 	assert.Equal(t, files[0].Name, common.FilesystemConfiguration)
 	assert.Equal(t, files[1].Name, common.ConfigureSoftwareUpdates)
 	assert.Equal(t, files[2].Name, common.ConfigureSudo)
@@ -49,6 +49,7 @@ func Test_StartCli(t *testing.T) {
 	assert.Equal(t, files[21].Name, common.ConfigurePam)
 	assert.Equal(t, files[22].Name, common.UserAccountsAndEnvironment)
 	assert.Equal(t, files[23].Name, common.RootLoginRestrictedSystemConsole)
+	assert.Equal(t, files[24].Name, common.EnsureAccessSuCommandRestricted)
 }
 
 func Test_ArgsSanitizer(t *testing.T) {

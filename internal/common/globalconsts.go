@@ -49,6 +49,8 @@ const (
 	UserAccountsAndEnvironment = "5.4_user_accounts_and_environment.yml"
 	//RootLoginRestrictedSystemConsole file name
 	RootLoginRestrictedSystemConsole = "5.5_root_login_restricted_system_console.yml"
+	//EnsureAccessSuCommandRestricted file name
+	EnsureAccessSuCommandRestricted = "5.6_ensure_access_su_command_restricted.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
