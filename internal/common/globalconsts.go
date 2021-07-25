@@ -47,6 +47,8 @@ const (
 	ConfigurePam = "5.3_configure_pam.yml"
 	//UserAccountsAndEnvironment file name
 	UserAccountsAndEnvironment = "5.4_user_accounts_and_environment.yml"
+	//RootLoginRestrictedSystemConsole file name
+	RootLoginRestrictedSystemConsole = "5.5_root_login_restricted_system_console.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests
