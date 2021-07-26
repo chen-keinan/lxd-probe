@@ -1,0 +1,34 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: System Maintenance
+    sub_category:
+      name: 6.1 System File Permissions
+      audit_tests:
+        -
+          name: '6.1.1 Audit system file permissions (Manual)'
+          description: 'The Debian package manager has a number of useful options. One of these, the --verify option, can be used to verify that system packages are correctly installed. The --verify option can be used to verify a particular package or to verify all system packages. If no output is returned, the package is installed correctly. The following table describes the meaning of output from the verify option:
+                        Code Meaning
+                        S File size differs.
+                        M File mode differs (includes permissions and file type).
+                        5 The MD5 checksum differs.
+                        D The major and minor version numbers differ on a device file. L A mismatch occurs in a link.
+                        U The file ownership differs.
+                        G The file group owner differs.
+                        T The file time (mtime) differs.
+                        The dpkg -S command can be used to determine which package a particular file belongs to. For example the following command determines which package the /bin/bash file belongs to:
+                        To verify the settings for the package that controls the /bin/bash file, run the following:
+                        # dpkg -S /bin/bash
+                        bash: /bin/bash
+                        # dpkg --verify bash
+                        ??5?????? c /etc/bash.bashrc'
+          audit:
+            - 'dpkg --verify <package name>'
+          remedeation: 'Correct any discrepancies found and rerun the audit until output is clean or risk is mitigated or accepted.'
+          additional_info: 'Since packages and important files may change with new updates and releases, it is recommended to verify everything, not just a finite list of files.
+                            This can be a time consuming task and results may depend on site policy therefore it is not a scorable benchmark item, but is provided for those interested in additional security measures.
+                            Some of the recommendations of this benchmark alter the state of files audited by this recommendation.
+                             The audit command will alert for all changes to a file permissions even if the new state is more secure than the default.'
+          check_type: multi_param
+          type: manual

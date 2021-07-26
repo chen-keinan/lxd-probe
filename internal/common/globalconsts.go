@@ -51,6 +51,8 @@ const (
 	RootLoginRestrictedSystemConsole = "5.5_root_login_restricted_system_console.yml"
 	//EnsureAccessSuCommandRestricted file name
 	EnsureAccessSuCommandRestricted = "5.6_ensure_access_su_command_restricted.yml"
+	//SystemFilePermissions file name
+	SystemFilePermissions = "6.1_system_file_permissions.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests

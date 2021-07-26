@@ -165,6 +165,12 @@ func GenerateLxdBenchmarkFiles() ([]utils.FilesInfo, error) {
 		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.EnsureAccessSuCommandRestricted, err.Error())
 	}
 	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.EnsureAccessSuCommandRestricted, Data: easc})
+	//24
+	sfp, err := box.FindString(common.SystemFilePermissions)
+	if err != nil {
+		return []utils.FilesInfo{}, fmt.Errorf("faild to load lxd benchmarks audit tests %s %s", common.SystemFilePermissions, err.Error())
+	}
+	fileInfo = append(fileInfo, utils.FilesInfo{Name: common.SystemFilePermissions, Data: sfp})
 	return fileInfo, nil
 }
 
