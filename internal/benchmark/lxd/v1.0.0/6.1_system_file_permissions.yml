@@ -67,3 +67,24 @@ categories:
                         # chmod o-rwx,g-wx /etc/shadow'
           check_type: multi_param
           eval_expr: "'$0' == 'Access: (0640/-rw-r-----)  Uid: (    0/    root)   Gid: (    0/  root)';"
+        -
+          name: '6.1.5 Ensure permissions on /etc/group are configured (Automated)'
+          description: 'The /etc/group file contains a list of all the valid groups defined in the system.
+                        The command below allows read/write access for root and read access for everyone else.'
+          audit:
+            - 'stat /etc/group 2> /dev/null | grep "Access: ("'
+          remedeation: 'Run the following command to set permissions on /etc/group :
+                         # chown root:root /etc/group
+                         # chmod u-x,go-wx /etc/group'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '6.1.6 Ensure permissions on /etc/passwd- are configured (Automated)'
+          description: 'The /etc/passwd- file contains backup user account information.'
+          audit:
+            - 'stat /etc/passwd- 2> /dev/null | grep "Access: ("'
+          remedeation: 'Run the following command to set permissions on /etc/passwd- :
+                        # chown root:root /etc/passwd-
+                        # chmod u-x,go-rwx /etc/passwd-'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
