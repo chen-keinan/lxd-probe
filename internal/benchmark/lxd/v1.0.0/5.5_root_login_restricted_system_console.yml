@@ -4,7 +4,7 @@ categories:
   -
     name: Access, Authentication and Authorization
     sub_category:
-      name: 5.5 Ensure root login is restricted
+      name: 5.5 root login is restricted
       audit_tests:
         -
           name: '5.5 Ensure root login is restricted to system console (Manual)'

@@ -4,7 +4,7 @@ categories:
   -
     name: Logging and Auditing
     sub_category:
-      name: 4.3 Ensure logrotate assigns appropriate permissions
+      name: 4.3 Ensure logrotate permissions
       audit_tests:
         -
           name: '4.3 Ensure logrotate assigns appropriate permissions (Automated)'

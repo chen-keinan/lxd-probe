@@ -4,7 +4,7 @@ categories:
   -
     name: Access, Authentication and Authorization
     sub_category:
-      name: 5.6 Ensure access to the su command is restricted
+      name: 5.6 access su command restricted
       audit_tests:
         -
           name: '5.6 Ensure access to the su command is restricted (Automated)'
