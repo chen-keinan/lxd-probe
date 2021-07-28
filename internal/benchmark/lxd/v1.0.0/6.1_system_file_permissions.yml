@@ -141,3 +141,11 @@ categories:
                         files, and reset the ownership of these files to some active user on the system as appropriate.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '6.1.12 Ensure no ungrouped files or directories exist (Automated)'
+          description: 'Sometimes when administrators delete users or groups from the system they neglect to remove all files owned by those users or groups.'
+          audit:
+            - 'df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' -xdev -nogroup |awk ''FNR <= 1'''
+          remedeation: 'Locate files that are owned by users or groups not listed in the system configuration files, and reset the ownership of these files to some active user on the system as appropriate.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
