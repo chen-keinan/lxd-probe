@@ -99,3 +99,36 @@ categories:
                         # chmod u-x,go-rwx /etc/shadow-'
           check_type: multi_param
           eval_expr: "'$0' == 'Access: (0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '6.1.8 Ensure permissions on /etc/group- are configured (Automated)'
+          description: 'The /etc/group- file contains a backup list of all the valid groups defined in the system.'
+          audit:
+            - 'stat stat /etc/group- 2> /dev/null | grep "Access: ("'
+          remedeation: 'Run the following command to set permissions on /etc/group- :
+                         # chown root:root /etc/group-
+                          # chmod u-x,go-rwx /etc/group-'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '6.1.9 Ensure permissions on /etc/gshadow are configured (Automated)'
+          description: 'The /etc/gshadow file is used to store the information about groups that is critical to the security of those
+                        accounts, such as the hashed password and other security information.'
+          audit:
+            - 'stat stat /etc/gshadow 2> /dev/null | grep "Access: ("'
+          remedeation: 'Run one of the following chown commands as appropriate and the chmod to set permissions on /etc/gshadow :
+                         # chown root:root /etc/gshadow
+                        # chown root:shadow /etc/gshadow
+                        # chmod u-x,g-wx,o-rwx /etc/gshadow'
+          check_type: multi_param
+          eval_expr: "'$0' == 'Access: (0640/-rw-r-----)  Uid: (    0/    root)   Gid: (    0/    root)';"
+        -
+          name: '6.1.10 Ensure no world writable files exist (Automated)'
+          description: 'Unix-based systems support variable settings to control access to files. World writable
+                        files are the least secure. See the chmod(2) man page for more information.'
+          audit:
+            - 'df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' -xdev -type f -perm -0002 |awk ''FNR <= 1'''
+          remedeation: 'Removing write access for the "other" category ( chmod o-w <filename> )
+                        is advisable, but always consult relevant vendor documentation to avoid breaking
+                         any application dependencies on a given file.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
