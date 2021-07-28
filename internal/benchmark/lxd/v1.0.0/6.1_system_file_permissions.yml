@@ -132,3 +132,12 @@ categories:
                          any application dependencies on a given file.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '6.1.11 Ensure no unowned files or directories exist (Automated)'
+          description: 'Sometimes when administrators delete users from the password file they neglect to remove all files owned by those users from the system.'
+          audit:
+            - 'df --local -P | awk {''if (NR!=1) print $6''} | xargs -I ''{}'' find ''{}'' -xdev -nouser |awk ''FNR <= 1'''
+          remedeation: 'Locate files that are owned by users or groups not listed in the system configuration
+                        files, and reset the ownership of these files to some active user on the system as appropriate.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
