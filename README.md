@@ -4,7 +4,7 @@
 # lxd-probe
 
 ###  Scan your Linux container (LXD / LXC) runtime !!
-Lxd-Probe is an open source audit scanner who perform audit check on a linux container manager and output a security report.
+Lxd-Probe is an open source audit scanner who perform audit check on a linux container manager and output it security report.
 
 The audit tests are the full implementation of [CIS Lxd Benchmark specification](https://www.cisecurity.org/benchmark/lxd/) <br>
 
