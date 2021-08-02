@@ -1,10 +1,10 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/chen-keinan/lxd-probe)](https://goreportcard.com/report/github.com/chen-keinan/lxd-probe)
+9[![Go Report Card](https://goreportcard.com/badge/github.com/chen-keinan/lxd-probe)](https://goreportcard.com/report/github.com/chen-keinan/lxd-probe)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/chen-keinan/lxd-probe/blob/main/LICENSE)
 <br><img src="./pkg/img/lxd-gopher.png" width="300" alt="lxd-probe logo"><br>
 # lxd-probe
 
 ###  Scan your Linux container (LXD / LXC) runtime !!
-Lxd-Probe is an open source audit scanner who perform audit check on a linux container manager and output a security report.
+Lxd-Probe is an open source audit scanner who perform audit check on a linux container manager and output it security report.
 
 The audit tests are the full implementation of [CIS Lxd Benchmark specification](https://www.cisecurity.org/benchmark/lxd/) <br>
 
