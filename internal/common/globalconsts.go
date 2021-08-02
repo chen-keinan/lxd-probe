@@ -53,6 +53,8 @@ const (
 	EnsureAccessSuCommandRestricted = "5.6_ensure_access_su_command_restricted.yml"
 	//SystemFilePermissions file name
 	SystemFilePermissions = "6.1_system_file_permissions.yml"
+	//UserAndGroupSettings file name
+	UserAndGroupSettings = "6.2_user_and_group_settings.yml"
 	//GrepRegex for tests
 	GrepRegex = "[^\"]\\S*'"
 	//MultiValue for tests

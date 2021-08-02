@@ -1,0 +1,16 @@
+---
+benchmark_type: lxd
+categories:
+  -
+    name: System Maintenance
+    sub_category:
+      name: 6.2 User and Group Settings
+      audit_tests:
+        -
+          name: '6.2.1 Ensure password fields are not empty (Automated)'
+          description: 'An account with an empty password field means that anybody may log in as that user without providing a password.'
+          audit:
+            - 'awk -F: ''($2 == "" ) { print $1 " does not have a password "}'' /etc/shadow 2> /dev/null'
+          remedeation: 'Remove any legacy + entries from /etc/passwd if they exist.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
