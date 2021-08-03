@@ -68,3 +68,25 @@ categories:
           remedeation: 'Remove any users other than root with UID 0 or assign them a new UID if appropriate.'
           check_type: multi_param
           eval_expr: "'$0' == 'root';"
+        -
+          name: '6.2.7 Ensure root PATH Integrity (Automated)'
+          description: 'The root user can execute any command on the system and could be fooled into executing programs unintentionally if the PATH is not set correctly.'
+          audit:
+            - '#!/bin/bash
+               if echo $PATH | grep -q "::" ; then
+                  echo "Empty Directory in PATH (::)"
+               fi
+               if echo $PATH | grep -q ":$" ; then
+                       echo "Trailing : in PATH"
+               fi
+               for x in $(echo $PATH | tr ":" " ") ; do
+                 if [ -d "$x" ] ; then
+                   ls -ldH "$x" | awk ''
+                $9 == "." {print "PATH contains current working directory (.)"} $3 != "root" {print $9, "is not owned by root"}
+                substr($1,6,1) != "-" {print $9, "is group writable"} substr($1,9,1) != "-" {print $9, "is world writable"}''
+                else
+                echo "$x is not a directory"
+                fi done'
+          remedeation: 'Correct or justify any items discovered in the Audit step.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
