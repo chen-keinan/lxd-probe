@@ -11,6 +11,18 @@ categories:
           description: 'An account with an empty password field means that anybody may log in as that user without providing a password.'
           audit:
             - 'awk -F: ''($2 == "" ) { print $1 " does not have a password "}'' /etc/shadow 2> /dev/null'
-          remedeation: 'Remove any legacy + entries from /etc/passwd if they exist.'
+          remedeation: 'If any accounts in the /etc/shadow file do not have a password, run the following command to lock the account until it can be determined why it does not have a password:
+                        # passwd -l <username>
+                        Also, check to see if the account is logged in and investigate what it is being used for to determine if it needs to be forced off.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
+        -
+          name: '6.2.2 Ensure no legacy "+" entries exist in /etc/passwd (Automated)'
+          description: 'The character + in various files used to be markers for systems to insert data from NIS maps at
+                        a certain point in a system configuration file. These entries are no longer required on most
+                        systems, but may exist in files that have been imported from other platforms.'
+          audit:
+            - 'grep ''^\+:'' /etc/passwd 2> /dev/null'
+          remedeation: 'Remove any legacy entries from /etc/passwd if they exist.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
