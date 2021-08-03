@@ -35,7 +35,7 @@ categories:
             - '#!/bin/bash grep -E -v ''^(halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read -r user dir; do
                                                                           if [ ! -d "$dir" ]; then
                                                                           echo "The home directory ($dir) of user $user does not exist."
-                                                                          fi done'
+                                                                          fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'If any users home directories do not exist, create them and make sure the respective user owns the directory.
                         Users without an assigned home directory should be removed or assigned a home directory as appropriate.'
           additional_info: 'The audit script checks all users with interactive shells except halt, sync, shutdown, and nfsnobody.'
@@ -86,7 +86,35 @@ categories:
                 substr($1,6,1) != "-" {print $9, "is group writable"} substr($1,9,1) != "-" {print $9, "is world writable"}''
                 else
                 echo "$x is not a directory"
-                fi done'
+                fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Correct or justify any items discovered in the Audit step.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'$1' == '';"
+        -
+          name: '6.2.8 Ensure users home directories permissions are 750 or more restrictive (Automated)'
+          description: 'While the system administrator can establish secure permissions for users home directories, the users can easily override these.'
+          audit:
+            - '#!/bin/bash grep -E -v ''^(halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read user dir; do
+              if [ ! -d "$dir" ]; then
+              echo "The home directory ($dir) of user $user does not exist."
+              else
+              dirperm=$(ls -ld $dir | cut -f1 -d" ")
+              if [ $(echo $dirperm | cut -c6) != "-" ]; then
+              echo "Group Write permission set on the home directory ($dir) of user $user"
+              fi
+              if [ $(echo $dirperm | cut -c8) != "-" ]; then
+              echo "Other Read permission set on the home directory ($dir) of user $user"
+              fi
+              if [ $(echo $dirperm | cut -c9) != "-" ]; then
+              echo "Other Write permission set on the home directory ($dir) of user $user"
+              fi
+              if [ $(echo $dirperm | cut -c10) != "-" ]; then
+              echo "Other Execute permission set on the home directory ($dir) of user $user"
+              fi fi
+              done > tf | awk ''{ print $3 }'' tf'
+          remedeation: 'Making global modifications to user home directories without alerting the user community
+                        can result in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring
+                        policy be established to report user file permissions and determine the action to be taken in accordance with site policy.'
+          check_type: multi_param
+          eval_expr: "'$1' == '';"
+          additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
