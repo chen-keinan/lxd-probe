@@ -26,3 +26,13 @@ categories:
           remedeation: 'Remove any legacy entries from /etc/passwd if they exist.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '6.2.3 Ensure all users'' home directories exist (Automated)'
+          description: 'The character + in various files used to be markers for systems to insert data
+                        from NIS maps at a certain point in a system configuration file. These entries are no longer
+                        required on most systems, but may exist in files that have been imported from other platforms.'
+          audit:
+            - 'grep ''^\+:'' /etc/shadow 2> /dev/null'
+          remedeation: 'Remove any legacy entries from /etc/shadow if they exist.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
