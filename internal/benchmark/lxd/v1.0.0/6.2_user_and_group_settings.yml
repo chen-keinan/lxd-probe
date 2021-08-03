@@ -32,6 +32,20 @@ categories:
                         from NIS maps at a certain point in a system configuration file. These entries are no longer
                         required on most systems, but may exist in files that have been imported from other platforms.'
           audit:
+            - '#!/bin/bash grep -E -v ''^(halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read -r user dir; do
+                                                                          if [ ! -d "$dir" ]; then
+                                                                          echo "The home directory ($dir) of user $user does not exist."
+                                                                          fi done'
+          remedeation: 'If any users home directories do not exist, create them and make sure the respective user owns the directory.
+                        Users without an assigned home directory should be removed or assigned a home directory as appropriate.'
+          additional_info: 'The audit script checks all users with interactive shells except halt, sync, shutdown, and nfsnobody.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
+        -
+          name: '6.2.4 Ensure no legacy "+" entries exist in /etc/shadow (Automated)'
+          description: 'The character + in various files used to be markers for systems to insert data from NIS maps at a certain point in a system configuration file.
+                        These entries are no longer required on most systems, but may exist in files that have been imported from other platforms.'
+          audit:
             - 'grep ''^\+:'' /etc/shadow 2> /dev/null'
           remedeation: 'Remove any legacy entries from /etc/shadow if they exist.'
           check_type: multi_param
