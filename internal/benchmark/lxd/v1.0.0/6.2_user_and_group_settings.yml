@@ -134,3 +134,27 @@ categories:
           check_type: multi_param
           eval_expr: "'$1' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
+        -
+          name: '6.2.10 Ensure users dot files are not group or world writable (Automated)'
+          description: 'While the system administrator can establish secure permissions for users "dot" files, the users can easily override these.'
+          audit:
+            - '#!/bin/bash grep -E -v ''^(halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read user dir; do
+                if [ ! -d "$dir" ]; then
+                echo "The home directory ($dir) of user $user does not exist."
+                else
+                for file in $dir/.[A-Za-z0-9]*; do
+                if [ ! -h "$file" -a -f "$file" ]; then
+                fileperm=$(ls -ld $file | cut -f1 -d" ")
+                if [ $(echo $fileperm | cut -c6) != "-" ]; then echo "Group Write permission set on file $file"
+                fi
+                if [ $(echo $fileperm | cut -c9)  != "-" ]; then
+                echo "Other Write permission set on file $file" fi
+                fi
+                done fi
+                done > tf | awk ''{ print $3 }'' tf'
+          remedeation: 'Making global modifications to users files without alerting the user community can result in unexpected outages and unhappy users.
+                        Therefore, it is recommended that a monitoring policy be established to report user dot
+                         file permissions and determine the action to be taken in accordance with site policy.'
+          check_type: multi_param
+          eval_expr: "'$1' == '';"
+          additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
