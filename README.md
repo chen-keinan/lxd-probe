@@ -39,4 +39,6 @@ Available commands are:
   -r , --report :  run audit tests and generate failure report
   -i , --include:  execute only specific audit test,   example -i=1.2.3,1.4.5
   -e , --exclude:  ignore specific audit tests,  example -e=1.2.3,1.4.5
+  -c , --classic:  test report in classic view,  example -c
+
 ```
