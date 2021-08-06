@@ -13,7 +13,7 @@ audit result now can be leveraged as webhook via user plugin(using go plugin)
  1.  root cause of the security issue.
  2. proposed remediation for security issue
 
-#### kubernetes cluster audit scan output:
+#### Linux container audit scan output:
 ![lxd-probe](./pkg/img/lxd-probe.gif)
 
 
