@@ -233,3 +233,20 @@ categories:
           check_type: multi_param
           eval_expr: "'$1' == '';"
           additional_info: 'While the complete removal of .netrc files is recommended if any are required on the system secure permissions must be applied.'
+        -
+          name: '6.2.14 Ensure no users have .rhosts files (Automated)'
+          description: 'While no .rhosts files are shipped by default, users can easily create them.'
+          audit:
+            - '#!/bin/bash grep -E -v ''^(root|halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read user dir; do
+               if [ ! -d "$dir" ]; then
+               echo "The home directory ($dir) of user $user does not exist."
+               else
+               for file in $dir/.rhosts; do
+               if [ ! -h "$file" -a -f "$file" ]; then
+               echo ".rhosts file in $dir"
+               fi done
+               fi done > tf | awk ''{ print $3 }'' tf'
+          remedeation: 'Making global modifications to users files without alerting the user community can result in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring policy be established to report user .rhosts files and determine the action to be taken in accordance with site policy.'
+          check_type: multi_param
+          eval_expr: "'$1' == '';"
+          additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
