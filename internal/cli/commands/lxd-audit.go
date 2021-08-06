@@ -54,6 +54,17 @@ var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, l
 	log.Console(printFinalResults(grandTotal))
 }
 
+// ClassicOutputGenerator print audit tests to stdout in classic view
+var ClassicOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
+	grandTotal := make([]models.AuditTestTotals, 0)
+	for _, a := range at {
+		log.Console(fmt.Sprintf("%s %s\n", "[Category]", a.Name))
+		categoryTotal := printClassicTestResults(a.AuditTests, log)
+		grandTotal = append(grandTotal, categoryTotal)
+	}
+	log.Console(printFinalResults(grandTotal))
+}
+
 func printFinalResults(grandTotal []models.AuditTestTotals) string {
 	finalTotal := calculateFinalTotal(grandTotal)
 	passTest := colorstring.Color("[green]Pass:")

@@ -43,11 +43,23 @@ func Test_GetProcessingFunction(t *testing.T) {
 	args := []string{"r"}
 	a := GetResultProcessingFunction(args)
 	name := GetFunctionName(a)
+	assert.True(t, strings.Contains(name, "commands.glob..func5"))
+	args = []string{"report"}
+	a = GetResultProcessingFunction(args)
+	name = GetFunctionName(a)
+	assert.True(t, strings.Contains(name, "commands.glob..func5"))
+	args = []string{"c"}
+	a = GetResultProcessingFunction(args)
+	name = GetFunctionName(a)
+	assert.True(t, strings.Contains(name, "commands.glob..func4"))
+	args = []string{"classic"}
+	a = GetResultProcessingFunction(args)
+	name = GetFunctionName(a)
 	assert.True(t, strings.Contains(name, "commands.glob..func4"))
 	args = []string{}
 	a = GetResultProcessingFunction(args)
 	name = GetFunctionName(a)
-	assert.True(t, strings.Contains(name, "commands.glob..func3"))
+	assert.True(t, strings.Contains(name, "commands.glob..func4"))
 }
 
 func GetFunctionName(i interface{}) string {

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/cheggaaa/pb"
 	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
@@ -42,6 +43,32 @@ func printTestResults(at []*models.AuditBench, table *tablewriter.Table, categor
 		} else {
 			failTest := colorstring.Color("[red][Fail]")
 			table.Append([]string{category, failTest, testType, a.Name})
+			failCounter++
+		}
+	}
+	return models.AuditTestTotals{Fail: failCounter, Pass: passCounter, Warn: warnCounter}
+}
+
+func printClassicTestResults(at []*models.AuditBench, log *logger.LdxProbeLogger) models.AuditTestTotals {
+	var (
+		warnCounter int
+		passCounter int
+		failCounter int
+	)
+	for _, a := range at {
+		if a.NonApplicable {
+			warnTest := colorstring.Color("[yellow][Warn]")
+			log.Console(fmt.Sprintf("%s %s\n", warnTest, a.Name))
+			warnCounter++
+			continue
+		}
+		if a.TestSucceed {
+			passTest := colorstring.Color("[green][Pass]")
+			log.Console(fmt.Sprintf("%s %s\n", passTest, a.Name))
+			passCounter++
+		} else {
+			failTest := colorstring.Color("[red][Fail]")
+			log.Console(fmt.Sprintf("%s %s\n", failTest, a.Name))
 			failCounter++
 		}
 	}
@@ -131,10 +158,14 @@ func GetResultProcessingFunction(args []string) ResultProcessor {
 
 //getOutPutGeneratorFunction return output generator function
 func getOutputGeneratorFunction(args []string) ui.OutputGenerator {
-	if isArgsExist(args, common.Report) || isArgsExist(args, common.ReportFull) {
+	switch {
+	case isArgsExist(args, common.Report) || isArgsExist(args, common.ReportFull):
 		return ReportOutputGenerator
+	case isArgsExist(args, common.Classic) || isArgsExist(args, common.ClassicFull):
+		return ClassicOutputGenerator
+	default:
+		return ConsoleOutputGenerator
 	}
-	return ConsoleOutputGenerator
 }
 
 //buildPredicateChain build chain of filters based on command criteria

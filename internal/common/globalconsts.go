@@ -69,6 +69,10 @@ const (
 	Report = "r"
 	//ReportFull arg
 	ReportFull = "report"
+	//Classic arg
+	Classic = "c"
+	//ClassicFull arg
+	ClassicFull = "classic"
 	//Synopsis help
 	Synopsis = "synopsis"
 	//LdxProbeCli Name
