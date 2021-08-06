@@ -89,7 +89,7 @@ categories:
                 fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Correct or justify any items discovered in the Audit step.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
         -
           name: '6.2.8 Ensure users home directories permissions are 750 or more restrictive (Automated)'
           description: 'While the system administrator can establish secure permissions for users home directories, the users can easily override these.'
@@ -116,7 +116,7 @@ categories:
                         can result in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring
                         policy be established to report user file permissions and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.9 Ensure users own their home directories (Automated)'
@@ -132,7 +132,7 @@ categories:
               fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Change the ownership of any home directories that are not owned by the defined user to the correct user.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.10 Ensure users dot files are not group or world writable (Automated)'
@@ -156,7 +156,7 @@ categories:
                         Therefore, it is recommended that a monitoring policy be established to report user dot
                          file permissions and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.11 Ensure no users have .forward files (Automated)'
@@ -174,7 +174,7 @@ categories:
                         Therefore, it is recommended that a monitoring policy be established to report user.
                         forward files and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.12 Ensure no users have .netrc files (Automated)'
@@ -193,13 +193,14 @@ categories:
                         in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring policy
                          be established to report user .netrc files and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.13 Ensure users .netrc Files are not group or world accessible (Automated)'
           description: 'While the system administrator can establish secure permissions for users .netrc files, the users can easily override these.'
           audit:
-            - '#!/bin/bash grep -E -v ''^(root|halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read user dir; do
+            - '#!/bin/bash
+               grep -E -v ''^(root|halt|sync|shutdown)'' /etc/passwd | awk -F: ''($7 != "''"$(which nologin)"''" && $7 != "/bin/false") { print $1 " " $6 }'' | while read user dir; do
                if [ ! -d "$dir" ]; then
                echo "The home directory ($dir) of user $user does not exist."
                else
@@ -224,14 +225,13 @@ categories:
                if [ $(echo $fileperm | cut -c10)  != "-" ]; then
                echo "Other Execute set on $file"
                fi
-               fi
-               done
-              fi done > tf | awk ''{ print $3 }'' tf'
+               fi done
+               fi done 2> /dev/null > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Making global modifications to users files without alerting the user community can result in unexpected outages
                         and unhappy users. Therefore, it is recommended that a monitoring policy be established to report user
                         .netrc file permissions and determine the action to be taken in accordance with site policy'
-          cxheck_type: multi_param
-          eval_expr: "'$1' == '';"
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
           additional_info: 'While the complete removal of .netrc files is recommended if any are required on the system secure permissions must be applied.'
         -
           name: '6.2.14 Ensure no users have .rhosts files (Automated)'
@@ -248,7 +248,7 @@ categories:
                fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Making global modifications to users files without alerting the user community can result in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring policy be established to report user .rhosts files and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.15 Ensure all groups in /etc/passwd exist in /etc/group (Automated)'
@@ -260,5 +260,5 @@ categories:
                fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Analyze the output of the Audit step above and perform the appropriate action to correct any discrepancies found.'
           check_type: multi_param
-          eval_expr: "'$1' == '';"
+          eval_expr: "'$0' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
