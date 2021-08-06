@@ -56,7 +56,7 @@ The lxd-probe expose hook for user plugins [Example](https://github.com/chen-kei
 ```
 go build -buildmode=plugin -o=~/<plugin folder>/bench_plugin.so /<plugin folder>/bench_plugin.go
 ```
-##### Copy plugin to folder (.beacon folder is created on the 1st startup)
+##### Copy plugin to folder (.lxd-probe folder is created on the 1st startup)
 ```
 cp /<plugin folder>/bench_plugin.so ~/.lxd-probe/plugins/compile/bench_plugin.so
 ```
