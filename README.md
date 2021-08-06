@@ -16,8 +16,10 @@ audit result now can be leveraged as webhook via user plugin(using go plugin)
 --------------------------------------------------------------------------------------------------------
 
 * [Installation](#installation)
-  
 * [Quick Start](#quick-start)
+* [User Plugin Usage](#user-plugin-usage)
+* [Supported Specs](#supported-specs)
+* [Contribution](#Contribution)
 
 ## Installation
 
@@ -42,3 +44,19 @@ Available commands are:
   -c , --classic:  test report in classic view,  example -c
 
 ```
+## User Plugin Usage
+The lxd-probe expose hook for user plugins [Example](https://github.com/chen-keinan/lxd-probe/tree/master/examples/plugins) :
+- **LxdBenchAuditResultHook** - this hook accepts audit benchmark results as found by audit test
+
+##### Compile user plugin
+```
+go build -buildmode=plugin -o=~/<plugin folder>/bench_plugin.so /<plugin folder>/bench_plugin.go
+```
+##### Copy plugin to folder (.beacon folder is created on the 1st startup)
+```
+cp /<plugin folder>/bench_plugin.so ~/.lxd-probe/plugins/compile/bench_plugin.so
+```
+
+## Contribution
+- code contribution is welcome !! , contribution with tests and passing linter is more than welcome :)
+- /.dev folder include vagrantfile to be used for development : [Dev Instruction](https://github.com/chen-keinan/lxd-probe/tree/master/.dev)
