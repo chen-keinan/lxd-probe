@@ -126,7 +126,7 @@ categories:
           description: 'Unix-based systems support variable settings to control access to files. World writable
                         files are the least secure. See the chmod(2) man page for more information.'
           audit:
-            - 'df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' -xdev -type f -perm -0002 |awk ''FNR <= 1'''
+            - 'df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' 2>/dev/null -xdev -type f -perm -0002 |awk ''FNR <= 1'''
           remedeation: 'Removing write access for the "other" category ( chmod o-w <filename> )
                         is advisable, but always consult relevant vendor documentation to avoid breaking
                          any application dependencies on a given file.'
@@ -136,7 +136,7 @@ categories:
           name: '6.1.11 Ensure no unowned files or directories exist (Automated)'
           description: 'Sometimes when administrators delete users from the password file they neglect to remove all files owned by those users from the system.'
           audit:
-            - 'df --local -P | awk {''if (NR!=1) print $6''} | xargs -I ''{}'' find ''{}'' -xdev -nouser |awk ''FNR <= 1'''
+            - 'df --local -P | awk {''if (NR!=1) print $6''} | xargs -I ''{}'' find ''{}'' 2>/dev/null -xdev -nouser |awk ''FNR <= 1'''
           remedeation: 'Locate files that are owned by users or groups not listed in the system configuration
                         files, and reset the ownership of these files to some active user on the system as appropriate.'
           check_type: multi_param
@@ -145,7 +145,7 @@ categories:
           name: '6.1.12 Ensure no ungrouped files or directories exist (Automated)'
           description: 'Sometimes when administrators delete users or groups from the system they neglect to remove all files owned by those users or groups.'
           audit:
-            - 'df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' -xdev -nogroup |awk ''FNR <= 1'''
+            - 'df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' 2>/dev/null -xdev -nogroup |awk ''FNR <= 1'''
           remedeation: 'Locate files that are owned by users or groups not listed in the system configuration files, and reset the ownership of these files to some active user on the system as appropriate.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
@@ -155,7 +155,7 @@ categories:
                         the user running the program is not the owner or a member of the group. The most common reason for a SUID program
                          is to enable users to perform functions (such as changing their password) that require root privileges.'
           audit:
-            - '# df --local -P | awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' -xdev -type f -perm -4000'
+            - '# df --local -P| awk ''{if (NR!=1) print $6}'' | xargs -I ''{}'' find ''{}'' 2>/dev/null -xdev -type f -perm -4000'
             - '# find <partition> -xdev -type f -perm -4000'
           remedeation: 'Ensure that no rogue SUID programs have been introduced into the system. Review the files returned
                         by the action in the Audit section and confirm the integrity of these binaries.'
