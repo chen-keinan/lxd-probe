@@ -19,5 +19,3 @@ script:
   - goveralls -service=travis-pro
   - make test_travis
   - make build_travis
-  - echo "$PASSWORD" | docker login -u "$USER" --password-stdin chenkeinan
-
