@@ -37,7 +37,7 @@ test_travis:
 	$(GOCMD) get github.com/golang/mock/mockgen@latest
 	$(GOCMD) install -v github.com/golang/mock/mockgen && export PATH=$GOPATH/bin:$PATH;
 	$(GOMOCKS)
-	$(GOTEST) ./... -coverprofile coverage.md fmt
+	$(GOTEST) -short ./...  -coverprofile coverage.md fmt
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 build_travis:
 	$(GOPACKR)
