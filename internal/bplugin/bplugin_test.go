@@ -21,6 +21,9 @@ func TestPluginLoader_Plugins(t *testing.T) {
 }
 
 func TestExecuteNetEvt(t *testing.T) {
+	if  testing.Short(){
+		t.Skip("test wihtout plugin")
+	}
 	pl, err := pluginSetUp("lxd_bench_audit_result_hook.go")
 	assert.NoError(t, err)
 	plFiles, err := pl.Plugins()
