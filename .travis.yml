@@ -20,5 +20,4 @@ script:
   - make test_travis
   - make build_travis
   - echo "$PASSWORD" | docker login -u "$USER" --password-stdin chenkeinan
-  - make build_docker
 

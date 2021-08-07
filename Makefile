@@ -46,13 +46,6 @@ build_remote:
 	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' ./cmd/lxd-probe
 	mv lxd-probe ~/boxes/lxd_box/lxd-probe
-build_docker:
-	export PATH=$GOPATH/bin:$PATH;
-	docker build -t chenkeinan/lxd-probe:latest .
-	docker push chenkeinan/lxd-probe:latest
-build_docker_local:
-	docker build -t chenkeinan/lxd-probe:latest .
-	docker push chenkeinan/lxd-probe:latest
 dlv:
 	dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./lxd-probe
 build_beb:
