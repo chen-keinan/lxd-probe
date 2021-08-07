@@ -225,7 +225,7 @@ func Test_printClassicTestResults(t *testing.T) {
 	ab = append(ab, ats)
 	ab = append(ab, atf)
 	ab = append(ab, ata)
-	tr := printClassicTestResults(ab,logger.GetLog())
+	tr := printClassicTestResults(ab, logger.GetLog())
 	assert.Equal(t, tr.Warn, 1)
 	assert.Equal(t, tr.Pass, 1)
 	assert.Equal(t, tr.Fail, 1)

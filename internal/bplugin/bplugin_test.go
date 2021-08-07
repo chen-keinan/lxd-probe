@@ -3,7 +3,6 @@ package bplugin
 import (
 	"fmt"
 	"github.com/chen-keinan/lxd-probe/internal/common"
-	"github.com/chen-keinan/lxd-probe/pkg/models"
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -18,20 +17,6 @@ func TestPluginLoader_Plugins(t *testing.T) {
 	plFiles, err := pl.Plugins()
 	assert.NoError(t, err)
 	assert.Equal(t, plFiles[0], "test_plugin.go")
-}
-
-func TestExecuteNetEvt(t *testing.T) {
-	if  testing.Short(){
-		t.Skip("test wihtout plugin")
-	}
-	pl, err := pluginSetUp("lxd_bench_audit_result_hook.go")
-	assert.NoError(t, err)
-	plFiles, err := pl.Plugins()
-	assert.NoError(t, err)
-	sym, err := pl.Compile(plFiles[0], common.LxdBenchAuditResultHook)
-	assert.NoError(t, err)
-	err = ExecuteLxdAuditResults(sym, models.LxdAuditResults{})
-	assert.NoError(t, err)
 }
 
 func TestPluginLoader_CompileBad(t *testing.T) {
