@@ -1,5 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/chen-keinan/lxd-probe)](https://goreportcard.com/report/github.com/chen-keinan/lxd-probe)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/chen-keinan/lxd-probe/blob/main/LICENSE)
+[![Build Status](https://travis-ci.com/chen-keinan/lxd-probe.svg?branch=master)](https://travis-ci.com/chen-keinan/lxd-probe)
 <img src="./pkg/img/coverage_badge.png" alt="test coverage badge">
 [![Gitter](https://badges.gitter.im/beacon-sec/lxd-probe.svg)](https://gitter.im/beacon-sec/lxd-probe?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
