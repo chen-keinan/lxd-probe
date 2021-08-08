@@ -277,3 +277,13 @@ categories:
           remedeation: 'Based on the results of the audit script, establish unique UIDs and review all files owned by the shared UIDs to determine which UID they are supposed to belong to.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '6.2.17 Ensure no duplicate GIDs exist (Automated)'
+          description: 'Although the groupadd program will not let you create a duplicate Group ID (GID), it is possible for an administrator to manually edit the /etc/group file and change the GID field.'
+          audit:
+            - '#!/bin/bash cut -d: -f3 /etc/group | sort | uniq -d | while read x ; do echo "Duplicate GID ($x) in /etc/group"
+               done > tf | awk ''{ print $2 }'' tf'
+          remedeation: 'Based on the results of the audit script, establish unique GIDs and review all files owned by the shared GID to determine which group they are supposed to belong to.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
+          additional_info: 'You can also use the grpck command to check for other inconsistencies in the /etc/group file.'
