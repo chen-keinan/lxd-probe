@@ -305,3 +305,12 @@ categories:
           remedeation: 'Based on the results of the audit script, establish unique names for the user groups. File group ownerships will automatically reflect the change as long as the groups have unique GIDs.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '6.2.20 Ensure shadow group is empty (Automated)'
+          description: 'The shadow group allows system programs which require access the ability to read the /etc/shadow file. No users should be assigned to the shadow group.'
+          audit:
+            - 'grep ^shadow:[^:]*:[^:]*:[^:]+ /etc/group'
+            - 'awk -F: ''($4 == "<shadow-gid>") { print }'' /etc/passwd'
+          remedeation: 'Remove all users from the shadow group, and change the primary group of any users with shadow as their primary group.'
+          check_type: multi_param
+          eval_expr: "'$0' == ''; && '$1' == '';"
