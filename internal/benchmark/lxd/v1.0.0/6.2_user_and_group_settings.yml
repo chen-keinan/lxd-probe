@@ -296,3 +296,12 @@ categories:
           remedeation: 'Based on the results of the audit script, establish unique user names for the users. File ownerships will automatically reflect the change as long as the users have unique UIDs.'
           check_type: multi_param
           eval_expr: "'$0' == '';"
+        -
+          name: '6.2.19 Ensure no duplicate group names exist (Automated)'
+          description: 'Although the groupadd program will not let you create a duplicate group name, it is possible for an administrator to manually edit the /etc/group file and change the group name.'
+          audit:
+            - '#!/bin/bash cut -d: -f1 /etc/group | sort | uniq -d | while read x do echo "Duplicate group name ${x} in /etc/group"
+               done > tf | awk ''{ print $2 }'' tf'
+          remedeation: 'Based on the results of the audit script, establish unique names for the user groups. File group ownerships will automatically reflect the change as long as the groups have unique GIDs.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
