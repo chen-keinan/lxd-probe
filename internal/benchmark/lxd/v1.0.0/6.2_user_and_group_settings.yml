@@ -287,3 +287,12 @@ categories:
           check_type: multi_param
           eval_expr: "'$0' == '';"
           additional_info: 'You can also use the grpck command to check for other inconsistencies in the /etc/group file.'
+        -
+          name: '6.2.18 Ensure no duplicate user names exist (Automated)'
+          description: 'Although the useradd program will not let you create a duplicate user name, it is possible for an administrator to manually edit the /etc/passwd file and change the user name.'
+          audit:
+            - '#!/bin/bash cut -d: -f1 /etc/passwd | sort | uniq -d | while read x do echo "Duplicate login name ${x} in /etc/passwd"
+               done > tf | awk ''{ print $2 }'' tf'
+          remedeation: 'Based on the results of the audit script, establish unique user names for the users. File ownerships will automatically reflect the change as long as the users have unique UIDs.'
+          check_type: multi_param
+          eval_expr: "'$0' == '';"
