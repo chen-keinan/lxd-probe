@@ -8,8 +8,6 @@ import (
 //ShellToUse bash shell
 const ShellToUse = "bash"
 
-var shellExec *CommandExec
-
 //Executor defines the interface for shell command executor
 //exec.go
 //go:generate mockgen -destination=../mocks/mock_Executor.go -package=mocks . Executor
@@ -23,8 +21,7 @@ type CommandExec struct {
 
 //NewShellExec return new instance of shell executor
 func NewShellExec() Executor {
-	shellExec = &CommandExec{}
-	return shellExec
+	return &CommandExec{}
 }
 
 //CommandResult return data
