@@ -3,14 +3,12 @@ package shell
 import (
 	"bytes"
 	"os/exec"
-	"sync"
 )
 
 //ShellToUse bash shell
 const ShellToUse = "bash"
 
 var shellExec *CommandExec
-var shellExecSync sync.Once
 
 //Executor defines the interface for shell command executor
 //exec.go
@@ -25,9 +23,7 @@ type CommandExec struct {
 
 //NewShellExec return new instance of shell executor
 func NewShellExec() Executor {
-	shellExecSync.Do(func() {
-		shellExec = &CommandExec{}
-	})
+	shellExec = &CommandExec{}
 	return shellExec
 }
 
