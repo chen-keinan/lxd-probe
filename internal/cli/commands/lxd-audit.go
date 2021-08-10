@@ -269,6 +269,9 @@ func (ldx *LxdAudit) evalExpression(at *models.AuditBench,
 	for _, o := range outputs {
 		permutationArr = append(permutationArr, o)
 		testFailure = ldx.evalExpression(at, commandRes[1:commResSize], commResSize-1, permutationArr, testFailure)
+		if testFailure > 0 {
+			return testFailure
+		}
 		permutationArr = permutationArr[:len(permutationArr)-1]
 	}
 	return testFailure
