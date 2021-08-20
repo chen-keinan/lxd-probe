@@ -403,9 +403,9 @@ func Test_Help(t *testing.T) {
 //Test_reportResultProcessor test
 func Test_reportResultProcessor(t *testing.T) {
 	ad := &models.AuditBench{Name: "1.2.1 aaa"}
-	fm := reportResultProcessor(ad, 0)
+	fm := reportResultProcessor(ad, true)
 	assert.True(t, len(fm) == 0)
-	fm = reportResultProcessor(ad, 1)
+	fm = reportResultProcessor(ad, false)
 	assert.True(t, len(fm) == 1)
 	assert.Equal(t, fm[0].Name, "1.2.1 aaa")
 }

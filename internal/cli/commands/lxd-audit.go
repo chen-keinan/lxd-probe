@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/Knetic/govaluate"
+	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
@@ -35,7 +36,7 @@ type LxdAudit struct {
 }
 
 // ResultProcessor process audit results
-type ResultProcessor func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench
+type ResultProcessor func(at *models.AuditBench, isSucceeded bool) []*models.AuditBench
 
 // ConsoleOutputGenerator print audit tests to stdout
 var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
@@ -96,14 +97,14 @@ var ReportOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, lo
 }
 
 // simpleResultProcessor process audit results to stdout print only
-var simpleResultProcessor ResultProcessor = func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench {
-	return AddAllMessages(at, NumFailedTest)
+var simpleResultProcessor ResultProcessor = func(at *models.AuditBench, isSucceeded bool) []*models.AuditBench {
+	return AddAllMessages(at, isSucceeded)
 }
 
 // ResultProcessor process audit results to std out and failure results
-var reportResultProcessor ResultProcessor = func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench {
+var reportResultProcessor ResultProcessor = func(at *models.AuditBench, isSucceeded bool) []*models.AuditBench {
 	// append failed messages
-	return AddFailedMessages(at, NumFailedTest)
+	return AddFailedMessages(at, isSucceeded)
 }
 
 //NewLxdAudit new audit object
@@ -162,16 +163,11 @@ func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 		auditRes = append(auditRes, at)
 		return auditRes
 	}
-	cmdTotalRes := make([]string, 0)
 	// execute audit test command
-	for index := range at.AuditCommand {
-		res := ldx.execCommand(at, index, cmdTotalRes, make([]IndexValue, 0))
-		cmdTotalRes = append(cmdTotalRes, res)
-	}
-	// evaluate command result with expression
-	NumFailedTest := ldx.evalExpression(at, cmdTotalRes, len(cmdTotalRes), make([]string, 0), 0)
+	cmdEval := eval.New()
+	cmdEvalResult := cmdEval.EvalCommand(at.AuditCommand, at.EvalExpr)
 	// continue with result processing
-	auditRes = append(auditRes, ldx.ResultProcessor(at, NumFailedTest)...)
+	auditRes = append(auditRes, ldx.ResultProcessor(at, cmdEvalResult.Match)...)
 	return auditRes
 }
 

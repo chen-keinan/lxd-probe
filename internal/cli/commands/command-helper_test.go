@@ -22,10 +22,10 @@ import (
 //Test_AddFailedMessages text
 func Test_AddFailedMessages(t *testing.T) {
 	atb1 := &models.AuditBench{TestSucceed: false}
-	afm := AddFailedMessages(atb1, 1)
+	afm := AddFailedMessages(atb1, false)
 	assert.True(t, len(afm) == 1)
 	atb2 := &models.AuditBench{TestSucceed: true}
-	afm = AddFailedMessages(atb2, 0)
+	afm = AddFailedMessages(atb2, true)
 	assert.True(t, len(afm) == 0)
 }
 
