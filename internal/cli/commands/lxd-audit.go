@@ -164,7 +164,7 @@ func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 		return auditRes
 	}
 	// execute audit test command
-	cmdEval := eval.New()
+	cmdEval := eval.NewEvalCmd()
 	cmdEvalResult := cmdEval.EvalCommand(at.AuditCommand, at.EvalExpr)
 	// continue with result processing
 	auditRes = append(auditRes, ldx.ResultProcessor(at, cmdEvalResult.Match)...)
