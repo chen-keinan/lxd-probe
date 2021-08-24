@@ -3,10 +3,8 @@ package commands
 import (
 	"fmt"
 	"github.com/chen-keinan/go-command-eval/eval"
-	"github.com/chen-keinan/lxd-probe/internal/common"
-	"github.com/chen-keinan/lxd-probe/internal/mocks"
+	"github.com/chen-keinan/lxd-probe/internal/cli/mocks"
 	"github.com/chen-keinan/lxd-probe/internal/models"
-	"github.com/chen-keinan/lxd-probe/internal/shell"
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/golang/mock/gomock"
@@ -17,346 +15,45 @@ import (
 	"testing"
 )
 
-//Test_EvalVarSingleIn text
-func Test_EvalVarSingleIn(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiProcessInClause.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
+func TestRunAuditTests(t *testing.T) {
+	tests := []struct {
+		name              string
+		testFile          string
+		completedChan     chan bool
+		plChan            chan m2.LxdAuditResults
+		wantTestSucceeded bool
+	}{
+
+		{name: "Test_MultiCommandParams_OK", testFile: "CheckMultiParamOK.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: true},
+		{name: "Test_MultiCommandParams_OK_With_IN", testFile: "CheckMultiParamOKWithIN.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: true},
+		{name: "Test_MultiCommandParams_NOKWith_IN", testFile: "CheckMultiParamNOKWithIN.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: false},
+		{name: "Test_MultiCommandParamsPass1stResultToNext", testFile: "CheckMultiParamPass1stResultToNext.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: false},
+		{name: "Test_MultiCommandParamsComplex", testFile: "CheckMultiParamComplex.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: true},
+		{name: "Test_MultiCommandParamsComplexOppositeEmptyReturn", testFile: "CheckInClauseOppositeEmptyReturn.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: false},
+		{name: "Test_MultiCommandParamsComplexOppositeWithNumber", testFile: "CheckInClauseOppositeWithNum.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: false},
+		{name: "Test_MultiCommand4_2_13", testFile: "CheckInClause4.2.13.yml", completedChan: make(chan bool), plChan: make(chan m2.LxdAuditResults), wantTestSucceeded: false},
 	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"aaa"}, 1, make([]string, 0), 0)
-	assert.True(t, k == 0)
-}
-
-//Test_EvalVarSingleNotInGood text
-func Test_EvalVarSingleNotInGood(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiProcessInClause.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ab := models.Audit{}
+			err := yaml.Unmarshal(readTestData(tt.testFile, t), &ab)
+			if err != nil {
+				t.Errorf("failed to Unmarshal test file %s error : %s", tt.testFile, err.Error())
+			}
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			evalCmd := mocks.NewMockCmdEvaluator(ctrl)
+			testBench := ab.Categories[0].SubCategory.AuditTests[0]
+			evalCmd.EXPECT().EvalCommand(testBench.AuditCommand, testBench.EvalExpr).Return(eval.CmdEvalResult{Match: tt.wantTestSucceeded, Error: nil}).Times(1)
+			kb := LxdAudit{Evaluator: evalCmd, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: tt.plChan, CompletedChan: tt.completedChan}
+			kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
+			assert.Equal(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed, tt.wantTestSucceeded)
+			go func() {
+				<-tt.plChan
+				tt.completedChan <- true
+			}()
+		})
 	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"ttt,aaa"}, 1, make([]string, 0), 0)
-	assert.True(t, k == 0)
-}
-
-//Test_EvalVarSingleNotInBad text
-func Test_EvalVarSingleNotInBad(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiProcessInClause.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"RBAC,aaa"}, 1, make([]string, 0), 0)
-	assert.True(t, k > 0)
-}
-
-//Test_EvalVarSingleNotInSingleValue test
-func Test_EvalVarSingleNotInSingleValue(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiProcessInClause.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"aaa"}, 1, make([]string, 0), 0)
-	assert.True(t, k == 0)
-}
-
-//Test_EvalVarMultiExprSingleValue test
-func Test_EvalVarMultiExprSingleValue(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiExprProcessParam.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"AlwaysAdmit"}, 1, make([]string, 0), 0)
-	assert.True(t, k > 0)
-}
-
-//Test_EvalVarMultiExprSingleValue test
-func Test_EvalVarMultiExprMultiValue(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiExprProcessParam.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"bbb,aaa"}, 1, make([]string, 0), 0)
-	assert.True(t, k == 0)
-}
-
-//Test_EvalVarMultiExprMultiEmptyValue test
-func Test_EvalVarMultiExprMultiEmptyValue(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiExprEmptyProcessParam.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{common.GrepRegex}, 1, make([]string, 0), 0)
-	assert.True(t, k > 0)
-}
-
-//Test_EvalVarComparator test
-func Test_EvalVarComparator(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeComparator.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	kb := LxdAudit{}
-	bench := ab.Categories[0].SubCategory.AuditTests[0]
-	k := kb.evalExpression(bench, []string{"1204"}, 1, make([]string, 0), 0)
-	assert.True(t, k == 0)
-}
-
-//Test_MultiCommandParams_OK test
-func Test_MultiCommandParams_OK(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckMultiParamOK.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb kkk").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.True(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-}
-
-//Test_MultiCommandParams_OK_With_IN test
-func Test_MultiCommandParams_OK_With_IN(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckMultiParamOKWithIN.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb kkk").Return(&shell.CommandResult{Stdout: "kkk,aaa"}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.True(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-}
-
-//Test_MultiCommandParams_NOK test
-func Test_MultiCommandParams_NOK(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckMultiParamNOK.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb kkk").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.False(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-}
-
-//Test_MultiCommandParams_NOKWith_IN test
-func Test_MultiCommandParams_NOKWith_IN(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckMultiParamNOKWithIN.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb kkk").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{})}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.False(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-}
-
-//Test_MultiCommandParamsPass1stResultToNext test
-func Test_MultiCommandParamsPass1stResultToNext(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckMultiParamPass1stResultToNext.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	executor.EXPECT().Exec("ccc kkk").Return(&shell.CommandResult{Stdout: "kkk"}, nil).Times(1)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{})}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.False(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-}
-
-//Test_MultiCommandParamsComplex test
-func Test_MultiCommandParamsComplex(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckMultiParamComplex.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "/etc/kubernetes/pki/encry.yaml"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb").Return(&shell.CommandResult{Stdout: "/etc/kubernetes/pki/encry.yaml"}, nil).Times(1)
-	executor.EXPECT().Exec("ccc").Return(&shell.CommandResult{Stdout: "aescbc"}, nil).Times(1)
-	executor.EXPECT().Exec("ddd").Return(&shell.CommandResult{Stdout: ""}, nil).Times(1)
-	executor.EXPECT().Exec("eee").Return(&shell.CommandResult{Stdout: "secretbox"}, nil).Times(1)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{})}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.True(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-}
-
-//Test_MultiCommandParamsComplexOppositeEmptyReturn test
-func Test_MultiCommandParamsComplexOppositeEmptyReturn(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckInClauseOppositeEmptyReturn.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: ""}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.False(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-}
-
-//Test_MultiCommandParamsComplexOppositeWithNumber test
-func Test_MultiCommandParamsComplexOppositeWithNumber(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckInClauseOppositeWithNum.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: ""}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.False(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-}
-
-//Test_MultiCommand4_2_13 test
-func Test_MultiCommand4_2_13(t *testing.T) {
-	ab := models.Audit{}
-	err := yaml.Unmarshal(readTestData("CheckInClause4.2.13.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("ps -ef | grep kubelet |grep ' --config' | grep -o ' --config=[^\"]\\S*' | awk -F \"=\" '{print $2}' |awk 'FNR <= 1'").Return(&shell.CommandResult{Stdout: ""}, nil).Times(1)
-	executor.EXPECT().Exec("ps -ef | grep kubelet |grep 'TLSCipherSuites' | grep -o 'TLSCipherSuites=[^\"]\\S*' | awk -F \"=\" '{print $2}' |awk 'FNR <= 1'").Return(&shell.CommandResult{Stdout: ""}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab.Categories[0].SubCategory.AuditTests[0])
-	assert.False(t, ab.Categories[0].SubCategory.AuditTests[0].TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-}
-
-//Test_MultiCommand4_2_13 test
-func Test_MultiCommand5_2_7(t *testing.T) {
-	ab := &models.AuditBench{}
-	ab.AuditCommand = []string{"aaa", "bbb #0"}
-	ab.EvalExpr = "'NET_RAW' IN ($1); || 'ALL' IN ($1);"
-	ab.CommandParams = map[int][]string{1: {"0"}}
-	ab.CmdExprBuilder = utils.UpdateCmdExprParam
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "1234\n"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb 1234").Return(&shell.CommandResult{Stdout: "\n"}, nil).Times(1)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab)
-	assert.False(t, ab.TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
-
-}
-
-//Test_MultiCommand5_3_4 test
-func Test_MultiCommand5_3_4(t *testing.T) {
-	ab := &models.AuditBench{}
-	ab.AuditCommand = []string{"aaa", "bbb"}
-	ab.EvalExpr = "'$0' == ''; && '$1' == '';"
-	ab.CommandParams = map[int][]string{}
-	ab.CmdExprBuilder = utils.UpdateCmdExprParam
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	completedChan := make(chan bool)
-	plChan := make(chan m2.LxdAuditResults)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "\n\n\n\n\n"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb").Return(&shell.CommandResult{Stdout: "default-token-ppzx7\n\n\n\n\n"}, nil).Times(1)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
-	kb.runAuditTest(ab)
-	assert.False(t, ab.TestSucceed)
-	go func() {
-		<-plChan
-		completedChan <- true
-	}()
 }
 
 func readTestData(fileName string, t *testing.T) []byte {

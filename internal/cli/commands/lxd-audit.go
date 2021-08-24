@@ -32,7 +32,7 @@ type LxdAudit struct {
 	PlChan          chan m2.LxdAuditResults
 	CompletedChan   chan bool
 	FilesInfo       []utils.FilesInfo
-	evaluator       eval.CmdEvaluator
+	Evaluator       eval.CmdEvaluator
 	log             *logger.LdxProbeLogger
 }
 
@@ -125,7 +125,7 @@ func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan
 		FileLoader:      NewFileLoader(),
 		PlChan:          plChan,
 		FilesInfo:       fi,
-		evaluator:       evaluator,
+		Evaluator:       evaluator,
 		CompletedChan:   completedChan}
 }
 
@@ -173,7 +173,7 @@ func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 		return auditRes
 	}
 	// execute audit test command
-	cmdEvalResult := ldx.evaluator.EvalCommand(at.AuditCommand, at.EvalExpr)
+	cmdEvalResult := ldx.Evaluator.EvalCommand(at.AuditCommand, at.EvalExpr)
 	// continue with result processing
 	auditRes = append(auditRes, ldx.ResultProcessor(at, cmdEvalResult.Match)...)
 	return auditRes
