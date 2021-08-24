@@ -1,10 +1,10 @@
 package commands
 
 import (
+	"github.com/chen-keinan/go-command-eval/eval"
+	"github.com/chen-keinan/lxd-probe/internal/cli/mocks"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
-	"github.com/chen-keinan/lxd-probe/internal/mocks"
 	"github.com/chen-keinan/lxd-probe/internal/models"
-	"github.com/chen-keinan/lxd-probe/internal/shell"
 	"github.com/chen-keinan/lxd-probe/internal/startup"
 	"github.com/chen-keinan/lxd-probe/pkg/filters"
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
@@ -159,18 +159,6 @@ func Test_buildPredicateChainParams(t *testing.T) {
 	assert.Equal(t, p[1], "i=1.2.1")
 }
 
-//Test_buildPredicateChainParamsExcludeNode test
-func Test_buildPredicateChainExcludeNode(t *testing.T) {
-	p := buildPredicateChainParams([]string{"a", "n=master"})
-	assert.True(t, len(p) == 2)
-	assert.Equal(t, p[0], "a")
-	assert.Equal(t, p[1], "n=master")
-	p = buildPredicateChainParams([]string{"a", "e=1.2.1"})
-	assert.True(t, len(p) == 2)
-	assert.Equal(t, p[0], "a")
-	assert.Equal(t, p[1], "e=1.2.1")
-}
-
 func Test_filteredAuditBenchTests(t *testing.T) {
 	asc := []*models.SubCategory{{AuditTests: []*models.AuditBench{{Name: "1.1.0 bbb"}}}}
 	fp := []filters.Predicate{filters.IncludeAudit, filters.ExcludeAudit}
@@ -188,45 +176,50 @@ func Test_executeTests(t *testing.T) {
 	ab.CmdExprBuilder = utils.UpdateCmdExprParam
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "\n\n\n\n\n"}, nil).Times(1)
-	executor.EXPECT().Exec("bbb").Return(&shell.CommandResult{Stdout: "default-token-ppzx7\n\n\n\n\n"}, nil).Times(1)
+	evalcmd := mocks.NewMockCmdEvaluator(ctrl)
+	evalcmd.EXPECT().EvalCommand([]string{"aaa", "bbb"}, ab.EvalExpr).Return(eval.CmdEvalResult{Match: true, CmdEvalExpr: ab.EvalExpr, Error: nil})
 	completedChan := make(chan bool)
 	plChan := make(chan m2.LxdAuditResults)
-	kb := LxdAudit{Command: executor, ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan}
+	kb := LxdAudit{ResultProcessor: GetResultProcessingFunction([]string{}), PlChan: plChan, CompletedChan: completedChan, evaluator: evalcmd}
 	sc := []*models.SubCategory{{AuditTests: []*models.AuditBench{ab}}}
 	executeTests(sc, kb.runAuditTest, logger.GetLog())
-	assert.False(t, ab.TestSucceed)
+	assert.True(t, ab.TestSucceed)
 	go func() {
 		<-plChan
 		completedChan <- true
 	}()
 }
 
-func Test_printTestResults(t *testing.T) {
-	ab := make([]*models.AuditBench, 0)
-	ats := &models.AuditBench{Name: "bbb", TestSucceed: true}
-	atf := &models.AuditBench{Name: "ccc", TestSucceed: false}
-	ata := &models.AuditBench{Name: "ddd", NonApplicable: true}
-	ab = append(ab, ats)
-	ab = append(ab, atf)
-	ab = append(ab, ata)
-	tr := printTestResults(ab, tablewriter.NewWriter(os.Stdout), "aaa")
-	assert.Equal(t, tr.Warn, 1)
-	assert.Equal(t, tr.Pass, 1)
-	assert.Equal(t, tr.Fail, 1)
-}
-
-func Test_printClassicTestResults(t *testing.T) {
-	ab := make([]*models.AuditBench, 0)
-	ats := &models.AuditBench{Name: "bbb", TestSucceed: true}
-	atf := &models.AuditBench{Name: "ccc", TestSucceed: false}
-	ata := &models.AuditBench{Name: "ddd", NonApplicable: true}
-	ab = append(ab, ats)
-	ab = append(ab, atf)
-	ab = append(ab, ata)
-	tr := printClassicTestResults(ab, logger.GetLog())
-	assert.Equal(t, tr.Warn, 1)
-	assert.Equal(t, tr.Pass, 1)
-	assert.Equal(t, tr.Fail, 1)
+func TestPrintTestResults(t *testing.T) {
+	tests := []struct {
+		name         string
+		tests        []*models.AuditBench
+		testCategory string
+		testType     string
+		warn         int
+		pass         int
+		fail         int
+	}{
+		{name: "regular result", testCategory: "aaa", tests: []*models.AuditBench{{Name: "bbb", TestSucceed: true}, {Name: "ccc", TestSucceed: false}, {Name: "ddd", NonApplicable: true}}, warn: 1, pass: 1, fail: 1, testType: "regular"},
+		{name: "classic result", testCategory: "aaa", tests: []*models.AuditBench{{Name: "bbb", TestSucceed: true}, {Name: "ccc", TestSucceed: false}, {Name: "ddd", NonApplicable: true}}, warn: 1, pass: 1, fail: 1, testType: "classic"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var tr models.AuditTestTotals
+			if tt.testType == "regular" {
+				tr = printTestResults(tt.tests, tablewriter.NewWriter(os.Stdout), tt.testCategory)
+			} else {
+				tr = printClassicTestResults(tt.tests, logger.GetLog())
+			}
+			if tr.Pass != tt.pass {
+				t.Errorf("TestPrintTestResults() = %v, want %v", tr.Pass, tt.pass)
+			}
+			if tr.Fail != tt.fail {
+				t.Errorf("TestPrintTestResults() = %v, want %v", tr.Fail, tt.fail)
+			}
+			if tr.Warn != tt.warn {
+				t.Errorf("TestPrintTestResults() = %v, want %v", tr.Warn, tt.warn)
+			}
+		})
+	}
 }
