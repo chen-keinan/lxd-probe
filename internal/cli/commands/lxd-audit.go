@@ -32,6 +32,7 @@ type LxdAudit struct {
 	PlChan          chan m2.LxdAuditResults
 	CompletedChan   chan bool
 	FilesInfo       []utils.FilesInfo
+	evaluator       eval.CmdEvaluator
 	log             *logger.LdxProbeLogger
 }
 
@@ -107,8 +108,15 @@ var reportResultProcessor ResultProcessor = func(at *models.AuditBench, isSuccee
 	return AddFailedMessages(at, isSucceeded)
 }
 
+//CmdEvaluator interface expose one method to evaluate command with evalExpr
+//lxd-audit.go
+//go:generate mockgen -destination=../mocks/mock_CmdEvaluator.go -package=mocks . CmdEvaluator
+type CmdEvaluator interface {
+	EvalCommand(commands []string, evalExpr string) eval.CmdEvalResult
+}
+
 //NewLxdAudit new audit object
-func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan chan bool, fi []utils.FilesInfo) *LxdAudit {
+func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan chan bool, fi []utils.FilesInfo, evaluator CmdEvaluator) *LxdAudit {
 	return &LxdAudit{Command: shell.NewShellExec(),
 		PredicateChain:  buildPredicateChain(filters),
 		PredicateParams: buildPredicateChainParams(filters),
@@ -117,6 +125,7 @@ func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan
 		FileLoader:      NewFileLoader(),
 		PlChan:          plChan,
 		FilesInfo:       fi,
+		evaluator:       evaluator,
 		CompletedChan:   completedChan}
 }
 
@@ -164,8 +173,7 @@ func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 		return auditRes
 	}
 	// execute audit test command
-	cmdEval := eval.NewEvalCmd()
-	cmdEvalResult := cmdEval.EvalCommand(at.AuditCommand, at.EvalExpr)
+	cmdEvalResult := ldx.evaluator.EvalCommand(at.AuditCommand, at.EvalExpr)
 	// continue with result processing
 	auditRes = append(auditRes, ldx.ResultProcessor(at, cmdEvalResult.Match)...)
 	return auditRes

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/internal/mocks"
 	"github.com/chen-keinan/lxd-probe/internal/models"
@@ -376,7 +377,8 @@ func Test_NewLxdAudit(t *testing.T) {
 	args := []string{"a", "i=1.2.3"}
 	completedChan := make(chan bool)
 	plChan := make(chan m2.LxdAuditResults)
-	ka := NewLxdAudit(args, plChan, completedChan, []utils.FilesInfo{})
+	evaluator := eval.NewEvalCmd()
+	ka := NewLxdAudit(args, plChan, completedChan, []utils.FilesInfo{}, evaluator)
 	assert.True(t, len(ka.PredicateParams) == 2)
 	assert.True(t, len(ka.PredicateChain) == 2)
 	assert.True(t, ka.ResultProcessor != nil)
@@ -391,7 +393,8 @@ func Test_Help(t *testing.T) {
 	args := []string{"a", "i=1.2.3"}
 	completedChan := make(chan bool)
 	plChan := make(chan m2.LxdAuditResults)
-	ka := NewLxdAudit(args, plChan, completedChan, []utils.FilesInfo{})
+	evaluator := eval.NewEvalCmd()
+	ka := NewLxdAudit(args, plChan, completedChan, []utils.FilesInfo{}, evaluator)
 	help := ka.Help()
 	assert.True(t, len(help) > 0)
 	go func() {
@@ -415,7 +418,8 @@ func Test_LxdSynopsis(t *testing.T) {
 	args := []string{"a", "i=1.2.3"}
 	completedChan := make(chan bool)
 	plChan := make(chan m2.LxdAuditResults)
-	ka := NewLxdAudit(args, plChan, completedChan, []utils.FilesInfo{})
+	evaluator := eval.NewEvalCmd()
+	ka := NewLxdAudit(args, plChan, completedChan, []utils.FilesInfo{}, evaluator)
 	s := ka.Synopsis()
 	assert.True(t, len(s) > 0)
 	go func() {

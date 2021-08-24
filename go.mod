@@ -2,17 +2,16 @@ module github.com/chen-keinan/lxd-probe
 
 go 1.16
 
-
-
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible
- 	github.com/cheggaaa/pb v1.0.29
+	github.com/cheggaaa/pb v1.0.29
 	github.com/chen-keinan/go-command-eval v0.0.2
 	github.com/gobuffalo/envy v1.9.0 // indirect
 	github.com/gobuffalo/packd v1.0.0 // indirect
 	github.com/gobuffalo/packr v1.30.1
 	github.com/golang/mock v1.6.0
- 	github.com/mitchellh/cli v1.1.2
+	github.com/gosuri/uitable v0.0.4 // indirect
+	github.com/mitchellh/cli v1.1.2
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/olekukonko/tablewriter v0.0.5
