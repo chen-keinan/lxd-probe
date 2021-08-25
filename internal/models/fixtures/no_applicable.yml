@@ -14,10 +14,11 @@ categories:
           remediation: Edit the API server pod specification file /etc/kubernetes/manifests/kube-
             apiserver.yaml on the master node and set the --authorization-mode parameter
             to a value that includes RBAC, for example:--authorization-mode=Node,RBAC
-          check_type: blaa
+          check_type: multi_param
           impact: When RBAC is enabled you will need to ensure that appropriate RBAC settings
             (including Roles, RoleBindings and ClusterRoleBindings) are configured to
             allow appropriate access.
+          type: non_applicable
           eval_expr: "'RBAC' IN ($1)"
           default_value: By default, RBAC authorization is not enabled.
           references:

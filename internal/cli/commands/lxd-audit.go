@@ -8,7 +8,6 @@ import (
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
 	"github.com/chen-keinan/lxd-probe/internal/reports"
-	"github.com/chen-keinan/lxd-probe/internal/shell"
 	"github.com/chen-keinan/lxd-probe/internal/startup"
 	"github.com/chen-keinan/lxd-probe/pkg/filters"
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
@@ -17,13 +16,11 @@ import (
 	"github.com/mitchellh/colorstring"
 	"github.com/olekukonko/tablewriter"
 	"os"
-	"strconv"
 	"strings"
 )
 
 //LxdAudit lxd benchmark object
 type LxdAudit struct {
-	Command         shell.Executor
 	ResultProcessor ResultProcessor
 	OutputGenerator ui.OutputGenerator
 	FileLoader      TestLoader
@@ -117,7 +114,7 @@ type CmdEvaluator interface {
 
 //NewLxdAudit new audit object
 func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan chan bool, fi []utils.FilesInfo, evaluator CmdEvaluator) *LxdAudit {
-	return &LxdAudit{Command: shell.NewShellExec(),
+	return &LxdAudit{
 		PredicateChain:  buildPredicateChain(filters),
 		PredicateParams: buildPredicateChainParams(filters),
 		ResultProcessor: GetResultProcessingFunction(filters),
@@ -200,67 +197,6 @@ func (ldx *LxdAudit) addDummyCommandResponse(expr string, index int, n string) s
 type IndexValue struct {
 	index int
 	value string
-}
-
-func (ldx *LxdAudit) execCommand(at *models.AuditBench, index int, prevResult []string, newRes []IndexValue) string {
-	cmd := at.AuditCommand[index]
-	paramArr, ok := at.CommandParams[index]
-	if ok {
-		for _, param := range paramArr {
-			paramNum, err := strconv.Atoi(param)
-			if err != nil {
-				ldx.log.Console(fmt.Sprintf("failed to convert param for command %s", cmd))
-				continue
-			}
-			if paramNum < len(prevResult) {
-				n := ldx.addDummyCommandResponse(at.EvalExpr, index, prevResult[paramNum])
-				newRes = append(newRes, IndexValue{index: paramNum, value: n})
-			}
-		}
-		commandRes := ldx.execCmdWithParams(newRes, len(newRes), make([]IndexValue, 0), cmd, make([]string, 0))
-		sb := strings.Builder{}
-		for _, cr := range commandRes {
-			sb.WriteString(utils.AddNewLineToNonEmptyStr(cr))
-		}
-		return sb.String()
-	}
-	result, _ := ldx.Command.Exec(cmd)
-	if result.Stderr != "" {
-		ldx.log.Console(fmt.Sprintf("Failed to execute command %s\n %s", result.Stderr, cmd))
-	}
-	return ldx.addDummyCommandResponse(at.EvalExpr, index, result.Stdout)
-}
-
-func (ldx *LxdAudit) execCmdWithParams(arr []IndexValue, index int, prevResHolder []IndexValue, currCommand string, resArr []string) []string {
-	if len(arr) == 0 {
-		return ldx.execShellCmd(prevResHolder, resArr, currCommand, ldx.Command)
-	}
-	sArr := strings.Split(utils.RemoveNewLineSuffix(arr[0].value), "\n")
-	for _, a := range sArr {
-		prevResHolder = append(prevResHolder, IndexValue{index: arr[0].index, value: a})
-		resArr = ldx.execCmdWithParams(arr[1:index], index-1, prevResHolder, currCommand, resArr)
-		prevResHolder = prevResHolder[:len(prevResHolder)-1]
-	}
-	return resArr
-}
-
-func (ldx *LxdAudit) execShellCmd(prevResHolder []IndexValue, resArr []string, currCommand string, se shell.Executor) []string {
-	for _, param := range prevResHolder {
-		if param.value == common.EmptyValue || param.value == common.NotValidNumber || param.value == "" {
-			resArr = append(resArr, param.value)
-			break
-		}
-		cmd := strings.ReplaceAll(currCommand, fmt.Sprintf("#%d", param.index), param.value)
-		result, _ := se.Exec(cmd)
-		if result.Stderr != "" {
-			ldx.log.Console(fmt.Sprintf("Failed to execute command %s", result.Stderr))
-		}
-		if len(strings.TrimSpace(result.Stdout)) == 0 {
-			result.Stdout = common.EmptyValue
-		}
-		resArr = append(resArr, result.Stdout)
-	}
-	return resArr
 }
 
 //evalExpression expression eval as cartesian product

@@ -18,6 +18,7 @@ categories:
           impact: When RBAC is enabled you will need to ensure that appropriate RBAC settings
             (including Roles, RoleBindings and ClusterRoleBindings) are configured to
             allow appropriate access.
+          type: manual
           eval_expr: "'RBAC' IN ($1)"
           default_value: By default, RBAC authorization is not enabled.
           references:
