@@ -15,7 +15,7 @@ categories:
             - 'dpkg -s nis 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Uninstall nis: apt purge nis'
           check_type: multi_param
-          eval_expr: "'${0}' == 'install ok installed'; || '${0}' == '';"
+          eval_expr: "'${0}' != 'install ok installed'; || '${0}' == '';"
         -
           name: '2.3.2 Ensure rsh client is not installed (Automated)'
           description: The rsh-client package contains the client commands for the rsh services.
@@ -24,7 +24,7 @@ categories:
             - 'dpkg -s rsh-client 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Uninstall rsh: apt purge rsh-client'
           check_type: multi_param
-          eval_expr: "'${0}' == 'install ok installed'; || '${0}' == '';"
+          eval_expr: "'${0}' != 'install ok installed'; || '${0}' == '';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.3.3 Ensure talk client is not installed (Automated)'
@@ -35,7 +35,7 @@ categories:
             - 'dpkg -s talk 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Uninstall talk: apt purge talk'
           check_type: multi_param
-          eval_expr: "'${0}' == 'install ok installed'; || '${0}' == '';"
+          eval_expr: "'${0}' != 'install ok installed'; || '${0}' == '';"
         -
           name: '2.3.4 Ensure telnet client is not installed (Automated)'
           description: The telnet package contains the telnet client, which allows users to start connections to other systems via the telnet protocol.
@@ -44,7 +44,7 @@ categories:
             - 'dpkg -s telnet 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Uninstall telnet:# apt purge telnet'
           check_type: multi_param
-          eval_expr: "'${0}' == 'install ok installed'; || '${0}' == '';"
+          eval_expr: "'${0}' != 'install ok installed'; || '${0}' == '';"
         -
           name: '2.3.5 Ensure LDAP client is not installed (Automated)'
           description: The Lightweight Directory Access Protocol (LDAP) was introduced as a replacement for NIS/YP.
@@ -54,6 +54,6 @@ categories:
             - 'dpkg -s ldap-utils 2> /dev/null |grep Status |awk -F ":" ''{print $2}'' |awk ''FNR <= 1'''
           remediation: 'Uninstall ldap-utils:# apt purge ldap-utils'
           check_type: multi_param
-          eval_expr: "'${0}' == 'install ok installed'; || '${0}' == '';"
+          eval_expr: "'${0}' != 'install ok installed'; || '${0}' == '';"
           additional_info: The openldap-clients package can go by other names on some distributions.
                           openldap2-client, and ldap-utils are known alternative package names.
