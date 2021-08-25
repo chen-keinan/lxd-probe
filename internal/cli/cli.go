@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/lxd-probe/internal/bplugin"
 	"github.com/chen-keinan/lxd-probe/internal/cli/commands"
 	"github.com/chen-keinan/lxd-probe/internal/common"
@@ -142,7 +143,8 @@ func NewCommandArgs(ad ArgsData) []string {
 func NewCliCommands(ad ArgsData, plChan chan models.LxdAuditResults, completedChan chan bool, fi []utils.FilesInfo) []cli.Command {
 	cmds := make([]cli.Command, 0)
 	// invoke cli
-	cmds = append(cmds, commands.NewLxdAudit(ad.Filters, plChan, completedChan, fi))
+	evaluator := eval.NewEvalCmd()
+	cmds = append(cmds, commands.NewLxdAudit(ad.Filters, plChan, completedChan, fi, evaluator))
 	return cmds
 }
 

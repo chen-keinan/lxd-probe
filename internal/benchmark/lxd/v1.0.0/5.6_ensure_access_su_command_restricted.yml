@@ -18,10 +18,10 @@ categories:
             - 'grep pam_wheel.so /etc/pam.d/su 2> /dev/null  |awk -F " " ''{print $3}'' |awk ''FNR <= 1'''
             - 'grep pam_wheel.so /etc/pam.d/su 2> /dev/null  |awk -F " " ''{print $4}'' |awk ''FNR <= 1'''
             - 'grep pam_wheel.so /etc/pam.d/su 2> /dev/null  |awk -F "group=" ''{print $2}'' |awk ''FNR <= 1'''
-            - 'grep #1 /etc/group 2> /dev/null |awk -F ":" ''{print $4}'' |awk ''FNR <= 1'''
+            - 'grep ${1} /etc/group 2> /dev/null |awk -F ":" ''{print $4}'' |awk ''FNR <= 1'''
           remedeation: 'Create an empty group that will be specified for use of the su command. The group should be named according to site policy.
                         Example:
                         # groupadd sugroup
                         Add the following line to the /etc/pam.d/su file, specifying the empty group: auth required pam_wheel.so use_uid group=sugroup'
           check_type: multi_param
-          eval_expr: "'$0' == 'auth'; && '$1' == 'required'; && '$2' == 'pam_wheel.so'; && '$3' == 'use_uid'; && '$4' != ''; && '$5' == '';"
+          eval_expr: "'${0}' == 'auth'; && '${1}' == 'required'; && '${2}' == 'pam_wheel.so'; && '${3}' == 'use_uid'; && '${4}' != ''; && '${5}' == '';"

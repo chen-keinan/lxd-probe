@@ -16,7 +16,7 @@ categories:
                          # chmod og-rwx /etc/ssh/sshd_config'
           check_type: multi_param
           additional_info: 'Additional methods of enabling a service exist. Consult your distribution documentation for appropriate methods.'
-          eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+          eval_expr: "'${0}' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
         -
           name: '5.2.2 Ensure permissions on SSH private host key files are configured (Automated)'
           description: An SSH private key is one of two files used in SSH public key authentication.
@@ -29,7 +29,7 @@ categories:
                         # find /etc/ssh -xdev -type f -name ''ssh_host_*_key'' -exec chown root:root {} \;
                         # find /etc/ssh -xdev -type f -name ''ssh_host_*_key'' -exec chmod 0600 {} \;'
           check_type: multi_param
-          eval_expr: "'$0' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
+          eval_expr: "'${0}' == '(0600/-rw-------)  Uid: (    0/    root)   Gid: (    0/    root)';"
         -
           name: '5.2.3 Ensure permissions on SSH public host key files are configured (Automated)'
           description: An SSH public key is one of two files used in SSH public key authentication.
@@ -42,7 +42,7 @@ categories:
                         # find /etc/ssh -xdev -type f -name ''ssh_host_*_key.pub'' -exec chmod go-wx {} \;
                         # find /etc/ssh -xdev -type f -name ''ssh_host_*_key.pub'' -exec chown root:root {} \;'
           check_type: multi_param
-          eval_expr: "'$0' == '(0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
+          eval_expr: "'${0}' == '(0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
         -
           name: '5.2.4 Ensure SSH Protocol is not set to 1 (Automated)'
           description: Older versions of SSH support two different and incompatible protocols
@@ -52,7 +52,7 @@ categories:
             - 'sshd -T 2> /dev/null | grep -Ei ''^\s*protocol\s+(1|1\s*,\s*2|2\s*,\s*1)\s*'''
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: Protocol 2'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'This command not longer exists in newer versions of SSH.
                             This check is still being included for systems that may be running an older version of SSH. As of
                             openSSH version 7.4 this parameter will not cause an issue when included.'
@@ -69,7 +69,7 @@ categories:
                         OR
                         LogLevel INFO'
           check_type: multi_param
-          eval_expr: "'$0' == 'loglevel VERBOSE'; || '$0' == 'loglevel INFO';"
+          eval_expr: "'${0}' == 'loglevel VERBOSE'; || '${0}' == 'loglevel INFO';"
           default_value: LogLevel INFO
           references:
             - https://www.ssh.com/ssh/sshd_config/
@@ -81,7 +81,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
                         X11Forwarding no'
           check_type: multi_param
-          eval_expr: "'$0' == 'x11forwarding no';"
+          eval_expr: "'${0}' == 'x11forwarding no';"
         -
           name: '5.2.7 Ensure SSH MaxAuthTries is set to 4 or less (Automated)'
           description: The MaxAuthTries parameter specifies the maximum number of authentication attempts permitted per connection.
@@ -91,7 +91,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
                         MaxAuthTries 4'
           check_type: multi_param
-          eval_expr: "'$0' == 'maxAuthTries 4';"
+          eval_expr: "'${0}' == 'maxAuthTries 4';"
           default_value: MaxAuthTries 6
         -
           name: '5.2.8 Ensure SSH IgnoreRhosts is enabled (Automated)'
@@ -102,7 +102,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
                         IgnoreRhosts yes'
           check_type: multi_param
-          eval_expr: "'$0' == 'ignoreRhosts yes';"
+          eval_expr: "'${0}' == 'ignoreRhosts yes';"
           default_value: IgnoreRhosts yes
         -
           name: '5.2.9 Ensure SSH HostbasedAuthentication is disabled (Automated)'
@@ -114,7 +114,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
                         hostbasedauthentication no'
           check_type: multi_param
-          eval_expr: "'$0' == 'hostbasedauthentication no';"
+          eval_expr: "'${0}' == 'hostbasedauthentication no';"
           default_value: hostbasedAuthentication no
         -
           name: '5.2.10 Ensure SSH root login is disabled (Automated)'
@@ -124,7 +124,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows::
                         permitrootlogin no'
           check_type: multi_param
-          eval_expr: "'$0' == 'permitrootlogin no';"
+          eval_expr: "'${0}' == 'permitrootlogin no';"
           default_value: PermitRootLogin without-password
         -
           name: '5.2.11 Ensure SSH PermitEmptyPasswords is disabled (Automated)'
@@ -134,7 +134,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows::
                         permitemptypasswords no'
           check_type: multi_param
-          eval_expr: "'$0' == 'permitemptypasswords no';"
+          eval_expr: "'${0}' == 'permitemptypasswords no';"
           default_value: PermitEmptyPasswords no
         -
           name: '5.2.12 Ensure SSH PermitUserEnvironment is disabled (Automated)'
@@ -144,7 +144,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows::
                         permituserenvironment no'
           check_type: multi_param
-          eval_expr: "'$0' == 'permituserenvironment no';"
+          eval_expr: "'${0}' == 'permituserenvironment no';"
           default_value: permituserenvironment no
         -
           name: '5.2.13 Ensure only strong Ciphers are used (Automated)'
@@ -160,7 +160,7 @@ categories:
                          aes192-ctr,
                          aes128-ctr'
           check_type: multi_param
-          eval_expr: "'$0' IN ('3des-cbc','aes128-cbc','aes192-cbc','aes256-cbc','arcfour','arcfour128','arcfour256','blowfish-cbc','cast128-cbc','rijndael-cbc@lysator.liu.se');"
+          eval_expr: "'${0}' IN ('3des-cbc','aes128-cbc','aes192-cbc','aes256-cbc','arcfour','arcfour128','arcfour256','blowfish-cbc','cast128-cbc','rijndael-cbc@lysator.liu.se');"
           default_value: Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128- gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256- cbc,blowfish-cbc,cast128-cbc,3des-cbc
           references:
             - https://nvd.nist.gov/vuln/detail/CVE-2016-2183 2. https://nvd.nist.gov/vuln/detail/CVE-2015-2808 3. https://www.kb.cert.org/vuls/id/565052
@@ -200,7 +200,7 @@ categories:
                           hmac-sha2-512,
                           hmac-sha2-256'
           check_type: multi_param
-          eval_expr: "!('$0' IN ('hmac-md5','hmac-md5-96','hmac-ripemd160','hmac-sha1','hmac-sha1-96','umac-64@openssh.com','umac-128@openssh.com','hmac-md5-etm@openssh.com','hmac-md5-96-etm@openssh.com','hmac-ripemd160-etm@openssh.com','hmac-sha1-etm@openssh.com','hmac-sha1-96-etm@openssh.com','umac-64-etm@openssh.com','umac-128-etm@openssh.com');)"
+          eval_expr: "!('${0}' IN ('hmac-md5','hmac-md5-96','hmac-ripemd160','hmac-sha1','hmac-sha1-96','umac-64@openssh.com','umac-128@openssh.com','hmac-md5-etm@openssh.com','hmac-md5-96-etm@openssh.com','hmac-ripemd160-etm@openssh.com','hmac-sha1-etm@openssh.com','hmac-sha1-96-etm@openssh.com','umac-64-etm@openssh.com','umac-128-etm@openssh.com');)"
           default_value: MACs umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256- etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1- etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2- 256,hmac-sha2-512,hmac-sha1,hmac-sha1-etm@openssh.com
           references:
             - More information on SSH downgrade attacks can be found here http://www.mitls.org/pages/attacks/SLOTH
@@ -241,7 +241,7 @@ categories:
                           ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,
                           diffie- hellman-group-exchange-sha256'
           check_type: multi_param
-          eval_expr: "!('$0' IN ('diffie-hellman-group1-sha1','diffie-hellman-group14-sha1','diffie-hellman-group-exchange-sha1');)"
+          eval_expr: "!('${0}' IN ('diffie-hellman-group1-sha1','diffie-hellman-group14-sha1','diffie-hellman-group-exchange-sha1');)"
           default_value: KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2- nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange- sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
           additional_info: 'Kex algorithms have a higher preference the earlier they appear in the list
                             Some organizations may have stricter requirements for approved Key exchange algorithms. Ensure that Key exchange algorithms used are in compliance with site policy.
@@ -264,7 +264,7 @@ categories:
                         ClientAliveInterval 300
                         ClientAliveCountMax 0'
           check_type: multi_param
-          eval_expr: "$0 > 1 && $0 < 300 && $1 <= 3"
+          eval_expr: "${0} > 1 && ${0} < 300 && ${1} <= 3"
           default_value: ClientAliveInterval 300 ClientAliveCountMax 0
         -
           name: '5.2.17 Ensure SSH LoginGraceTime is set to one minute or less (Automated)'
@@ -276,7 +276,7 @@ categories:
             - 'sshd -T 2> /dev/null| grep logingracetime |awk -F "logingracetime" ''{print $2}'' |awk ''FNR <= 1'''
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: LoginGraceTime 60'
           check_type: multi_param
-          eval_expr: "$0 > 1 && $0 < 60"
+          eval_expr: "${0} > 1 && ${0} < 60"
           default_value: LoginGraceTime 120
         -
           name: '5.2.18 Ensure SSH access is limited (Automated)'
@@ -305,7 +305,7 @@ categories:
                         DenyUsers <userlist>
                         DenyGroups <grouplist>'
           check_type: multi_param
-          eval_expr: "'$0' != ''; && '$1' != ''; && '$2' != ''; && '$3' != '';"
+          eval_expr: "'${0}' != ''; && '${1}' != ''; && '$2' != ''; && '${3}' != '';"
         -
           name: '5.2.19 Ensure SSH warning banner is configured (Automated)'
           description: The Banner parameter specifies a file whose contents must be sent to the remote user before authentication is permitted.
@@ -314,7 +314,7 @@ categories:
             - 'sshd -T 2> /dev/null| grep banner'
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: Banner /etc/issue.net'
           check_type: multi_param
-          eval_expr: "'$0' == 'banner /etc/issue.net';"
+          eval_expr: "'${0}' == 'banner /etc/issue.net';"
         -
           name: '5.2.20 Ensure SSH PAM is enabled (Automated)'
           description: UsePAM Enables the Pluggable Authentication Module interface.
@@ -324,7 +324,7 @@ categories:
             - 'sshd -T 2> /dev/null| grep -i usepam'
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: UsePAM yes'
           check_type: multi_param
-          eval_expr: "'$0' == 'usepam yes';"
+          eval_expr: "'${0}' == 'usepam yes';"
           default_value: usepam yes
         -
           name: '5.2.21 Ensure SSH AllowTcpForwarding is disabled (Automated)'
@@ -336,7 +336,7 @@ categories:
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows:
                         AllowTcpForwarding no'
           check_type: multi_param
-          eval_expr: "'$0' == 'allowtcpforwarding no';"
+          eval_expr: "'${0}' == 'allowtcpforwarding no';"
           default_value: allowTcpForwarding yes
         -
           name: '5.2.22 Ensure SSH MaxStartups is configured (Automated)'
@@ -345,7 +345,7 @@ categories:
             - 'sshd -T 2> /dev/null| grep -i maxstartups'
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: maxstartups 10:30:60'
           check_type: multi_param
-          eval_expr: "'$0' == 'maxstartups 10:30:60';"
+          eval_expr: "'${0}' == 'maxstartups 10:30:60';"
           additional_info: 'Local site policy may be more restrictive'
         -
           name: '5.2.23 Ensure SSH MaxSessions is set to 4 or less (Automated)'
@@ -354,6 +354,6 @@ categories:
             - 'sshd -T 2> /dev/null| grep -i maxsessions'
           remedeation: 'Edit the /etc/ssh/sshd_config file to set the parameter as follows: MaxSessions 4'
           check_type: multi_param
-          eval_expr: "'$0' == 'maxsessions 4';"
+          eval_expr: "'${0}' == 'maxsessions 4';"
           default_value: MaxSessions 10
 

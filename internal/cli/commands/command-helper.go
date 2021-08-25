@@ -76,21 +76,19 @@ func printClassicTestResults(at []*models.AuditBench, log *logger.LdxProbeLogger
 }
 
 //AddFailedMessages add failed audit test to report data
-func AddFailedMessages(at *models.AuditBench, NumFailedTest int) []*models.AuditBench {
+func AddFailedMessages(at *models.AuditBench, isSucceeded bool) []*models.AuditBench {
 	av := make([]*models.AuditBench, 0)
-	testSucceeded := NumFailedTest == 0
-	at.TestSucceed = testSucceeded
-	if !testSucceeded || at.NonApplicable {
+	at.TestSucceed = isSucceeded
+	if !isSucceeded || at.NonApplicable {
 		av = append(av, at)
 	}
 	return av
 }
 
 //AddAllMessages add all audit test to report data
-func AddAllMessages(at *models.AuditBench, NumFailedTest int) []*models.AuditBench {
+func AddAllMessages(at *models.AuditBench, isSucceeded bool) []*models.AuditBench {
 	av := make([]*models.AuditBench, 0)
-	testSucceeded := NumFailedTest == 0
-	at.TestSucceed = testSucceeded
+	at.TestSucceed = isSucceeded
 	av = append(av, at)
 	return av
 }

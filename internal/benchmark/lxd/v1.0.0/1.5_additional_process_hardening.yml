@@ -16,4 +16,4 @@ categories:
           remediation: 'Run the following command to restore binaries to normal: # prelink -ua
                         Uninstall prelink using the appropriate package manager or manual installation: # apt purge prelink'
           check_type: multi_param
-          eval_expr: "'$0' != 'install ok installed';"
+          eval_expr: "'${0}' != 'install ok installed';"

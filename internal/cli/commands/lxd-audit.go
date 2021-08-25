@@ -2,12 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/Knetic/govaluate"
-	"github.com/chen-keinan/lxd-probe/internal/common"
+	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
 	"github.com/chen-keinan/lxd-probe/internal/reports"
-	"github.com/chen-keinan/lxd-probe/internal/shell"
 	"github.com/chen-keinan/lxd-probe/internal/startup"
 	"github.com/chen-keinan/lxd-probe/pkg/filters"
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
@@ -16,13 +14,10 @@ import (
 	"github.com/mitchellh/colorstring"
 	"github.com/olekukonko/tablewriter"
 	"os"
-	"strconv"
-	"strings"
 )
 
 //LxdAudit lxd benchmark object
 type LxdAudit struct {
-	Command         shell.Executor
 	ResultProcessor ResultProcessor
 	OutputGenerator ui.OutputGenerator
 	FileLoader      TestLoader
@@ -31,11 +26,12 @@ type LxdAudit struct {
 	PlChan          chan m2.LxdAuditResults
 	CompletedChan   chan bool
 	FilesInfo       []utils.FilesInfo
+	Evaluator       eval.CmdEvaluator
 	log             *logger.LdxProbeLogger
 }
 
 // ResultProcessor process audit results
-type ResultProcessor func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench
+type ResultProcessor func(at *models.AuditBench, isSucceeded bool) []*models.AuditBench
 
 // ConsoleOutputGenerator print audit tests to stdout
 var ConsoleOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, log *logger.LdxProbeLogger) {
@@ -96,19 +92,26 @@ var ReportOutputGenerator ui.OutputGenerator = func(at []*models.SubCategory, lo
 }
 
 // simpleResultProcessor process audit results to stdout print only
-var simpleResultProcessor ResultProcessor = func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench {
-	return AddAllMessages(at, NumFailedTest)
+var simpleResultProcessor ResultProcessor = func(at *models.AuditBench, isSucceeded bool) []*models.AuditBench {
+	return AddAllMessages(at, isSucceeded)
 }
 
 // ResultProcessor process audit results to std out and failure results
-var reportResultProcessor ResultProcessor = func(at *models.AuditBench, NumFailedTest int) []*models.AuditBench {
+var reportResultProcessor ResultProcessor = func(at *models.AuditBench, isSucceeded bool) []*models.AuditBench {
 	// append failed messages
-	return AddFailedMessages(at, NumFailedTest)
+	return AddFailedMessages(at, isSucceeded)
+}
+
+//CmdEvaluator interface expose one method to evaluate command with evalExpr
+//lxd-audit.go
+//go:generate mockgen -destination=../mocks/mock_CmdEvaluator.go -package=mocks . CmdEvaluator
+type CmdEvaluator interface {
+	EvalCommand(commands []string, evalExpr string) eval.CmdEvalResult
 }
 
 //NewLxdAudit new audit object
-func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan chan bool, fi []utils.FilesInfo) *LxdAudit {
-	return &LxdAudit{Command: shell.NewShellExec(),
+func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan chan bool, fi []utils.FilesInfo, evaluator CmdEvaluator) *LxdAudit {
+	return &LxdAudit{
 		PredicateChain:  buildPredicateChain(filters),
 		PredicateParams: buildPredicateChainParams(filters),
 		ResultProcessor: GetResultProcessingFunction(filters),
@@ -116,6 +119,7 @@ func NewLxdAudit(filters []string, plChan chan m2.LxdAuditResults, completedChan
 		FileLoader:      NewFileLoader(),
 		PlChan:          plChan,
 		FilesInfo:       fi,
+		Evaluator:       evaluator,
 		CompletedChan:   completedChan}
 }
 
@@ -162,147 +166,11 @@ func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 		auditRes = append(auditRes, at)
 		return auditRes
 	}
-	cmdTotalRes := make([]string, 0)
 	// execute audit test command
-	for index := range at.AuditCommand {
-		res := ldx.execCommand(at, index, cmdTotalRes, make([]IndexValue, 0))
-		cmdTotalRes = append(cmdTotalRes, res)
-	}
-	// evaluate command result with expression
-	NumFailedTest := ldx.evalExpression(at, cmdTotalRes, len(cmdTotalRes), make([]string, 0), 0)
+	cmdEvalResult := ldx.Evaluator.EvalCommand(at.AuditCommand, at.EvalExpr)
 	// continue with result processing
-	auditRes = append(auditRes, ldx.ResultProcessor(at, NumFailedTest)...)
+	auditRes = append(auditRes, ldx.ResultProcessor(at, cmdEvalResult.Match)...)
 	return auditRes
-}
-
-func (ldx *LxdAudit) addDummyCommandResponse(expr string, index int, n string) string {
-	if n == "[^\"]\\S*'\n" || n == "" || n == common.EmptyValue {
-		spExpr := utils.SeparateExpr(expr)
-		for _, expr := range spExpr {
-			if expr.Type == common.SingleValue {
-				if !strings.Contains(expr.Expr, fmt.Sprintf("'$%d'", index)) {
-					if strings.Contains(expr.Expr, fmt.Sprintf("$%d", index)) {
-						return common.NotValidNumber
-					}
-				}
-			}
-		}
-		return common.EmptyValue
-	}
-	return n
-}
-
-//IndexValue hold command index and result
-type IndexValue struct {
-	index int
-	value string
-}
-
-func (ldx *LxdAudit) execCommand(at *models.AuditBench, index int, prevResult []string, newRes []IndexValue) string {
-	cmd := at.AuditCommand[index]
-	paramArr, ok := at.CommandParams[index]
-	if ok {
-		for _, param := range paramArr {
-			paramNum, err := strconv.Atoi(param)
-			if err != nil {
-				ldx.log.Console(fmt.Sprintf("failed to convert param for command %s", cmd))
-				continue
-			}
-			if paramNum < len(prevResult) {
-				n := ldx.addDummyCommandResponse(at.EvalExpr, index, prevResult[paramNum])
-				newRes = append(newRes, IndexValue{index: paramNum, value: n})
-			}
-		}
-		commandRes := ldx.execCmdWithParams(newRes, len(newRes), make([]IndexValue, 0), cmd, make([]string, 0))
-		sb := strings.Builder{}
-		for _, cr := range commandRes {
-			sb.WriteString(utils.AddNewLineToNonEmptyStr(cr))
-		}
-		return sb.String()
-	}
-	result, _ := ldx.Command.Exec(cmd)
-	if result.Stderr != "" {
-		ldx.log.Console(fmt.Sprintf("Failed to execute command %s\n %s", result.Stderr, cmd))
-	}
-	return ldx.addDummyCommandResponse(at.EvalExpr, index, result.Stdout)
-}
-
-func (ldx *LxdAudit) execCmdWithParams(arr []IndexValue, index int, prevResHolder []IndexValue, currCommand string, resArr []string) []string {
-	if len(arr) == 0 {
-		return ldx.execShellCmd(prevResHolder, resArr, currCommand, ldx.Command)
-	}
-	sArr := strings.Split(utils.RemoveNewLineSuffix(arr[0].value), "\n")
-	for _, a := range sArr {
-		prevResHolder = append(prevResHolder, IndexValue{index: arr[0].index, value: a})
-		resArr = ldx.execCmdWithParams(arr[1:index], index-1, prevResHolder, currCommand, resArr)
-		prevResHolder = prevResHolder[:len(prevResHolder)-1]
-	}
-	return resArr
-}
-
-func (ldx *LxdAudit) execShellCmd(prevResHolder []IndexValue, resArr []string, currCommand string, se shell.Executor) []string {
-	for _, param := range prevResHolder {
-		if param.value == common.EmptyValue || param.value == common.NotValidNumber || param.value == "" {
-			resArr = append(resArr, param.value)
-			break
-		}
-		cmd := strings.ReplaceAll(currCommand, fmt.Sprintf("#%d", param.index), param.value)
-		result, _ := se.Exec(cmd)
-		if result.Stderr != "" {
-			ldx.log.Console(fmt.Sprintf("Failed to execute command %s", result.Stderr))
-		}
-		if len(strings.TrimSpace(result.Stdout)) == 0 {
-			result.Stdout = common.EmptyValue
-		}
-		resArr = append(resArr, result.Stdout)
-	}
-	return resArr
-}
-
-//evalExpression expression eval as cartesian product
-func (ldx *LxdAudit) evalExpression(at *models.AuditBench,
-	commandRes []string, commResSize int, permutationArr []string, testFailure int) int {
-	if len(commandRes) == 0 {
-		return ldx.evalCommand(at, permutationArr, testFailure)
-	}
-	outputs := strings.Split(utils.RemoveNewLineSuffix(commandRes[0]), "\n")
-	for _, o := range outputs {
-		permutationArr = append(permutationArr, o)
-		testFailure = ldx.evalExpression(at, commandRes[1:commResSize], commResSize-1, permutationArr, testFailure)
-		if testFailure > 0 {
-			return testFailure
-		}
-		permutationArr = permutationArr[:len(permutationArr)-1]
-	}
-	return testFailure
-}
-
-func (ldx *LxdAudit) evalCommand(at *models.AuditBench, permutationArr []string, testExec int) int {
-	// build command expression with params
-	expr := at.CmdExprBuilder(permutationArr, at.EvalExpr)
-	testExec++
-	// eval command expression
-	testSucceeded, err := evalCommandExpr(strings.ReplaceAll(expr, common.EmptyValue, ""))
-	if err != nil {
-		ldx.log.Console(fmt.Sprintf("failed to evaluate command expr %s for audit test %s : err %s", expr, at.Name, err.Error()))
-	}
-	return testExec - testSucceeded
-}
-
-func evalCommandExpr(expr string) (int, error) {
-	expression, err := govaluate.NewEvaluableExpression(expr)
-	if err != nil {
-		return 0, err
-	}
-	result, err := expression.Evaluate(nil)
-	if err != nil {
-		return 0, err
-	}
-	b, ok := result.(bool)
-	if ok && b {
-		return 1, nil
-	}
-	return 0, nil
 }
 
 //Synopsis for help

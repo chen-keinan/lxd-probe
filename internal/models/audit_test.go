@@ -2,44 +2,35 @@ package models
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/chen-keinan/lxd-probe/internal/common"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"testing"
 )
 
-//Test_CheckType_Permission test
-func Test_CheckType_Blaa(t *testing.T) {
-	ab := Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeBlaa.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
+func TestAuditBench_UnmarshalYAML(t *testing.T) {
+	tests := []struct {
+		name     string
+		fileName string
+		want     string
+	}{
+		{name: "non applicable test", fileName: "no_applicable.yml", want: common.NonApplicableTest},
+		{name: "manual test", fileName: "manual.yml", want: common.ManualTest},
 	}
-	assert.NoError(t, err)
-	assert.Nil(t, ab.Categories[0].SubCategory.AuditTests[0].CmdExprBuilder)
-}
-
-//Test_CheckType_Multi_ProcessParam test
-func Test_CheckType_Multi_ProcessParam(t *testing.T) {
-	ab := Audit{}
-	err := yaml.Unmarshal(readTestData("CheckTypeMultiProcessParam.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ab := Audit{}
+			err := yaml.Unmarshal(readTestData(tt.fileName, t), &ab)
+			if err != nil {
+				t.Errorf("TestAuditBench_UnmarshalYAML failed to unmarshal json %v", err)
+			}
+			got := ab.Categories[0].SubCategory.AuditTests[0].TestType
+			if tt.want != got {
+				t.Errorf("TestAuditBench_UnmarshalYAML want %v got %v", tt.want, got)
+			}
+		})
 	}
-	assert.NoError(t, err)
-	assert.NotNil(t, ab.Categories[0].SubCategory.AuditTests[0].CmdExprBuilder)
-}
-
-//Test_CheckType_Multi_ProcessParam test
-func Test_CheckType_Multi_AdditionalInfo(t *testing.T) {
-	ab := Audit{}
-	err := yaml.Unmarshal(readTestData("lxd_filesystem_configuration.yml", t), &ab)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.NoError(t, err)
-	assert.NotNil(t, ab.Categories[0].SubCategory.AuditTests[0].CmdExprBuilder)
 }
 
 func readTestData(fileName string, t *testing.T) []byte {
@@ -53,25 +44,4 @@ func readTestData(fileName string, t *testing.T) []byte {
 	}
 	f.Close()
 	return b
-}
-
-//Test_AuditIndexWithParams test
-func Test_AuditIndexWithParams(t *testing.T) {
-	commands := []string{"aaa", "bbb #0", "ccc #0 #1"}
-	commandParams := make(map[int][]string)
-	for index, command := range commands {
-		findIndex(command, "#", index, commandParams)
-	}
-	assert.Equal(t, commandParams[1], []string{"0"})
-	assert.Equal(t, commandParams[2], []string{"0", "1"})
-}
-
-//Test_AuditIndexWithParams test
-func Test_AuditIndexWithNoParams(t *testing.T) {
-	commands := []string{"aaa", "bbb", "ccc"}
-	commandParams := make(map[int][]string)
-	for index, command := range commands {
-		findIndex(command, "#", index, commandParams)
-	}
-	assert.True(t, len(commandParams) == 0)
 }

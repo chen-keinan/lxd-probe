@@ -19,7 +19,7 @@ categories:
                         OR
                         # apt install sudo-ldap'
           check_type: multi_param
-          eval_expr: "'$0' == 'install ok installed'; || '$1' == 'install ok installed';"
+          eval_expr: "'${0}' == 'install ok installed'; || '${1}' == 'install ok installed';"
           additional_info: Use the sudo-ldap package if you need LDAP support for sudoers.
           references:
             - SUDO(8)
@@ -33,7 +33,7 @@ categories:
           remediation: 'edit the file /etc/sudoers or a file in /etc/sudoers.d/ with visudo -f and add the following line:
                         Defaults use_pty'
           check_type: multi_param
-          eval_expr: "'$0' != '';"
+          eval_expr: "'${0}' != '';"
           additional_info: isudo edits the sudoers file in a safe fashion, analogous to vipw(8).
                           visudo locks the sudoers file against multiple simultaneous edits, provides basic sanity checks, and checks or parse errors.
                           If the sudoers file is currently being edited you will receive a message to try again later.
@@ -50,7 +50,7 @@ categories:
                         Example
                         Defaults logfile="/var/log/sudo.log"'
           check_type: multi_param
-          eval_expr: "'$0' != '';"
+          eval_expr: "'${0}' != '';"
           additional_info: visudo edits the sudoers file in a safe fashion, analogous to vipw(8).
                            visudo locks the sudoers file against multiple simultaneous edits, provides basic sanity checks, and checks or parse errors.
                            If the sudoers file is currently being edited you will receive a message to try again later.

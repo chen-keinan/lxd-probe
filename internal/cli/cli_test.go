@@ -1,11 +1,12 @@
 package cli
 
 import (
+	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/lxd-probe/internal/cli/commands"
+	"github.com/chen-keinan/lxd-probe/internal/cli/mocks"
 	"github.com/chen-keinan/lxd-probe/internal/common"
-	"github.com/chen-keinan/lxd-probe/internal/mocks"
+	m3 "github.com/chen-keinan/lxd-probe/internal/mocks"
 	"github.com/chen-keinan/lxd-probe/internal/models"
-	"github.com/chen-keinan/lxd-probe/internal/shell"
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
 	"github.com/chen-keinan/lxd-probe/pkg/utils"
 	"github.com/golang/mock/gomock"
@@ -86,7 +87,7 @@ func Test_createCliBuilderData(t *testing.T) {
 	completedChan := make(chan bool)
 	plChan := make(chan m2.LxdAuditResults)
 	// invoke cli
-	cmds = append(cmds, commands.NewLxdAudit(ad.Filters, plChan, completedChan, []utils.FilesInfo{}))
+	cmds = append(cmds, commands.NewLxdAudit(ad.Filters, plChan, completedChan, []utils.FilesInfo{}, eval.NewEvalCmd()))
 	c := createCliBuilderData(cmdArgs, cmds)
 	_, ok := c["a"]
 	assert.True(t, ok)
@@ -99,20 +100,19 @@ func Test_InvokeCli(t *testing.T) {
 	ab.AuditCommand = []string{"aaa"}
 	ab.EvalExpr = "'$0' != '';"
 	ab.CommandParams = map[int][]string{}
-	ab.CmdExprBuilder = utils.UpdateCmdExprParam
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	executor := mocks.NewMockExecutor(ctrl)
-	executor.EXPECT().Exec("aaa").Return(&shell.CommandResult{Stdout: "1234"}, nil).Times(1)
-	tl := mocks.NewMockTestLoader(ctrl)
-	tl.EXPECT().LoadAuditTests(nil).Return([]*models.SubCategory{{Name: "te", AuditTests: []*models.AuditBench{ab}}})
+	evalCmd := mocks.NewMockCmdEvaluator(ctrl)
+	evalCmd.EXPECT().EvalCommand([]string{"aaa"}, ab.EvalExpr).Return(eval.CmdEvalResult{Match: true}).Times(1)
 	completedChan := make(chan bool)
 	plChan := make(chan m2.LxdAuditResults)
+	tl := m3.NewMockTestLoader(ctrl)
+	tl.EXPECT().LoadAuditTests(nil).Return([]*models.SubCategory{{Name: "te", AuditTests: []*models.AuditBench{ab}}})
 	go func() {
 		<-plChan
 		completedChan <- true
 	}()
-	kb := &commands.LxdAudit{Command: executor, ResultProcessor: commands.GetResultProcessingFunction([]string{}), FileLoader: tl, OutputGenerator: commands.ConsoleOutputGenerator, PlChan: plChan, CompletedChan: completedChan}
+	kb := &commands.LxdAudit{Evaluator: evalCmd, ResultProcessor: commands.GetResultProcessingFunction([]string{}), FileLoader: tl, OutputGenerator: commands.ConsoleOutputGenerator, PlChan: plChan, CompletedChan: completedChan}
 	cmdArgs := []string{"a"}
 	cmds := make([]cli.Command, 0)
 	// invoke cli

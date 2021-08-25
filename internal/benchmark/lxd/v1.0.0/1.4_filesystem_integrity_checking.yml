@@ -20,7 +20,7 @@ categories:
                         Initialize AIDE:
                         # aideinit'
           check_type: multi_param
-          eval_expr: "'$0' == 'install ok installed';"
+          eval_expr: "'${0}' == 'install ok installed';"
           additional_info: The prelinking feature can interfere with AIDE because it alters binaries to speed up their start up times.
                             Run prelink -ua to restore the binaries to their prelinked state, thus avoiding false positives from AIDE.
         -
@@ -61,7 +61,7 @@ categories:
                                # systemctl enable aidecheck.service
                                # systemctl --now enable aidecheck.timer'
           check_type: multi_param
-          eval_expr: "('$0' != ''; && '$1' != '';) || ('$2' != ''; && '$3' != ''; && '$4' != 'Unit aidecheck.timer could not be found.';) "
+          eval_expr: "('${0}' != ''; && '${1}' != '';) || ('${2}' != ''; && '${3}' != ''; && '${4}' != 'Unit aidecheck.timer could not be found.';) "
           additional_info: The checking in this recommendation occurs every day at 5am. Alter the frequency and time of the checks in compliance with site policy.
             Note that Debian advises using /usr/bin/aide.wrapper rather than calling /usr/bin/aide directly in order to protect the database and prevent conflicts.
           references:

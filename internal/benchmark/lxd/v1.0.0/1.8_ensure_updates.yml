@@ -18,7 +18,7 @@ categories:
                         OR
                         # apt dist-upgrade'
           check_type: multi_param
-          eval_expr: "'$0' != 'install ok installed';"
+          eval_expr: "'${0}' != 'install ok installed';"
           additional_info: 'Site policy may mandate a testing period before install onto production systems for available updates.
                             upgrade: upgrade is used to install the newest versions of all packages currently installed on the system from the sources enumerated in /etc/apt/sources.list.
                              Packages currently installed with new versions available are retrieved and upgraded;

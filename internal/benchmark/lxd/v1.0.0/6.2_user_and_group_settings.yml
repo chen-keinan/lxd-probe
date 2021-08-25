@@ -15,7 +15,7 @@ categories:
                         # passwd -l <username>
                         Also, check to see if the account is logged in and investigate what it is being used for to determine if it needs to be forced off.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.2 Ensure no legacy "+" entries exist in /etc/passwd (Automated)'
           description: 'The character + in various files used to be markers for systems to insert data from NIS maps at
@@ -25,7 +25,7 @@ categories:
             - 'grep ''^\+:'' /etc/passwd 2> /dev/null'
           remedeation: 'Remove any legacy entries from /etc/passwd if they exist.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.3 Ensure all users'' home directories exist (Automated)'
           description: 'The character + in various files used to be markers for systems to insert data
@@ -40,7 +40,7 @@ categories:
                         Users without an assigned home directory should be removed or assigned a home directory as appropriate.'
           additional_info: 'The audit script checks all users with interactive shells except halt, sync, shutdown, and nfsnobody.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.4 Ensure no legacy "+" entries exist in /etc/shadow (Automated)'
           description: 'The character + in various files used to be markers for systems to insert data from NIS maps at a certain point in a system configuration file.
@@ -49,7 +49,7 @@ categories:
             - 'grep ''^\+:'' /etc/shadow 2> /dev/null'
           remedeation: 'Remove any legacy entries from /etc/shadow if they exist.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.5 Ensure no legacy "+" entries exist in /etc/group (Automated)'
           description: 'The character + in various files used to be markers for systems to insert data from NIS maps at a certain point
@@ -59,7 +59,7 @@ categories:
             - 'grep ''^\+:'' /etc/group 2> /dev/null'
           remedeation: 'Remove any legacy entries from /etc/group if they exist.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.6 Ensure root is the only UID 0 account (Automated)'
           description: 'Any account with UID 0 has superuser privileges on the system.'
@@ -67,7 +67,7 @@ categories:
             - 'awk -F: ''($3 == 0) { print $1 }'' /etc/passwd 2> /dev/null'
           remedeation: 'Remove any users other than root with UID 0 or assign them a new UID if appropriate.'
           check_type: multi_param
-          eval_expr: "'$0' == 'root';"
+          eval_expr: "'${0}' == 'root';"
         -
           name: '6.2.7 Ensure root PATH Integrity (Automated)'
           description: 'The root user can execute any command on the system and could be fooled into executing programs unintentionally if the PATH is not set correctly.'
@@ -89,7 +89,7 @@ categories:
                 fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Correct or justify any items discovered in the Audit step.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.8 Ensure users home directories permissions are 750 or more restrictive (Automated)'
           description: 'While the system administrator can establish secure permissions for users home directories, the users can easily override these.'
@@ -116,7 +116,7 @@ categories:
                         can result in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring
                         policy be established to report user file permissions and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.9 Ensure users own their home directories (Automated)'
@@ -132,7 +132,7 @@ categories:
               fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Change the ownership of any home directories that are not owned by the defined user to the correct user.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.10 Ensure users dot files are not group or world writable (Automated)'
@@ -156,7 +156,7 @@ categories:
                         Therefore, it is recommended that a monitoring policy be established to report user dot
                          file permissions and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.11 Ensure no users have .forward files (Automated)'
@@ -174,7 +174,7 @@ categories:
                         Therefore, it is recommended that a monitoring policy be established to report user.
                         forward files and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.12 Ensure no users have .netrc files (Automated)'
@@ -193,7 +193,7 @@ categories:
                         in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring policy
                          be established to report user .netrc files and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.13 Ensure users .netrc Files are not group or world accessible (Automated)'
@@ -231,7 +231,7 @@ categories:
                         and unhappy users. Therefore, it is recommended that a monitoring policy be established to report user
                         .netrc file permissions and determine the action to be taken in accordance with site policy'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'While the complete removal of .netrc files is recommended if any are required on the system secure permissions must be applied.'
         -
           name: '6.2.14 Ensure no users have .rhosts files (Automated)'
@@ -248,7 +248,7 @@ categories:
                fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Making global modifications to users files without alerting the user community can result in unexpected outages and unhappy users. Therefore, it is recommended that a monitoring policy be established to report user .rhosts files and determine the action to be taken in accordance with site policy.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.15 Ensure all groups in /etc/passwd exist in /etc/group (Automated)'
@@ -260,7 +260,7 @@ categories:
                fi done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Analyze the output of the Audit step above and perform the appropriate action to correct any discrepancies found.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'On some distributions the /sbin/nologin should be replaced with /usr/sbin/nologin.'
         -
           name: '6.2.16 Ensure no duplicate UIDs exist (Automated)'
@@ -276,7 +276,7 @@ categories:
                 done > tf | awk ''{ print $3 }'' tf'
           remedeation: 'Based on the results of the audit script, establish unique UIDs and review all files owned by the shared UIDs to determine which UID they are supposed to belong to.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.17 Ensure no duplicate GIDs exist (Automated)'
           description: 'Although the groupadd program will not let you create a duplicate Group ID (GID), it is possible for an administrator to manually edit the /etc/group file and change the GID field.'
@@ -285,7 +285,7 @@ categories:
                done > tf | awk ''{ print $2 }'' tf'
           remedeation: 'Based on the results of the audit script, establish unique GIDs and review all files owned by the shared GID to determine which group they are supposed to belong to.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: 'You can also use the grpck command to check for other inconsistencies in the /etc/group file.'
         -
           name: '6.2.18 Ensure no duplicate user names exist (Automated)'
@@ -295,7 +295,7 @@ categories:
                done > tf | awk ''{ print $2 }'' tf'
           remedeation: 'Based on the results of the audit script, establish unique user names for the users. File ownerships will automatically reflect the change as long as the users have unique UIDs.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.19 Ensure no duplicate group names exist (Automated)'
           description: 'Although the groupadd program will not let you create a duplicate group name, it is possible for an administrator to manually edit the /etc/group file and change the group name.'
@@ -304,7 +304,7 @@ categories:
                done > tf | awk ''{ print $2 }'' tf'
           remedeation: 'Based on the results of the audit script, establish unique names for the user groups. File group ownerships will automatically reflect the change as long as the groups have unique GIDs.'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '6.2.20 Ensure shadow group is empty (Automated)'
           description: 'The shadow group allows system programs which require access the ability to read the /etc/shadow file. No users should be assigned to the shadow group.'
@@ -313,4 +313,4 @@ categories:
             - 'awk -F: ''($4 == "<shadow-gid>") { print }'' /etc/passwd'
           remedeation: 'Remove all users from the shadow group, and change the primary group of any users with shadow as their primary group.'
           check_type: multi_param
-          eval_expr: "'$0' == ''; && '$1' == '';"
+          eval_expr: "'${0}' == ''; && '${1}' == '';"

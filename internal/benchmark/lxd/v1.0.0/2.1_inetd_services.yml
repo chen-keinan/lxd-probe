@@ -16,7 +16,7 @@ categories:
           remediation: 'Run the following commands to remove xinetd:
                         # apt purge xinetd'
           check_type: multi_param
-          eval_expr: "'$0' != 'install ok installed';"
+          eval_expr: "'${0}' != 'install ok installed';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.1.2 Ensure openbsd-inetd is not installed (Automated)'
@@ -27,4 +27,4 @@ categories:
           remediation: 'Run the following command to uninstall openbsd-inetd:
                         apt purge openbsd-inetd'
           check_type: multi_param
-          eval_expr: "'$0' != 'install ok installed';"
+          eval_expr: "'${0}' != 'install ok installed';"
