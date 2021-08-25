@@ -173,7 +173,6 @@ func Test_executeTests(t *testing.T) {
 	ab.AuditCommand = []string{"aaa", "bbb"}
 	ab.EvalExpr = "'$0' == ''; && '$1' == '';"
 	ab.CommandParams = map[int][]string{}
-	ab.CmdExprBuilder = utils.UpdateCmdExprParam
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	evalcmd := mocks.NewMockCmdEvaluator(ctrl)

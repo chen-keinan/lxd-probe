@@ -2,9 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/Knetic/govaluate"
 	"github.com/chen-keinan/go-command-eval/eval"
-	"github.com/chen-keinan/lxd-probe/internal/common"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/models"
 	"github.com/chen-keinan/lxd-probe/internal/reports"
@@ -16,7 +14,6 @@ import (
 	"github.com/mitchellh/colorstring"
 	"github.com/olekukonko/tablewriter"
 	"os"
-	"strings"
 )
 
 //LxdAudit lxd benchmark object
@@ -174,75 +171,6 @@ func (ldx *LxdAudit) runAuditTest(at *models.AuditBench) []*models.AuditBench {
 	// continue with result processing
 	auditRes = append(auditRes, ldx.ResultProcessor(at, cmdEvalResult.Match)...)
 	return auditRes
-}
-
-func (ldx *LxdAudit) addDummyCommandResponse(expr string, index int, n string) string {
-	if n == "[^\"]\\S*'\n" || n == "" || n == common.EmptyValue {
-		spExpr := utils.SeparateExpr(expr)
-		for _, expr := range spExpr {
-			if expr.Type == common.SingleValue {
-				if !strings.Contains(expr.Expr, fmt.Sprintf("'$%d'", index)) {
-					if strings.Contains(expr.Expr, fmt.Sprintf("$%d", index)) {
-						return common.NotValidNumber
-					}
-				}
-			}
-		}
-		return common.EmptyValue
-	}
-	return n
-}
-
-//IndexValue hold command index and result
-type IndexValue struct {
-	index int
-	value string
-}
-
-//evalExpression expression eval as cartesian product
-func (ldx *LxdAudit) evalExpression(at *models.AuditBench,
-	commandRes []string, commResSize int, permutationArr []string, testFailure int) int {
-	if len(commandRes) == 0 {
-		return ldx.evalCommand(at, permutationArr, testFailure)
-	}
-	outputs := strings.Split(utils.RemoveNewLineSuffix(commandRes[0]), "\n")
-	for _, o := range outputs {
-		permutationArr = append(permutationArr, o)
-		testFailure = ldx.evalExpression(at, commandRes[1:commResSize], commResSize-1, permutationArr, testFailure)
-		if testFailure > 0 {
-			return testFailure
-		}
-		permutationArr = permutationArr[:len(permutationArr)-1]
-	}
-	return testFailure
-}
-
-func (ldx *LxdAudit) evalCommand(at *models.AuditBench, permutationArr []string, testExec int) int {
-	// build command expression with params
-	expr := at.CmdExprBuilder(permutationArr, at.EvalExpr)
-	testExec++
-	// eval command expression
-	testSucceeded, err := evalCommandExpr(strings.ReplaceAll(expr, common.EmptyValue, ""))
-	if err != nil {
-		ldx.log.Console(fmt.Sprintf("failed to evaluate command expr %s for audit test %s : err %s", expr, at.Name, err.Error()))
-	}
-	return testExec - testSucceeded
-}
-
-func evalCommandExpr(expr string) (int, error) {
-	expression, err := govaluate.NewEvaluableExpression(expr)
-	if err != nil {
-		return 0, err
-	}
-	result, err := expression.Evaluate(nil)
-	if err != nil {
-		return 0, err
-	}
-	b, ok := result.(bool)
-	if ok && b {
-		return 1, nil
-	}
-	return 0, nil
 }
 
 //Synopsis for help
