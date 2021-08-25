@@ -16,7 +16,7 @@ categories:
           remediation: 'Remove the X Windows System packages:
                         apt purge xserver-xorg*'
           check_type: multi_param
-          eval_expr: "'$0' != '';"
+          eval_expr: "'${0}' != '';"
         -
           name: '2.2.2 Ensure Avahi Server is not enabled (Automated)'
           description: Avahi is a free zeroconf implementation, including a system for multicast DNS/DNS-SD service discovery.
@@ -28,7 +28,7 @@ categories:
           remediation: 'Run the following command to disable avahi-daemon:
                                # systemctl --now disable avahi-daemon'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.2.3 Ensure CUPS is not enabled (Automated)'
@@ -40,7 +40,7 @@ categories:
             - 'systemctl is-enabled cups 2> /dev/null'
           remediation: 'Run one of the following commands to disable cups : # systemctl --now disable cups'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
           references:
             - More detailed documentation on CUPS is available at the project homepage at http://www.cups.org
@@ -55,7 +55,7 @@ categories:
                          # systemctl --now disable isc-dhcp-server
                          # systemctl --now disable isc-dhcp-server6'
           check_type: multi_param
-          eval_expr: "('$0' == ''; && '$1' == '';) || ('$0' != 'disabled'; && '$1' == 'disabled')"
+          eval_expr: "('${0}' == ''; && '${1}' == '';) || ('${0}' != 'disabled'; && '${1}' == 'disabled')"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
           references:
             - More detailed documentation on DHCP is available at http://www.isc.org/software/dhcp.
@@ -68,7 +68,7 @@ categories:
             - 'systemctl is-enabled slapd 2> /dev/null'
           remediation: 'Run one of the following commands to disable slapd: # systemctl --now disable slapd'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
           references:
             - For more detailed documentation on OpenLDAP, go to the project homepage at http://www.openldap.org.
@@ -81,7 +81,7 @@ categories:
             - 'systemctl is-enabled rpcbind 2> /dev/null'
           remediation: 'Run the following commands to disable rpcbind:# systemctl --now disable rpcbind'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.2.7 Ensure DNS Server is not enabled (Automated)'
@@ -92,7 +92,7 @@ categories:
             - 'systemctl is-enabled bind9 2> /dev/null'
           remediation: 'un the following commands to disable DNS server:# systemctl --now disable bind9'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.2.8 Ensure FTP Server is not enabled (Automated)'
@@ -102,7 +102,7 @@ categories:
             - 'systemctl is-enabled vsftpd 2> /dev/null'
           remediation: 'Run the following command to disable vsftpd:# systemctl --now disable vsftpd'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
                             Additional FTP servers also exist and should be audited.
         -
@@ -113,7 +113,7 @@ categories:
             - 'systemctl is-enabled apache2 2> /dev/null'
           remediation: 'Run the following command to disable apache:# systemctl --now disable apache2'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
                           Several httpd servers exist and can use other service names. apache, apache2, lighttpd, and nginx are example services that provide an HTTP server.
                           These and other services should also be audited.
@@ -125,7 +125,7 @@ categories:
             - 'systemctl is-enabled dovecot 2> /dev/null'
           remediation: 'Run one of the following commands to disable dovecot :# systemctl --now disable dovecot'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
                           Several IMAP/POP3 servers exist and can use other service names. courier-imap and cyrus-imap are example services that provide a mail server.
                           These and other services should also be audited.
@@ -139,7 +139,7 @@ categories:
             - 'systemctl is-enabled smbd 2> /dev/null'
           remediation: 'Run the following command to disable Samba:systemctl --now disable smbd'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate met
         -
           name: '2.2.12 Ensure HTTP Proxy Server is not enabled (Automated)'
@@ -149,7 +149,7 @@ categories:
             - 'systemctl is-enabled squid 2> /dev/null'
           remediation: 'Run the following command to disable squid:# systemctl --now disable squid'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
                             On some distributions the squid service is known as squid3, not squid.
                             Several HTTP proxy servers exist. These and other services should be checked.
@@ -162,7 +162,7 @@ categories:
             - 'systemctl is-enabled snmpd 2> /dev/null'
           remediation: 'Run the following command to disable snmpd: # systemctl --now disable snmpd'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.2.14 Ensure mail transfer agent is configured for local-only mode (Automated)'
@@ -182,7 +182,7 @@ categories:
                           dc_mailname_in_oh=''true''
                           dc_localdelivery=''mail_spool'''
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
           additional_info: This recommendation is designed around the exim4 mail server,
                           depending on your environment you may have an alternative MTA installed such as sendmail.
                           If this is the case consult the documentation for your installed MTA to configure the recommended state.
@@ -194,7 +194,7 @@ categories:
             - 'systemctl is-enabled rsync 2> /dev/null'
           remediation: 'Run the following command to disable rsync:# systemctl --now disable rsync'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
         -
           name: '2.2.16 Ensure NIS Server is not enabled (Automated)'
@@ -205,6 +205,6 @@ categories:
             - 'systemctl is-enabled nis 2> /dev/null'
           remediation: 'Run the following command to disable nis: # systemctl --now disable nis'
           check_type: multi_param
-          eval_expr: "'$0' == ''; || '$0' == 'disabled';"
+          eval_expr: "'${0}' == ''; || '${0}' == 'disabled';"
           additional_info: Additional methods of disabling a service exist. Consult your distribution documentation for appropriate methods.
 

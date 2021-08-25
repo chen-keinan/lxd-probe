@@ -11,7 +11,7 @@ require (
 	github.com/gobuffalo/packr v1.30.1
 	github.com/golang/mock v1.6.0
 	github.com/gosuri/uitable v0.0.4
-	github.com/magiconair/properties v1.8.0
+	github.com/magiconair/properties v1.8.5
 	github.com/mitchellh/cli v1.1.2
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/mitchellh/mapstructure v1.4.1
@@ -22,7 +22,7 @@ require (
 	go.uber.org/zap v1.18.1
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/sys v0.0.0-20210820121016-41cdb8703e55 // indirect
+	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
 	golang.org/x/tools v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )

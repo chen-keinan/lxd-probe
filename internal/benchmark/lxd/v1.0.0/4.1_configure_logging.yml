@@ -17,7 +17,7 @@ categories:
           remediation: 'nstall rsyslog:
                         # apt install rsyslog'
           check_type: multi_param
-          eval_expr: "'$0' == 'install ok installed';"
+          eval_expr: "'${0}' == 'install ok installed';"
         -
           name: '4.1.1.2 Ensure rsyslog Service is enabled (Automated)'
           description: Once the rsyslog package is installed it needs to be activated.
@@ -27,7 +27,7 @@ categories:
           remediation: 'Run the following commands to enable rsyslog:
                         # systemctl --now enable rsyslog'
           check_type: multi_param
-          eval_expr: "'$0' == 'enabled';"
+          eval_expr: "'${0}' == 'enabled';"
           additional_info: 'Additional methods of enabling a service exist. Consult your distribution documentation for appropriate methods.'
         -
           name: '4.1.1.3 Ensure logging is configured (Manual)'
@@ -86,7 +86,7 @@ categories:
           remediation: 'Edit the /etc/rsyslog.conf and /etc/rsyslog.d/*.conf files and set $FileCreateMode to 0640 or more restrictive:
                         $FileCreateMode 0640'
           check_type: multi_param
-          eval_expr: "'$0' == '0640';"
+          eval_expr: "'${0}' == '0640';"
           references:
             - See the rsyslog.conf(5) man page for more information.
         -
@@ -110,7 +110,7 @@ categories:
                         *.* @@192.168.2.100
                         Run the following command to reload the rsyslog configuration: # systemctl reload rsyslog'
           check_type: multi_param
-          eval_expr: "'$0' != '';"
+          eval_expr: "'${0}' != '';"
           additional_info: 'The double "at" sign (@@) directs rsyslog to use TCP to send log messages to the server, which is a more reliable transport mechanism than the default UDP protocol.
                             *.* sends all logs to the remote loghost. Ensure that the selection of logfiles being sent follows local site policy'
           references:
@@ -145,7 +145,7 @@ categories:
           remedeation: 'Edit the /etc/systemd/journald.conf file and add the following line:
                         ForwardToSyslog=yes'
           check_type: multi_param
-          eval_expr: "'$0' == 'ForwardToSyslog=yes';"
+          eval_expr: "'${0}' == 'ForwardToSyslog=yes';"
           additional_info: 'This recommendation assumes that recommendation 4.2.1.5, "Ensure rsyslog is configured to send logs to a remote log host"
                            has been implemented. As noted in the journald man pages, journald logs may be exported to rsyslog either through the process mentioned here,
                             or through a facility like systemd-journald.service.
@@ -166,7 +166,7 @@ categories:
           remedeation: 'Edit the /etc/systemd/journald.conf file and add the following line:
                         Compress=yes'
           check_type: multi_param
-          eval_expr: "'$0' == 'Compress=yes';"
+          eval_expr: "'${0}' == 'Compress=yes';"
           additional_info: 'The main configuration file /etc/systemd/journald.conf is read before any of the custom *.conf files.
                             If there are custom configs present, they override the main configuration parameters'
           references:
@@ -180,7 +180,7 @@ categories:
           remedeation: 'Edit the /etc/systemd/journald.conf file and add the following line:
                         Storage=persistent'
           check_type: multi_param
-          eval_expr: "'$0' == 'Storage=persistent';"
+          eval_expr: "'${0}' == 'Storage=persistent';"
           additional_info: 'The main configuration file /etc/systemd/journald.conf is read before any of the custom *.conf files.
                             If there are custom configs present, they override the main configuration parameters'
           references:
@@ -193,5 +193,5 @@ categories:
           remedeation: 'Run the following commands to set permissions on all existing log files:
                          find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod g- w,o-rwx "{}" +'
           check_type: multi_param
-          eval_expr: "$0 <= 444;"
+          eval_expr: "${0} <= 444;"
           additional_info: 'You may also need to change the configuration for your logging software or services for any logs that had incorrect permissions.'

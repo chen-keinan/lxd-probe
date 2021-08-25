@@ -18,4 +18,4 @@ categories:
           additional_info: 'If no maxage setting is set for logrotate a situation can occur where logrotate is interrupted and fails to delete rotated logfiles.
                             It is recommended to set this to a value greater than the longest any log file should exist on your system to ensure that any such logfile
                             is removed but standard rotation settings are not overridden.'
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"

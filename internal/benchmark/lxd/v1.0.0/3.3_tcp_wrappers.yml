@@ -21,7 +21,7 @@ categories:
           remediation: 'Run the following command to install TCP Wrappers:
                         # apt install tcpd'
           check_type: multi_param
-          eval_expr: "'$0' == 'install ok installed';"
+          eval_expr: "'${0}' == 'install ok installed';"
           additional_info: 'To verify if a service supports TCP Wrappers, run the following command:
                           # ldd <path-to-daemon> | grep libwrap.so
                           If there is any output, then the service supports TCP Wrappers.'
@@ -52,7 +52,7 @@ categories:
                         Additional Information:
                         Contents of the /etc/hosts.deny file may include additional options depending on your network configuration.'
           check_type: multi_param
-          eval_expr: "'$0' == 'ALL: ALL';"
+          eval_expr: "'${0}' == 'ALL: ALL';"
         -
           name: '3.3.4 Ensure permissions on /etc/hosts.allow are configured (Automated)'
           description: The /etc/hosts.allow file contains networking information that is used by many applications
@@ -64,7 +64,7 @@ categories:
                          # chown root:root /etc/hosts.allow
                          # chmod 644 /etc/hosts.allow'
           check_type: multi_param
-          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
+          eval_expr: "'${0}' == 'Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
         -
           name: '3.3.5 Ensure permissions on /etc/hosts.deny are configured (Automated)'
           description: The /etc/hosts.deny file contains network information that is used by many system applications
@@ -76,4 +76,4 @@ categories:
                           # chown root:root /etc/hosts.deny
                           # chmod 644 /etc/hosts.deny'
           check_type: multi_param
-          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"
+          eval_expr: "'${0}' == 'Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)';"

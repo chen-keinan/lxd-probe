@@ -23,7 +23,7 @@ categories:
                         Run the following command to remove the motd file:
                         # rm /etc/motd'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '1.7.1.2 Ensure local login warning banner is configured properly (Automated)'
           description: 'The contents of the /etc/issue file are displayed to users prior to login for local terminals.
@@ -38,7 +38,7 @@ categories:
                         remove any instances of \m , \r , \s , \v or references to the OS platform
                         # echo "Authorized uses only. All activity may be monitored and reported." > /etc/issue'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '1.7.1.3 Ensure remote login warning banner is configured properly (Automated)'
           description: 'The contents of the /etc/issue.net file are displayed to users prior to login for remote connections from configured services.
@@ -53,7 +53,7 @@ categories:
                         remove any instances of \m , \r , \s , \v or references to the OS platform
                         # echo "Authorized uses only. All activity may be monitored and reported." > /etc/issue.net'
           check_type: multi_param
-          eval_expr: "'$0' == '';"
+          eval_expr: "'${0}' == '';"
         -
           name: '1.7.1.4 Ensure permissions on /etc/motd are configured (Automated)'
           description: 'The contents of the /etc/motd file are displayed to users after login and function as a message of the day for authenticated users.'
@@ -64,7 +64,7 @@ categories:
                          # chown root:root /etc/motd
                         # chmod u-x,go-wx /etc/motd'
           check_type: multi_param
-          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
+          eval_expr: "'${0}' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
         -
           name: '1.7.1.5 Ensure permissions on /etc/issue are configured (Automated)'
           description: 'The contents of the /etc/issue file are displayed to users prior to login for local terminals.'
@@ -75,7 +75,7 @@ categories:
                                # chown root:root /etc/issue
                               # chmod u-x,go-wx /etc/issue'
           check_type: multi_param
-          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
+          eval_expr: "'${0}' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
         -
           name: '1.7.1.6 Ensure permissions on /etc/issue.net are configured (Automated)'
           description: 'The contents of the /etc/issue.net file are displayed to users prior to login for remote connections from configured services.'
@@ -86,4 +86,4 @@ categories:
                                      # chown root:root /etc/issue.net
                                     # chmod u-x,go-wx /etc/issue.net'
           check_type: multi_param
-          eval_expr: "'$0' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
+          eval_expr: "'${0}' == 'Access: (0644/-rw-r--r--) Uid: ( 0/ root) Gid: ( 0/ root)';"
