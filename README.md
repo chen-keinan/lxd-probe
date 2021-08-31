@@ -64,6 +64,7 @@ go build -buildmode=plugin -o=~/<plugin folder>/bench_plugin.so /<plugin folder>
 ```
 cp /<plugin folder>/bench_plugin.so ~/.lxd-probe/plugins/compile/bench_plugin.so
 ```
+Note: Plugin and binary must compile with the same linux env
 ## Supported Specs
 The lxd-probe support cis specs and can be easily extended:
 - master config file change spec [CIS Lxd Benchmark specification](https://www.cisecurity.org/benchmark/lxd/)
