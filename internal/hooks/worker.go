@@ -1,4 +1,4 @@
-package bplugin
+package hooks
 
 import (
 	"fmt"

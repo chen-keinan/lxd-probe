@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/go-user-plugins/uplugin"
-	"github.com/chen-keinan/lxd-probe/internal/bplugin"
 	"github.com/chen-keinan/lxd-probe/internal/cli/commands"
 	"github.com/chen-keinan/lxd-probe/internal/common"
+	"github.com/chen-keinan/lxd-probe/internal/hooks"
 	"github.com/chen-keinan/lxd-probe/internal/logger"
 	"github.com/chen-keinan/lxd-probe/internal/startup"
 	"github.com/chen-keinan/lxd-probe/pkg/models"
@@ -83,7 +83,7 @@ func initPluginFolders(fm utils.FolderMgr) {
 }
 
 //loadAuditBenchPluginSymbols load API call plugin symbols
-func loadAuditBenchPluginSymbols(log *zap.Logger) bplugin.LxdBenchAuditResultHook {
+func loadAuditBenchPluginSymbols(log *zap.Logger) hooks.LxdBenchAuditResultHook {
 	fm := utils.NewKFolder()
 	sourceFolder, err := utils.GetPluginSourceSubFolder(fm)
 	if err != nil {
@@ -99,7 +99,7 @@ func loadAuditBenchPluginSymbols(log *zap.Logger) bplugin.LxdBenchAuditResultHoo
 	if err != nil {
 		panic(fmt.Sprintf("failed to get plugin compiled plugins %s", err.Error()))
 	}
-	apiPlugin := bplugin.LxdBenchAuditResultHook{Plugins: make([]plugin.Symbol, 0), Plug: pl}
+	apiPlugin := hooks.LxdBenchAuditResultHook{Plugins: make([]plugin.Symbol, 0), Plug: pl}
 	for _, name := range names {
 		sym, err := pl.Load(name, common.LxdBenchAuditResultHook)
 		if err != nil {
@@ -138,8 +138,8 @@ func initPluginWorker(plChan chan models.LxdAuditResults, completedChan chan boo
 		panic(err)
 	}
 	lxdHooks := loadAuditBenchPluginSymbols(log)
-	pluginData := bplugin.NewPluginWorkerData(plChan, lxdHooks, completedChan)
-	worker := bplugin.NewPluginWorker(pluginData, log)
+	pluginData := hooks.NewPluginWorkerData(plChan, lxdHooks, completedChan)
+	worker := hooks.NewPluginWorker(pluginData, log)
 	worker.Invoke()
 }
 

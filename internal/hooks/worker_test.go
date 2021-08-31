@@ -1,4 +1,4 @@
-package bplugin
+package hooks
 
 import (
 	m2 "github.com/chen-keinan/lxd-probe/pkg/models"
