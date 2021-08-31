@@ -45,7 +45,7 @@ build_travis:
 build_remote:
 	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' ./cmd/lxd-probe
-	mv lxd-probe ~/boxes/lxd_box/lxd-probe
+	mv lxd-probe ~/boxes/basic_box/lxd-probe
 dlv:
 	dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./lxd-probe
 build_beb:

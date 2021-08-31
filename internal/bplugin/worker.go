@@ -2,14 +2,22 @@ package bplugin
 
 import (
 	"fmt"
+	"github.com/chen-keinan/go-user-plugins/uplugin"
 	"github.com/chen-keinan/lxd-probe/pkg/models"
 	"go.uber.org/zap"
+	"plugin"
 )
 
 //PluginWorker instance which match command data to specific pattern
 type PluginWorker struct {
 	cmd *PluginWorkerData
 	log *zap.Logger
+}
+
+//LxdBenchAuditResultHook hold the plugin symbol for Lxd bench audit result Hook
+type LxdBenchAuditResultHook struct {
+	Plugins []plugin.Symbol
+	Plug    *uplugin.PluginLoader
 }
 
 //NewPluginWorker return new plugin worker instance
@@ -35,7 +43,7 @@ func (pm *PluginWorker) Invoke() {
 		ae := <-pm.cmd.plChan
 		if len(pm.cmd.plugins.Plugins) > 0 {
 			for _, pl := range pm.cmd.plugins.Plugins {
-				err := ExecuteLxdAuditResults(pl, ae)
+				_, err := pm.cmd.plugins.Plug.Invoke(pl, ae)
 				if err != nil {
 					pm.log.Error(fmt.Sprintf("failed to execute plugins %s", err.Error()))
 				}

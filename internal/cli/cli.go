@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/chen-keinan/go-command-eval/eval"
+	"github.com/chen-keinan/go-user-plugins/uplugin"
 	"github.com/chen-keinan/lxd-probe/internal/bplugin"
 	"github.com/chen-keinan/lxd-probe/internal/cli/commands"
 	"github.com/chen-keinan/lxd-probe/internal/common"
@@ -83,23 +84,51 @@ func initPluginFolders(fm utils.FolderMgr) {
 
 //loadAuditBenchPluginSymbols load API call plugin symbols
 func loadAuditBenchPluginSymbols(log *zap.Logger) bplugin.LxdBenchAuditResultHook {
-	pl, err := bplugin.NewPluginLoader()
+	fm := utils.NewKFolder()
+	sourceFolder, err := utils.GetPluginSourceSubFolder(fm)
 	if err != nil {
-		log.Error(fmt.Sprintf("failed to load plugin symbol %s", err.Error()))
+		panic(fmt.Sprintf("failed tpo get plugin source sourceFolder %s", err.Error()))
 	}
-	plugins, err := pl.Plugins()
+	compliledFolder, err := utils.GetCompilePluginSubFolder(fm)
 	if err != nil {
-		log.Error(fmt.Sprintf("failed to load plugin symbol %s", err.Error()))
+		panic(fmt.Sprintf("failed to get plugin compiled sourceFolder %s", err.Error()))
 	}
-	apiPlugin := bplugin.LxdBenchAuditResultHook{Plugins: make([]plugin.Symbol, 0)}
-	for _, name := range plugins {
-		sym, err := pl.Compile(name, common.LxdBenchAuditResultHook)
+
+	pl := uplugin.NewPluginLoader(sourceFolder, compliledFolder)
+	names, err := pl.Plugins(uplugin.CompiledExt)
+	if err != nil {
+		panic(fmt.Sprintf("failed to get plugin compiled plugins %s", err.Error()))
+	}
+	apiPlugin := bplugin.LxdBenchAuditResultHook{Plugins: make([]plugin.Symbol, 0), Plug: pl}
+	for _, name := range names {
+		sym, err := pl.Load(name, common.LxdBenchAuditResultHook)
 		if err != nil {
+			log.Error(fmt.Sprintf("failed to load sym %s error %s", name, err.Error()))
 			continue
 		}
 		apiPlugin.Plugins = append(apiPlugin.Plugins, sym)
 	}
 	return apiPlugin
+
+	/*
+
+		pl, err := bplugin.NewPluginLoader()
+		if err != nil {
+			log.Error(fmt.Sprintf("failed to load plugin symbol %s", err.Error()))
+		}
+		plugins, err := pl.Plugins()
+		if err != nil {
+			log.Error(fmt.Sprintf("failed to load plugin symbol %s", err.Error()))
+		}
+		apiPlugin := bplugin.LxdBenchAuditResultHook{Plugins: make([]plugin.Symbol, 0)}
+		for _, name := range plugins {
+			sym, err := pl.Compile(name, common.LxdBenchAuditResultHook)
+			if err != nil {
+				continue
+			}
+			apiPlugin.Plugins = append(apiPlugin.Plugins, sym)
+		}
+		return apiPlugin*/
 }
 
 // init new plugin worker , accept audit result chan and audit result plugin hooks
