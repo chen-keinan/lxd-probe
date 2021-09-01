@@ -109,26 +109,6 @@ func loadAuditBenchPluginSymbols(log *zap.Logger) hooks.LxdBenchAuditResultHook 
 		apiPlugin.Plugins = append(apiPlugin.Plugins, sym)
 	}
 	return apiPlugin
-
-	/*
-
-		pl, err := bplugin.NewPluginLoader()
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to load plugin symbol %s", err.Error()))
-		}
-		plugins, err := pl.Plugins()
-		if err != nil {
-			log.Error(fmt.Sprintf("failed to load plugin symbol %s", err.Error()))
-		}
-		apiPlugin := bplugin.LxdBenchAuditResultHook{Plugins: make([]plugin.Symbol, 0)}
-		for _, name := range plugins {
-			sym, err := pl.Compile(name, common.LxdBenchAuditResultHook)
-			if err != nil {
-				continue
-			}
-			apiPlugin.Plugins = append(apiPlugin.Plugins, sym)
-		}
-		return apiPlugin*/
 }
 
 // init new plugin worker , accept audit result chan and audit result plugin hooks
