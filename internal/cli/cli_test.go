@@ -56,16 +56,14 @@ func Test_StartCli(t *testing.T) {
 }
 
 func Test_ArgsSanitizer(t *testing.T) {
-	args := []string{"--a", "-b"}
-	ad := ArgsSanitizer(args)
-	assert.Equal(t, ad.Filters[0], "a")
-	assert.Equal(t, ad.Filters[1], "b")
+	os.Args = append(os.Args,"--report")
+	os.Args = append(os.Args,"--exclude=1.1.10")
+	ad := ArgsSanitizer()
+	assert.Equal(t, ad.Filters[0], "report")
+	assert.Equal(t, ad.Filters[1], "--exclude=1.1.10")
 	assert.False(t, ad.Help)
-	args = []string{}
-	ad = ArgsSanitizer(args)
-	assert.True(t, ad.Filters[0] == "")
-	args = []string{"--help"}
-	ad = ArgsSanitizer(args)
+	os.Args = append(os.Args,"--help")
+	ad = ArgsSanitizer()
 	assert.True(t, ad.Help)
 }
 
@@ -80,8 +78,8 @@ func Test_LxdProbeHelpFunc(t *testing.T) {
 
 //Test_createCliBuilderData test
 func Test_createCliBuilderData(t *testing.T) {
-	cmdArgs := []string{"a"}
-	ad := ArgsSanitizer(os.Args[1:])
+ 	cmdArgs := []string{"a"}
+	ad := ArgsSanitizer()
 	cmdArgs = append(cmdArgs, ad.Filters...)
 	cmds := make([]cli.Command, 0)
 	completedChan := make(chan bool)

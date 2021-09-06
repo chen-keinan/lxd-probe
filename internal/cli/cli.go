@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"flag"
 	"fmt"
 	"github.com/chen-keinan/go-command-eval/eval"
 	"github.com/chen-keinan/go-user-plugins/uplugin"
@@ -18,7 +19,7 @@ import (
 	"go.uber.org/zap"
 	"os"
 	"plugin"
-	"strings"
+	"reflect"
 )
 
 // StartCLI start ldx-prob audit tester
@@ -164,7 +165,7 @@ func NewArgFunc() SanitizeArgs {
 
 //NewCliArgs return cli args
 func NewCliArgs(sa SanitizeArgs) ArgsData {
-	ad := sa(os.Args[1:])
+	ad := sa()
 	return ad
 }
 
@@ -204,35 +205,25 @@ func invokeCommandCli(args []string, commands map[string]cli.CommandFactory) (in
 }
 
 //ArgsSanitizer sanitize CLI arguments
-var ArgsSanitizer SanitizeArgs = func(str []string) ArgsData {
-	ad := ArgsData{SpecType: "lxd"}
-	args := make([]string, 0)
-	if len(str) == 0 {
-		args = append(args, "")
+var ArgsSanitizer SanitizeArgs = func() ArgsData {
+	report := flag.Bool("report", false, "a bool")
+	include := flag.String("include", "", "a string")
+	exclude := flag.String("exclude", "", "a string")
+	specType := flag.String("spec", "lxd", "a string")
+	specVersion := flag.String("version", "v1.0.0", "a string")
+	help := flag.Bool("help", false, "a bool")
+	flag.Parse()
+	ad := ArgsData{Help: *help, SpecType: *specType, SpecVersion: *specVersion}
+	ad.Filters = make([]string, 0)
+	if *report {
+		ad.Filters = append(ad.Filters, reflect.TypeOf(report).Name())
 	}
-	for _, arg := range str {
-		arg = strings.Replace(arg, "--", "", -1)
-		arg = strings.Replace(arg, "-", "", -1)
-		switch {
-		case arg == "help", arg == "h":
-			ad.Help = true
-			args = append(args, arg)
-		case strings.HasPrefix(arg, "s="):
-			ad.SpecType = arg[len("s="):]
-		case strings.HasPrefix(arg, "spec="):
-			ad.SpecType = arg[len("spec="):]
-		case strings.HasPrefix(arg, "v="):
-			ad.SpecVersion = fmt.Sprintf("v%s", arg[len("v="):])
-		case strings.HasPrefix(arg, "version="):
-			ad.SpecVersion = fmt.Sprintf("v%s", arg[len("version="):])
-		default:
-			args = append(args, arg)
-		}
-	}
-	if ad.SpecType == "lxd" && len(ad.SpecVersion) == 0 {
+ 	e := reflect.ValueOf(include).Elem()
+	ad.Filters = append(ad.Filters, fmt.Sprintf("%s=%s", e.Type().Name(), *include))
+	ad.Filters = append(ad.Filters, fmt.Sprintf("%s=%s", reflect.TypeOf(*exclude).Name(), *exclude))
+ 	if ad.SpecType == "lxd" && len(ad.SpecVersion) == 0 {
 		ad.SpecVersion = "v1.0.0"
 	}
-	ad.Filters = args
 	return ad
 }
 
@@ -245,7 +236,7 @@ type ArgsData struct {
 }
 
 //SanitizeArgs sanitizer func
-type SanitizeArgs func(str []string) ArgsData
+type SanitizeArgs func() ArgsData
 
 // LxdProbeHelpFunc lxd-probe Help function with all supported commands
 func LxdProbeHelpFunc(app string) cli.HelpFunc {
