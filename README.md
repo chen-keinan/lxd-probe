@@ -4,7 +4,7 @@
 <img src="./pkg/img/coverage_badge.png" alt="test coverage badge">
 [![Gitter](https://badges.gitter.im/beacon-sec/lxd-probe.svg)](https://gitter.im/beacon-sec/lxd-probe?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-<br><img src="./pkg/img/lxd-gopher.png" width="300" alt="lxd-probe logo"><br>
+<br><img src="./pkg/img/lxd_containers.png" width="300" alt="lxd-probe logo"><br>
 # lxd-probe
 
 ###  Scan your Linux container (LXD / LXC) runtime !!
