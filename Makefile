@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 GOCMD=go
 MOVESANDBOX=mv ~/vms/lxd-probelxd-probe ~/vms-local/lxd-probe
-GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ${GOPATH}/bin/packr
+GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ~/go/bin/packr
 GOMOD=$(GOCMD) mod
 GOMOCKS=$(GOCMD) generate ./...
 GOBUILD=$(GOCMD) build
@@ -27,9 +27,6 @@ test:
 	$(GOCMD) tool cover  -func coverage.md
 build:
 	$(GOPACKR)
-	export PATH=$GOPATH/bin:$PATH;
-	export PATH=$PATH:/home/vagrant/go/bin
-	export PATH=$PATH:/home/root/go/bin
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_local:
 	packr
