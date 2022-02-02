@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 GOCMD=go
 MOVESANDBOX=mv ~/vms/lxd-probelxd-probe ~/vms-local/lxd-probe
-GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ${GOPATH}/bin/packr
+GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ~/go/bin/packr
 GOMOD=$(GOCMD) mod
 GOMOCKS=$(GOCMD) generate ./...
 GOBUILD=$(GOCMD) build
@@ -19,7 +19,7 @@ lint:
 tidy:
 	$(GOMOD) tidy -v
 test:
-	$(GOCMD) get -d github.com/golang/mock/mockgen@latest
+	$(GOCMD) get -d github.com/golang/mock/mockgen@v1.6.0
 	$(GOCMD) install -v github.com/golang/mock/mockgen && export PATH=$GOPATH/bin:$PATH;
 	$(GOMOCKS)
 	$(GOTEST) ./... -coverprofile coverage.md fmt
@@ -31,11 +31,17 @@ build:
 	export PATH=$PATH:/home/vagrant/go/bin
 	export PATH=$PATH:/home/root/go/bin
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
+build_local:
+	packr
+	export PATH=$GOPATH/bin:$PATH;
+	export PATH=$PATH:/home/vagrant/go/bin
+	export PATH=$PATH:/home/root/go/bin
+	$(GOBUILD) ./cmd/lxd-probe;
 install:build_travis
 	cp $(BINARY_NAME) $(GOPATH)/bin/$(BINARY_NAME)
 test_travis:
-	$(GOCMD) get -d github.com/golang/mock/mockgen@latest
-	$(GOCMD) install -v github.com/golang/mock/mockgen && export PATH=${GOPATH}/bin:$PATH;
+	$(GOCMD) get -d github.com/golang/mock/mockgen@v1.6.0
+	$(GOCMD) install -v github.com/golang/mock/mockgen && export PATH=$GOPATH/bin:$PATH;
 	$(GOMOCKS)
 	$(GOTEST) -short ./...  -coverprofile coverage.md fmt
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
@@ -44,12 +50,16 @@ build_travis:
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_remote:
 	$(GOPACKR)
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' ./cmd/lxd-probe
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe
 	mv lxd-probe ~/boxes/basic_box/lxd-probe
+
+build_docker_local:
+	docker build -t chenkeinan/lxd-probe:3 .
+	docker push chenkeinan/lxd-probe:3
 dlv:
 	dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./lxd-probe
 build_beb:
 	$(GOPACKR)
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' cmd/lxd/lxd-probe.go
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' cmd/lxd-probe/lxd-probe.go
 	scripts/deb.sh
 .PHONY: all build install test
