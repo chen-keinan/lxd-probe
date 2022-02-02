@@ -46,7 +46,6 @@ test_travis:
 	$(GOTEST) -short ./...  -coverprofile coverage.md fmt
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 build_travis:
-    export PATH=$GOPATH/bin:$PATH;
 	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_remote:
