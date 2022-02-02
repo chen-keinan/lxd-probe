@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 GOCMD=go
 MOVESANDBOX=mv ~/vms/lxd-probelxd-probe ~/vms-local/lxd-probe
-GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ~/go/bin/packr
+GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ${GOPATH}/bin/packr
 GOMOD=$(GOCMD) mod
 GOMOCKS=$(GOCMD) generate ./...
 GOBUILD=$(GOCMD) build
