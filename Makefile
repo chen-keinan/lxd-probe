@@ -2,7 +2,6 @@ SHELL := /bin/bash
 
 GOCMD=go
 MOVESANDBOX=mv ~/vms/lxd-probelxd-probe ~/vms-local/lxd-probe
-GOPACKR=$(GOCMD) get -d github.com/gobuffalo/packr/packr && ${HOME}/go/bin/packr
 GOMOD=$(GOCMD) mod
 GOMOCKS=$(GOCMD) generate ./...
 GOBUILD=$(GOCMD) build
@@ -26,10 +25,8 @@ test:
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 	$(GOCMD) tool cover  -func coverage.md
 build:
-	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_local:
-	packr
 	export PATH=$GOPATH/bin:$PATH;
 	export PATH=$PATH:/home/vagrant/go/bin
 	export PATH=$PATH:/home/root/go/bin
@@ -44,10 +41,8 @@ test_build_travis:
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_travis:
-	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_remote:
-	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe
 	mv lxd-probe ~/boxes/basic_box/lxd-probe
 
@@ -57,7 +52,6 @@ build_docker_local:
 dlv:
 	dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./lxd-probe
 build_beb:
-	$(GOPACKR)
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v -gcflags='-N -l' cmd/lxd-probe/lxd-probe.go
 	scripts/deb.sh
 .PHONY: all build install test
