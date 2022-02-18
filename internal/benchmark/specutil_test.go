@@ -10,7 +10,7 @@ func Test_meshUtil(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(is) != 24 {
-		t.Error(fmt.Sprintf("Test_meshUtil Want %d Got %d", len(is), 32))
+	if len(is) != 27 {
+		t.Error(fmt.Sprintf("Test_meshUtil Want %d Got %d", len(is), 27))
 	}
 }
