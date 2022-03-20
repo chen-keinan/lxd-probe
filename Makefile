@@ -14,6 +14,10 @@ all:test lint build
 fmt:
 	$(GOCMD) fmt ./...
 lint:
+	$(GOCMD) get -d github.com/golang/mock/mockgen@v1.6.0
+	$(GOCMD) install -v github.com/golang/mock/mockgen
+	export PATH=$HOME/go/bin:$PATH
+	$(GOMOCKS)
 	./scripts/lint.sh
 tidy:
 	$(GOMOD) tidy -v
@@ -25,23 +29,15 @@ test:
 	$(GOCMD) tool cover -html=coverage.md -o coverage.html
 	$(GOCMD) tool cover  -func coverage.md
 build:
+	export PATH=$GOPATH/bin:$PATH;
+	export PATH=$PATH:/home/vagrant/go/bin
+	export PATH=$PATH:/home/root/go/bin
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_local:
 	export PATH=$GOPATH/bin:$PATH;
 	export PATH=$PATH:/home/vagrant/go/bin
 	export PATH=$PATH:/home/root/go/bin
 	$(GOBUILD) ./cmd/lxd-probe;
-install:build_travis
-	cp $(BINARY_NAME) $(GOPATH)/bin/$(BINARY_NAME)
-test_build_travis:
-	$(GOCMD) get -d github.com/golang/mock/mockgen@v1.6.0
-	$(GOCMD) install -v github.com/golang/mock/mockgen && export PATH=$GOPATH/bin:$PATH;
-	$(GOMOCKS)
-	$(GOTEST) -short ./...  -coverprofile coverage.md fmt
-	$(GOCMD) tool cover -html=coverage.md -o coverage.html
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
-build_travis:
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe;
 build_remote:
 	GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/lxd-probe
 	mv lxd-probe ~/boxes/basic_box/lxd-probe
