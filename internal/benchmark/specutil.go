@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 )
 
+//LxdFolder hold spec files
 const LxdFolder = "lxd/v1.0.0"
 
 var (
@@ -14,6 +15,8 @@ var (
 	res embed.FS
 )
 
+//LoadLxdSpecs load lxd specs
+//nolint:gosec
 func LoadLxdSpecs() ([]utils.FilesInfo, error) {
 	dir, _ := res.ReadDir(LxdFolder)
 	specs := make([]utils.FilesInfo, 0)
